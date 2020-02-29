@@ -1,6 +1,6 @@
 package com.degrendel.outrogue.frontend.views.fragments
 
-import com.degrendel.outrogue.common.Properties.Companion.P
+import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.frontend.Application
 import kotlinx.collections.immutable.toImmutableMap
 import org.hexworks.zircon.api.data.Position

@@ -1,4 +1,4 @@
-package com.degrendel.outrogue.common
+package com.degrendel.outrogue.common.properties
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy

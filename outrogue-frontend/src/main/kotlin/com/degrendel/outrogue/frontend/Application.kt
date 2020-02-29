@@ -1,7 +1,7 @@
 package com.degrendel.outrogue.frontend
 
 import com.degrendel.outrogue.common.Engine
-import com.degrendel.outrogue.common.Properties.Companion.P
+import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.engine.OutrogueEngine
 import com.degrendel.outrogue.frontend.views.InGameView
