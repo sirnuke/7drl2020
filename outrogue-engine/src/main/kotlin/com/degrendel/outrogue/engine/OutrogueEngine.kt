@@ -1,5 +1,6 @@
 package com.degrendel.outrogue.engine
 
+import com.degrendel.outrogue.agent.RogueSoarAgent
 import com.degrendel.outrogue.common.Engine
 import com.degrendel.outrogue.common.Properties
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -11,4 +12,11 @@ class OutrogueEngine : Engine
   private val mapper = ObjectMapper().registerKotlinModule()
 
   override val properties: Properties = mapper.readValue(javaClass.getResource("/properties.json"))
+
+  private val soarAgent = RogueSoarAgent()
+
+  override fun openAgentDebuggers()
+  {
+    soarAgent.openDebugger()
+  }
 }

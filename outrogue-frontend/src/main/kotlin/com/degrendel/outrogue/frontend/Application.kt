@@ -29,13 +29,12 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
   init
   {
     if (profile.soarDebugger)
-      TODO("Open the soar debugger!")
+      engine.openAgentDebuggers()
 
     val debugConfig = if (profile.debugDrawGrid)
       DebugConfig(displayGrid = true, displayCoordinates = true, displayFps = true)
     else
       DebugConfig(displayGrid = false, displayCoordinates = false, displayFps = true)
-
 
     tileGrid = SwingApplications.startTileGrid(
         AppConfig(
