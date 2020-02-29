@@ -2,18 +2,22 @@ package com.degrendel.outrogue.engine
 
 import com.degrendel.outrogue.agent.RogueSoarAgent
 import com.degrendel.outrogue.common.Engine
-import com.degrendel.outrogue.common.Properties
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.degrendel.outrogue.common.PlayerInputProvider
+import com.degrendel.outrogue.common.logger
 
-class OutrogueEngine : Engine
+class OutrogueEngine(val playerInput: PlayerInputProvider) : Engine
 {
-  private val mapper = ObjectMapper().registerKotlinModule()
-
-  override val properties: Properties = mapper.readValue(javaClass.getResource("/properties.json"))
+  companion object
+  {
+    private val L by logger()
+  }
 
   private val soarAgent = RogueSoarAgent()
+
+  init
+  {
+    L.info("Creating engine")
+  }
 
   override fun openAgentDebuggers()
   {
