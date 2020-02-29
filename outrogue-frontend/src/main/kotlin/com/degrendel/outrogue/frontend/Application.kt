@@ -1,7 +1,10 @@
 package com.degrendel.outrogue.frontend
 
+import com.degrendel.outrogue.common.Engine
+import com.degrendel.outrogue.common.Properties.Companion.P
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.engine.OutrogueEngine
+import com.degrendel.outrogue.frontend.views.InGameView
 import org.hexworks.zircon.api.CP437TilesetResources
 import org.hexworks.zircon.api.ColorThemes
 import org.hexworks.zircon.api.SwingApplications
@@ -22,15 +25,12 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
     val L by logger()
   }
 
-  val engine = OutrogueEngine()
-
   val tileGrid: TileGrid
+  val inGameView: InGameView
+  val engine: Engine
 
   init
   {
-    if (profile.soarDebugger)
-      engine.openAgentDebuggers()
-
     val debugConfig = if (profile.debugDrawGrid)
       DebugConfig(displayGrid = true, displayCoordinates = true, displayFps = true)
     else
@@ -46,16 +46,25 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
             defaultTileset = CP437TilesetResources.rexPaint16x16(),
             defaultGraphicalTileset = CP437TilesetResources.rexPaint16x16(),
             defaultColorTheme = ColorThemes.defaultTheme(),
-            title = engine.properties.window.title,
+            title = P.window.title,
             fullScreen = profile.fullscreen,
             debugMode = profile.zirconDebugMode,
             debugConfig = debugConfig,
-            size = Size.create(engine.properties.window.width, engine.properties.window.height),
+            size = Size.create(P.window.width, P.window.height),
             betaEnabled = false,
-            fpsLimit = engine.properties.window.fpsLimit))
+            fpsLimit = P.window.fpsLimit))
 
     tileGrid.onShutdown { lock.withLock { condition.signal() } }
+
+    inGameView = InGameView(this)
+    engine = OutrogueEngine(inGameView)
+
+    if (profile.soarDebugger)
+      engine.openAgentDebuggers()
+
+    tileGrid.dock(inGameView)
   }
+
 }
 
 data class LaunchProfile(val fullscreen: Boolean,
