@@ -4,5 +4,16 @@
     "height": 45,
     "title": "Outrogue",
     "fps-limit": 120
+  },
+  "map": {
+    "width": 32,
+    "height": 64,
+    "floors": 10
+  },
+  "views": {
+    "world": {
+      "map-x": 0,
+      "map-y": 0
+    }
   }
 }

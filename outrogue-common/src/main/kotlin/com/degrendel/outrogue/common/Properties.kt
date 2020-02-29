@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
-data class Properties(val window: Window)
+data class Properties(val window: Window, val map: Map, val views: Views)
 {
   companion object
   {
@@ -21,3 +21,6 @@ data class Properties(val window: Window)
 }
 
 data class Window(val width: Int, val height: Int, val title: String, val fpsLimit: Int)
+data class Map(val width: Int, val height: Int, val levels: Int, val offsetX: Int, val offsetY: Int)
+data class Views(val world: World)
+data class World(val mapX: Int, val mapY: Int)
