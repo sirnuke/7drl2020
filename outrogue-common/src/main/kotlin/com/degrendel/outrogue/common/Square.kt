@@ -1,5 +1,9 @@
 package com.degrendel.outrogue.common
 
+interface Square
+{
+
+}
 
 enum class SquareType(val blocked: Boolean)
 {
