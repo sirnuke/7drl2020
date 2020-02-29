@@ -37,5 +37,5 @@ fi
 
 ./gradlew clean outrogue-zircon:shadowJar publish
 
-butler push outrogue-zircon/build/libs/*.jar $itch_channel
+butler push outrogue-frontend/build/libs/*.jar $itch_channel
 
