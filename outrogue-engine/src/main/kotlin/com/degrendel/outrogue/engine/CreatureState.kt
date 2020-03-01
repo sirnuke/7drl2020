@@ -1,6 +1,7 @@
 package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
+import com.degrendel.outrogue.common.ai.AgentController
 import com.degrendel.outrogue.common.ai.Controller
 import com.degrendel.outrogue.common.ai.PlayerController
 import com.degrendel.outrogue.common.ai.SimpleController
@@ -62,7 +63,7 @@ class Rogue(entity: Entity, initial: Coordinate, cooldown: Long) : CreatureState
 {
   override val allegiance = Allegiance.ROGUE
   override val type = CreatureType.ROGUE
-  override val controller = SimpleController((0..0))
+  override val controller = AgentController
 
   init
   {
@@ -83,10 +84,13 @@ class Conjurer(entity: Entity, initial: Coordinate, cooldown: Long) : CreatureSt
 }
 
 class Minion(entity: Entity, initial: Coordinate, private var _allegiance: Allegiance, override val type: CreatureType,
-             override val controller: Controller, cooldown: Long)
+             initialController: Controller, cooldown: Long)
   : CreatureState(entity, initial, cooldown)
 {
+  private var _controller = initialController
   override val allegiance get() = _allegiance
+
+  override val controller get() = _controller
 
   init
   {
