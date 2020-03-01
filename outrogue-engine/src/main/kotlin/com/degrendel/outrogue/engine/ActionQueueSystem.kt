@@ -2,8 +2,10 @@ package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntityListener
+import com.badlogic.ashley.core.Family
 import com.degrendel.outrogue.common.*
 import com.degrendel.outrogue.common.ai.*
+import com.degrendel.outrogue.common.components.CreatureComponent
 import com.degrendel.outrogue.common.components.getCreature
 import java.util.*
 
@@ -23,9 +25,15 @@ class ActionQueueSystem(private val engine: OutrogueEngine) : EntityListener
       (c1.cooldown - c2.cooldown).toInt()
   })
 
+  init
+  {
+    val family = Family.all(CreatureComponent::class.java).get()
+    engine.ecs.addEntityListener(family, this)
+  }
+
   override fun entityAdded(entity: Entity)
   {
-    L.info("Adding entity {} to the action queue", entity)
+    L.info("Adding entity {} / {} to the action queue", entity, entity.getCreature())
     queue.add(entity.getCreature() as CreatureState)
   }
 
@@ -46,9 +54,9 @@ class ActionQueueSystem(private val engine: OutrogueEngine) : EntityListener
       is AgentController -> Sleep(creature)
       is SimpleController -> executeSimpleAI(engine, creature, controller)
     }
-    // TODO: Compute cost of performing action, put entity back into queue
-    // creature.cooldown += world.computeCost(action)
-    // queue.add(entity)
+    // TODO: Double check the logic here
+    creature.addCooldown(engine.computeCost(action))
+    queue.add(creature)
     return action
   }
 }
