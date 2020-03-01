@@ -1,19 +1,16 @@
 package com.degrendel.outrogue.frontend
 
-import com.degrendel.outrogue.common.Engine
+import com.degrendel.outrogue.common.BUILD_DATE
 import com.degrendel.outrogue.common.Frontend
+import com.degrendel.outrogue.common.VERSION_STRING
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.engine.OutrogueEngine
 import com.degrendel.outrogue.frontend.views.InGameView
 import org.hexworks.zircon.api.CP437TilesetResources
-import org.hexworks.zircon.api.ColorThemes
 import org.hexworks.zircon.api.SwingApplications
 import org.hexworks.zircon.api.application.AppConfig
-import org.hexworks.zircon.api.application.CursorStyle
 import org.hexworks.zircon.api.application.DebugConfig
-import org.hexworks.zircon.api.color.TileColor
-import org.hexworks.zircon.api.data.Size
 import org.hexworks.zircon.api.grid.TileGrid
 import org.hexworks.zircon.api.uievent.*
 import java.util.concurrent.locks.Condition
@@ -42,13 +39,20 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
     else
       DebugConfig(displayGrid = false, displayCoordinates = false, displayFps = true)
 
+    var title = P.window.title
+
+    if (P.window.displayVersion)
+      title += " $VERSION_STRING"
+    if (P.window.displayBuildDate)
+      title += " built on $BUILD_DATE"
+
     var appConfig = AppConfig.newBuilder()
         .withSize(P.window.width, P.window.height)
         .withDefaultTileset(CP437TilesetResources.rexPaint16x16())
         .withDebugConfig(debugConfig)
         .withDebugMode(profile.zirconDebugMode)
         .withFpsLimit(P.window.fpsLimit)
-        .withTitle(P.window.title)
+        .withTitle(title)
 
     if (profile.fullscreen)
       appConfig = appConfig.fullScreen()
