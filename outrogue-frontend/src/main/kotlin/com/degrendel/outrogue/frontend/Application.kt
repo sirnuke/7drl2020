@@ -41,10 +41,14 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
 
     var title = P.window.title
 
-    if (P.window.displayVersion)
-      title += " $VERSION_STRING"
-    if (P.window.displayBuildDate)
-      title += " built on $BUILD_DATE"
+    if (P.window.displayVersion || P.window.displayBuildDate)
+    {
+      title += "  --  "
+      if (P.window.displayVersion)
+        title += "$VERSION_STRING "
+      if (P.window.displayBuildDate)
+        title += "built on $BUILD_DATE "
+    }
 
     var appConfig = AppConfig.newBuilder()
         .withSize(P.window.width, P.window.height)
