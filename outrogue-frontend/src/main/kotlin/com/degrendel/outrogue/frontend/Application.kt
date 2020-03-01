@@ -1,6 +1,7 @@
 package com.degrendel.outrogue.frontend
 
 import com.degrendel.outrogue.common.Engine
+import com.degrendel.outrogue.common.Frontend
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.engine.OutrogueEngine
@@ -18,7 +19,7 @@ import java.util.concurrent.locks.Condition
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProfile)
+class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProfile) : Frontend
 {
   companion object
   {
@@ -27,42 +28,40 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
 
   val tileGrid: TileGrid
   val inGameView: InGameView
-  val engine: Engine
+  val engine = OutrogueEngine(this)
 
   init
   {
+    if (profile.soarDebugger)
+      engine.openAgentDebuggers()
+
     val debugConfig = if (profile.debugDrawGrid)
       DebugConfig(displayGrid = true, displayCoordinates = true, displayFps = true)
     else
       DebugConfig(displayGrid = false, displayCoordinates = false, displayFps = true)
 
-    tileGrid = SwingApplications.startTileGrid(
-        AppConfig(
-            blinkLengthInMilliSeconds = 500,
-            cursorStyle = CursorStyle.FIXED_BACKGROUND,
-            cursorColor = TileColor.defaultForegroundColor(),
-            isCursorBlinking = false,
-            isClipboardAvailable = true,
-            defaultTileset = CP437TilesetResources.rexPaint16x16(),
-            defaultGraphicalTileset = CP437TilesetResources.rexPaint16x16(),
-            defaultColorTheme = ColorThemes.defaultTheme(),
-            title = P.window.title,
-            fullScreen = profile.fullscreen,
-            debugMode = profile.zirconDebugMode,
-            debugConfig = debugConfig,
-            size = Size.create(P.window.width, P.window.height),
-            betaEnabled = false,
-            fpsLimit = P.window.fpsLimit))
+    var appConfig = AppConfig.newBuilder()
+        .withSize(P.window.width, P.window.height)
+        .withDefaultTileset(CP437TilesetResources.rexPaint16x16())
+        .withDebugConfig(debugConfig)
+        .withDebugMode(profile.zirconDebugMode)
+        .withFpsLimit(P.window.fpsLimit)
+        .withTitle(P.window.title)
+
+    if (profile.fullscreen)
+      appConfig = appConfig.fullScreen()
+
+    tileGrid = SwingApplications.startTileGrid(appConfig.build())
 
     tileGrid.onShutdown { lock.withLock { condition.signal() } }
 
     inGameView = InGameView(this)
-    engine = OutrogueEngine(inGameView)
-
-    if (profile.soarDebugger)
-      engine.openAgentDebuggers()
 
     tileGrid.dock(inGameView)
+  }
+
+  override fun refreshMap(floor: Int)
+  {
   }
 
 }

@@ -1,8 +1,13 @@
 package com.degrendel.outrogue.common
 
+import com.badlogic.ashley.core.Entity
+
 interface Square
 {
-
+  val type: SquareType
+  val coordinate: Coordinate
+  val entity: Entity
+  val wallOrientation: WallOrientation
 }
 
 enum class SquareType(val blocked: Boolean)
