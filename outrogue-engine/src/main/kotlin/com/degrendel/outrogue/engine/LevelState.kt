@@ -132,5 +132,22 @@ class LevelState(val floor: Int) : Level
   override fun getSquare(x: Int, y: Int): Square = squares[x][y]
 
   fun getSquare(coordinate: Coordinate) = getSquare(coordinate.x, coordinate.y)
+
+  /**
+   * Adds the tiles, rooms, and spawned creature entities to the system.
+   *
+   * This is intended to be done once right after startup, once all families and listeners are wired up and ready to go.
+   */
+  fun bootstrapECS(ecs: ECS)
+  {
+    rooms.forEach { ecs.addEntity(it.entity) }
+    each { x, y ->
+      squares[x][y].let {
+        ecs.addEntity(it.entity)
+        it.creature?.let { creature -> ecs.addEntity(creature.entity) }
+      }
+    }
+  }
+
   fun getRandomRooms(count: Int) = rooms.shuffled().dropLast(rooms.size - count)
 }

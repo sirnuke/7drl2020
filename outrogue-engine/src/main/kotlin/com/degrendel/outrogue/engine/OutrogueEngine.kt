@@ -26,4 +26,9 @@ class OutrogueEngine(val frontend: Frontend) : Engine
   {
     soarAgent.openDebugger()
   }
+
+  override fun bootstrapECS()
+  {
+    _world.bootstrapECS()
+  }
 }
