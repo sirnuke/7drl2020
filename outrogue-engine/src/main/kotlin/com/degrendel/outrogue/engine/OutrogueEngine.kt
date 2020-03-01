@@ -2,6 +2,10 @@ package com.degrendel.outrogue.engine
 
 import com.degrendel.outrogue.agent.RogueSoarAgent
 import com.degrendel.outrogue.common.*
+import com.degrendel.outrogue.common.ai.Action
+import com.degrendel.outrogue.common.ai.Move
+import com.degrendel.outrogue.common.ai.Sleep
+import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.World
 
 class OutrogueEngine(val frontend: Frontend) : Engine
@@ -39,5 +43,15 @@ class OutrogueEngine(val frontend: Frontend) : Engine
   {
     L.info("Updating ECS")
     ecs.update(0.0f)
+  }
+
+  override fun computeCost(action: Action): Long
+  {
+    return when (action)
+    {
+      is Sleep -> P.costs.sleep
+      // TODO: Charge more for diagonal?
+      is Move -> P.costs.move
+    }
   }
 }
