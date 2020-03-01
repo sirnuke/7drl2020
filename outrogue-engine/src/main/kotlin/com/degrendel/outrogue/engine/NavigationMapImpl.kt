@@ -9,15 +9,10 @@ import com.degrendel.outrogue.common.world.Level
 import com.degrendel.outrogue.common.world.Square
 import java.util.*
 
-class NavigationMapImpl(level: Level, sources: List<Coordinate>, skip: Set<Coordinate>) : NavigationMap
+class NavigationMapImpl : NavigationMap
 {
   private val _data: MutableList<MutableList<Int>> = xRange.map { yRange.map { Int.MAX_VALUE }.toMutableList() }.toMutableList()
   val data: List<List<Int>> get() = _data
-
-  init
-  {
-    compute(level, sources, skip)
-  }
 
   override fun compute(level: Level, sources: List<Coordinate>, skip: Set<Coordinate>)
   {
