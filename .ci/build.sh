@@ -16,17 +16,19 @@ set -x
 export GRADLE_USER_HOME="${BUILD_DIR}/gradle"
 cd source
 
-version=`./gradlew printVersion|grep "\-SNAPSHOT" || true`
+
+version=`./gradlew printVersion`
+isSnapshot=`./gradlew printVersion|grep "\-SNAPSHOT" || true`
 
 if [ "$BUILD_TYPE" = "release" ] ; then
-  if [ ! -z "$version" ] ; then
+  if [ ! -z "$isSnapshot" ] ; then
     echo "not a release, aborting!"
     exit 1
   fi
   itch_channel="sirnuke/outrogue:win-linux-mac-stable"
   echo "$version" > github-version
 elif [ "$BUILD_TYPE" = "snapshot" ] ; then
-  if [ -z "$version" ] ; then
+  if [ -z "$isSnapshot" ] ; then
     echo "not a snapshot, aborting!"
     exit 1
   fi
