@@ -1,8 +1,6 @@
 package com.degrendel.outrogue.frontend
 
-import com.degrendel.outrogue.common.BUILD_DATE
-import com.degrendel.outrogue.common.VERSION_STRING
-import com.degrendel.outrogue.common.logger
+import com.degrendel.outrogue.common.*
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
@@ -11,7 +9,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.system.exitProcess
 
-@Command(name = "Outrogue", mixinStandardHelpOptions = true)
+@Command(name = "Outrogue", mixinStandardHelpOptions = true, version = [VERSION, GIT_SHA, DIRTY.toString(), BUILD_DATE])
 class Main : Callable<Int>
 {
   companion object
