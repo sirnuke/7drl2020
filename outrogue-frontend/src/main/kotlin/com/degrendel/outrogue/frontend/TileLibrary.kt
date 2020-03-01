@@ -10,6 +10,8 @@ object TileLibrary
   private val blockedTile = Tile.defaultTile().withCharacter(' ')
   private val corridorTile = Tile.defaultTile().withCharacter('#')
   private val doorTile = Tile.defaultTile().withCharacter('+')
+  private val downCaseTile = Tile.defaultTile().withCharacter('>')
+  private val upCaseTile = Tile.defaultTile().withCharacter('<')
   private val rogueTile = Tile.defaultTile().withCharacter(0x263A.toChar())
   private val conjurerTile = Tile.defaultTile().withCharacter('@')
 
@@ -39,6 +41,8 @@ object TileLibrary
       SquareType.FLOOR -> floorTile
       SquareType.WALL -> wallTiles.getValue(square.wallOrientation)
       SquareType.DOOR -> doorTile
+      SquareType.STAIRCASE_DOWN -> downCaseTile
+      SquareType.STAIRCASE_UP -> upCaseTile
     }
   }
 

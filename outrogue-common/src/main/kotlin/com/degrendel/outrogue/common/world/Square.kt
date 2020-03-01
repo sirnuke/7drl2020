@@ -34,13 +34,15 @@ interface Square
   }
 }
 
-enum class SquareType(val blocked: Boolean, val roomBorder: Boolean)
+enum class SquareType(val blocked: Boolean = false, val roomBorder: Boolean = false, val staircase: Boolean = false)
 {
-  BLOCKED(true, false),
-  CORRIDOR(false, false),
-  WALL(true, true),
-  FLOOR(false, false),
-  DOOR(false, true),
+  BLOCKED(blocked = true),
+  CORRIDOR,
+  WALL(blocked = true, roomBorder = true),
+  FLOOR,
+  DOOR(roomBorder = true),
+  STAIRCASE_DOWN(staircase = true),
+  STAIRCASE_UP(staircase = true),
   ;
 }
 
