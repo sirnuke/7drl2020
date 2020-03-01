@@ -16,6 +16,7 @@
       "max-number": 12
     },
     "features": {
+      "max-placement-attempts": 1000,
       "staircases": [0.2, 0.05]
     }
   },
