@@ -35,3 +35,6 @@ build/
 
 # Generated version file
 /outrogue-common/src/main/kotlin/com/degrendel/outrogue/common/GitVersion.kt
+
+# Soar files
+ngs-temp.txt
