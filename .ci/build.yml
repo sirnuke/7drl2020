@@ -11,9 +11,9 @@ image_resource:
 params:
   INTERNAL_NEXUS_USERNAME: ((nexus_username))
   INTERNAL_NEXUS_PASSWORD: ((nexus_password))
-  BUTLER_API_KEY: ((butler_api_key))
+  BUTLER_API_KEY: ((itch_api_key))
 caches:
   - path: gradle/wrapper
   - path: gradle/caches
 run:
-  path: source/ci/build.sh
+  path: source/.ci/build.sh

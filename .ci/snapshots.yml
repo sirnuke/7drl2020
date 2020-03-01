@@ -12,9 +12,10 @@ jobs:
       - get: source
         trigger: true
       - task: execute-gradle
-        file: source/ci/build.yml
+        file: source/.ci/build.yml
         params:
           BUILD_TYPE: snapshot
         vars:
           nexus_username: ((nexus_username))
           nexus_password: ((nexus_password))
+          itch_api_key: ((itch_api_key))

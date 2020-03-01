@@ -20,12 +20,13 @@ jobs:
       - get: source
         trigger: true
       - task: execute-gradle
-        file: source/ci/build.yml
+        file: source/.ci/build.yml
         params:
           BUILD_TYPE: release
         vars:
           nexus_username: ((nexus_username))
           nexus_password: ((nexus_password))
+          itch_api_key: ((itch_api_key))
       - put: gh-release
         params:
           name: github-version
