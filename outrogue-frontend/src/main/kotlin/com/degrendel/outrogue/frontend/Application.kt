@@ -74,7 +74,6 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
   override fun refreshMap(floor: Int)
   {
   }
-
 }
 
 data class LaunchProfile(val fullscreen: Boolean,

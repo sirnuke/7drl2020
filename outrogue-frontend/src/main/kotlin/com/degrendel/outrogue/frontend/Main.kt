@@ -1,5 +1,7 @@
 package com.degrendel.outrogue.frontend
 
+import com.degrendel.outrogue.common.BUILD_DATE
+import com.degrendel.outrogue.common.VERSION_STRING
 import com.degrendel.outrogue.common.logger
 import picocli.CommandLine
 import picocli.CommandLine.Command
@@ -34,9 +36,11 @@ class Main : Callable<Int>
 
   override fun call(): Int
   {
+    L.info("Outrogue {}", VERSION_STRING)
+    L.info("Built on {}", BUILD_DATE)
     val launchProfile = LaunchProfile(fullscreen = fullscreen, soarDebugger = soarDebugger,
         debugDrawGrid = drawZirconGrid, zirconDebugMode = zirconDebugMode)
-    L.info("Launching with profile {}", launchProfile)
+    L.info("Launching with {}", launchProfile)
     Application(lock, condition, launchProfile)
     lock.withLock { condition.await() }
     L.info("Quiting...")
