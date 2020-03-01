@@ -10,10 +10,9 @@ interface Level
 
   companion object
   {
-    fun each(lambda: (x: Int, y: Int) -> Unit) =
-      xRange.forEach { x -> yRange.forEach { y -> lambda(x, y) } }
+    fun each(lambda: (floor: Int) -> Unit) =
+      floorRange.forEach { lambda(it) }
 
-    val xRange = (0 until P.map.width)
-    val yRange = (0 until P.map.height)
+    val floorRange = (0 until P.map.floors)
   }
 }

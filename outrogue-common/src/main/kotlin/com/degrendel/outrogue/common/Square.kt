@@ -10,6 +10,17 @@ interface Square
   val wallOrientation: WallOrientation
   val room: Int?
   val visible: Set<Int>
+
+  fun isNavigable(): Boolean
+
+  companion object
+  {
+    fun each(lambda: (x: Int, y: Int) -> Unit) =
+      xRange.forEach { x -> yRange.forEach { y -> lambda(x, y) } }
+
+    val xRange = (0 until Properties.P.map.width)
+    val yRange = (0 until Properties.P.map.height)
+  }
 }
 
 enum class SquareType(val blocked: Boolean, val roomBorder: Boolean)

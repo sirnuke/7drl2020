@@ -1,6 +1,7 @@
 package com.degrendel.outrogue.frontend.views.fragments
 
 import com.degrendel.outrogue.common.Level
+import com.degrendel.outrogue.common.Square
 import com.degrendel.outrogue.common.SquareType
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
@@ -33,7 +34,7 @@ class WorldFragment(val app: Application, screen: Screen)
   {
     L.info("Refreshing map!")
     val level = app.engine.world.getLevel(floor)
-    Level.each { x, y ->
+    Square.each { x, y ->
       // TODO: Update visible, known variants
       val square = level.getSquare(x, y)
       L.trace("Setting ({},{}) of type {}", x, y, square.type)

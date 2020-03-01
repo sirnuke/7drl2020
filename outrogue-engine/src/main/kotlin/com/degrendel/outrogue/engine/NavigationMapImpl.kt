@@ -1,15 +1,13 @@
 package com.degrendel.outrogue.engine
 
-import com.degrendel.outrogue.common.Coordinate
-import com.degrendel.outrogue.common.EightWay
-import com.degrendel.outrogue.common.Level
-import com.degrendel.outrogue.common.NavigationMap
-import com.degrendel.outrogue.common.properties.Properties.Companion.P
+import com.degrendel.outrogue.common.*
+import com.degrendel.outrogue.common.Square.Companion.xRange
+import com.degrendel.outrogue.common.Square.Companion.yRange
 import java.util.*
 
 class NavigationMapImpl(level: Level, sources: List<Coordinate>, skip: Set<Coordinate>) : NavigationMap
 {
-  private val _data: MutableList<MutableList<Int>> = Level.xRange.map { Level.yRange.map { Int.MAX_VALUE }.toMutableList() }.toMutableList()
+  private val _data: MutableList<MutableList<Int>> = xRange.map { yRange.map { Int.MAX_VALUE }.toMutableList() }.toMutableList()
   val data: List<List<Int>> get() = _data
 
   init
@@ -19,7 +17,7 @@ class NavigationMapImpl(level: Level, sources: List<Coordinate>, skip: Set<Coord
 
   override fun compute(level: Level, sources: List<Coordinate>, skip: Set<Coordinate>)
   {
-    Level.each { x, y -> _data[x][y] = Int.MAX_VALUE }
+    Square.each { x, y -> _data[x][y] = Int.MAX_VALUE }
     sources.forEach { _data[it.x][it.y] = 0 }
     val toCheck = LinkedList<Coordinate>().also { it.addAll(sources) }
     while (toCheck.isNotEmpty())
