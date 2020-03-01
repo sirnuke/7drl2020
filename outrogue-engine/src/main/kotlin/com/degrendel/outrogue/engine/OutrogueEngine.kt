@@ -22,7 +22,7 @@ class OutrogueEngine(val frontend: Frontend) : Engine
   private val _world = WorldState(ecs)
   override val world: World get() = _world
 
-  private val actionQueue = ActionQueueSystem(this)
+  private val actionQueue = ActionQueue(this)
 
   init
   {
