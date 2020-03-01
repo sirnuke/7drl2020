@@ -2,7 +2,7 @@ resources:
   - name: source
     type: git
     source:
-      uri: "https://github.com/sirnuke/reverse-rogue-concept.git"
+      uri: "https://github.com/sirnuke/outrogue.git"
       username: ((github_username))
       password: ((github_access_token))
 

@@ -2,11 +2,17 @@ resources:
   - name: source
     type: git
     source:
-      uri: "https://github.com/sirnuke/reverse-rogue-concept.git"
+      uri: "https://github.com/sirnuke/outrogue.git"
       tag_filter: "v*"
       username: ((github_username))
       password: ((github_access_token))
     check_every: "30m"
+  - name: gh-release
+    type: github-release
+    source:
+      owner: ((github_username))
+      repository: outrogue
+      access_token: ((github_access_token))
 
 jobs:
   - name: gradle
@@ -20,3 +26,10 @@ jobs:
         vars:
           nexus_username: ((nexus_username))
           nexus_password: ((nexus_password))
+      - put: gh-release
+        params:
+          name: github-version
+          tag: github-version
+          tag_prefix: v
+          globs:
+            - "outrogue-frontend/build/libs/*.jar"

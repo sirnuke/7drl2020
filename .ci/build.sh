@@ -24,6 +24,7 @@ if [ "$BUILD_TYPE" = "release" ] ; then
     exit 1
   fi
   itch_channel="sirnuke:outrogue/win-linux-mac-stable"
+  echo "$version" > github-version
 elif [ "$BUILD_TYPE" = "snapshot" ] ; then
   if [ -z "$version" ] ; then
     echo "not a snapshot, aborting!"
