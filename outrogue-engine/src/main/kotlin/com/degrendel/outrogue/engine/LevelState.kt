@@ -12,7 +12,7 @@ import com.github.czyzby.noise4j.map.generator.room.AbstractRoomGenerator
 import com.github.czyzby.noise4j.map.generator.room.RoomType
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator
 
-class LevelState(val ecs: ECS, val floor: Int) : Level
+class LevelState(val floor: Int) : Level
 {
   companion object
   {
@@ -21,7 +21,7 @@ class LevelState(val ecs: ECS, val floor: Int) : Level
 
   private val squares: List<List<SquareState>>
 
-  private val rooms = mutableListOf<Entity>()
+  private val rooms = mutableListOf<RoomState>()
 
   init
   {
@@ -32,7 +32,8 @@ class LevelState(val ecs: ECS, val floor: Int) : Level
       override fun carve(room: AbstractRoomGenerator.Room, grid: Grid, value: Float)
       {
         L.debug("Carving room ({},{})->({}x{})", room.x, room.y, room.width, room.height)
-        rooms += Entity().add(CoordinateComponent(Coordinate(room.x, room.y, floor))).add(RoomComponent(rooms.size, room.width, room.height))
+        rooms += RoomState(entity = Entity(), topLeft = Coordinate(room.x, room.y, floor), id = rooms.size,
+            width = room.width, height = room.height)
         room.fill(grid, value)
       }
 
@@ -55,7 +56,7 @@ class LevelState(val ecs: ECS, val floor: Int) : Level
         }
         L.trace("Setting ({},{}) to {}", x, y, type)
         val roomId = if (type == SquareType.FLOOR)
-          rooms.firstOrNull { it.isWithinThisRoom(x, y) }?.getRoomData()?.id
+          rooms.firstOrNull { it.isWithin(x, y) }?.id
         else null
         SquareState(Coordinate(x, y, floor), type, roomId)
       }
@@ -80,20 +81,16 @@ class LevelState(val ecs: ECS, val floor: Int) : Level
     }
 
     rooms.forEach { room ->
-      val topLeft = room.getCoordinate()
-      val width: Int
-      val height: Int
-      room.getRoomData().let { width = it.width; height = it.height }
       // TODO: Gross
-      for (x in (topLeft.x - 1)..(topLeft.x + width))
+      for (x in (room.topLeft.x - 1)..(room.topLeft.x + room.width))
       {
-        wallify(x, topLeft.y - 1)
-        wallify(x, topLeft.y + height)
+        wallify(x, room.topLeft.y - 1)
+        wallify(x, room.topLeft.y + room.height)
       }
-      for (y in (topLeft.y - 1)..(topLeft.y + height))
+      for (y in (room.topLeft.y - 1)..(room.topLeft.y + room.height))
       {
-        wallify(topLeft.x - 1, y)
-        wallify(topLeft.x + width, y)
+        wallify(room.topLeft.x - 1, y)
+        wallify(room.topLeft.x + room.width, y)
       }
     }
 

@@ -16,7 +16,7 @@ data class CoordinateComponent(val coordinate: Coordinate) : Component
 data class SquareComponent(val square: Square) : Component
 
 /** Tracks the id and dimensions of the room. */
-data class RoomComponent(val id: Int, val width: Int, val height: Int) : Component
+data class RoomComponent(val room: Room) : Component
 
 /** Indicates this entity is a creature. */
 data class CreatureComponent(val creature: Creature) : Component
