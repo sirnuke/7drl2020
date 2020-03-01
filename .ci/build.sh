@@ -36,7 +36,7 @@ else
   exit 1
 fi
 
-./gradlew clean outrogue-zircon:shadowJar publish
+./gradlew clean outrogue-frontend:shadowJar publish
 
 butler push outrogue-frontend/build/libs/*.jar $itch_channel
 
