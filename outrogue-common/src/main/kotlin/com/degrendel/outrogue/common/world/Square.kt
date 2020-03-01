@@ -60,6 +60,12 @@ enum class EightWay(val x: Int, val y: Int, val diagonal: Boolean)
   WEST(-1, 0, false),
   NORTH_WEST(-1, -1, true),
   ;
+
+  val diagonalChecks: List<Pair<Int, Int>> = if (!diagonal)
+    listOf()
+  else
+    listOf(Pair(0, y), Pair(x, 0))
+
 }
 
 enum class WallOrientation

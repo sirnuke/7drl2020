@@ -131,7 +131,13 @@ class LevelState(val floor: Int) : Level
 
   override fun canMove(from: Coordinate, direction: EightWay): Boolean
   {
-    from.move(direction).let { return (it.isValid() && getSquare(it).isNavigable()) }
+    from.move(direction).let { to ->
+      return (to.isValid()
+          && getSquare(to).isNavigable()
+          && direction.diagonalChecks
+          .map { getSquare(from.x + it.first, from.y + it.second) }
+          .all { !it.type.blocked })
+    }
   }
 
   override fun isNavigable(coordinate: Coordinate) = getSquare(coordinate).isNavigable()
