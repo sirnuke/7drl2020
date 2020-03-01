@@ -15,9 +15,11 @@ import org.hexworks.zircon.api.application.DebugConfig
 import org.hexworks.zircon.api.color.TileColor
 import org.hexworks.zircon.api.data.Size
 import org.hexworks.zircon.api.grid.TileGrid
+import org.hexworks.zircon.api.uievent.*
 import java.util.concurrent.locks.Condition
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlin.system.exitProcess
 
 class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProfile) : Frontend
 {
@@ -56,6 +58,15 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
     tileGrid.onShutdown { lock.withLock { condition.signal() } }
 
     inGameView = InGameView(this)
+
+    if (profile.zirconDebugMode)
+    {
+      inGameView.screen.handleKeyboardEvents(KeyboardEventType.KEY_PRESSED) { event: KeyboardEvent, _: UIEventPhase ->
+        if (event.code == KeyCode.ESCAPE)
+          exitProcess(0)
+        UIEventResponse.pass()
+      }
+    }
 
     tileGrid.dock(inGameView)
   }
