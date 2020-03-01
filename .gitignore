@@ -32,3 +32,6 @@ build/
 # Misc
 .*.sw*
 ~tcl-expansion.soar
+
+# Generated version file
+/outrogue-common/src/main/kotlin/com/degrendel/outrogue/common/GitVersion.kt
