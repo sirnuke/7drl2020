@@ -10,7 +10,6 @@ plugins {
 
 allprojects {
   group = "com.degrendel"
-  version = "0.1.0-SNAPSHOT"
 
   repositories {
     mavenCentral()
