@@ -2,6 +2,8 @@ package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.*
+import com.degrendel.outrogue.common.Level.Companion.xRange
+import com.degrendel.outrogue.common.Level.Companion.yRange
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.github.czyzby.noise4j.map.Grid
@@ -41,8 +43,8 @@ class LevelState(val ecs: ECS, val floor: Int) : Level
 
     dungeonGenerator.generate(grid)
 
-    squares = (0 until P.map.width).map { x ->
-      (0 until P.map.height).map { y ->
+    squares = xRange.map { x ->
+      yRange.map { y ->
         val type = when (grid[x, y])
         {
           1.0f -> SquareType.BLOCKED

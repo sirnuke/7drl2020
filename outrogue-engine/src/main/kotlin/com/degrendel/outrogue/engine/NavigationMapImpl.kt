@@ -9,7 +9,7 @@ import java.util.*
 
 class NavigationMapImpl(level: Level, sources: List<Coordinate>, skip: Set<Coordinate>) : NavigationMap
 {
-  private val _data: MutableList<MutableList<Int>> = (0 until P.map.width).map { (0 until P.map.height).map { Int.MAX_VALUE }.toMutableList() }.toMutableList()
+  private val _data: MutableList<MutableList<Int>> = Level.xRange.map { Level.yRange.map { Int.MAX_VALUE }.toMutableList() }.toMutableList()
   val data: List<List<Int>> get() = _data
 
   init
@@ -19,7 +19,7 @@ class NavigationMapImpl(level: Level, sources: List<Coordinate>, skip: Set<Coord
 
   override fun compute(level: Level, sources: List<Coordinate>, skip: Set<Coordinate>)
   {
-    (0 until P.map.width).forEach { x -> (0 until P.map.height).forEach { y -> _data[x][y] = Int.MAX_VALUE } }
+    Level.each { x, y -> _data[x][y] = Int.MAX_VALUE }
     sources.forEach { _data[it.x][it.y] = 0 }
     val toCheck = LinkedList<Coordinate>().also { it.addAll(sources) }
     while (toCheck.isNotEmpty())
