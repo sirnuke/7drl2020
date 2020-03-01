@@ -8,15 +8,17 @@ interface Square
   val coordinate: Coordinate
   val entity: Entity
   val wallOrientation: WallOrientation
+  val room: Int?
+  val visible: Set<Int>
 }
 
-enum class SquareType(val blocked: Boolean)
+enum class SquareType(val blocked: Boolean, val roomBorder: Boolean)
 {
-  BLOCKED(true),
-  CORRIDOR(false),
-  WALL(true),
-  FLOOR(false),
-  DOOR(false),
+  BLOCKED(true, false),
+  CORRIDOR(false, false),
+  WALL(true, true),
+  FLOOR(false, false),
+  DOOR(false, true),
   ;
 }
 

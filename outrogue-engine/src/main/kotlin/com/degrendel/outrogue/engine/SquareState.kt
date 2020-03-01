@@ -8,11 +8,15 @@ import com.degrendel.outrogue.common.WallOrientation
 import com.degrendel.outrogue.common.components.CoordinateComponent
 import com.degrendel.outrogue.common.components.SquareComponent
 
-class SquareState(override val coordinate: Coordinate, override val type: SquareType) : Square
+class SquareState(override val coordinate: Coordinate, var _type: SquareType, override val room: Int?) : Square
 {
+  var _visible = mutableSetOf<Int>().also { if (room != null) it.add(room) }
+  override val visible: Set<Int> get() = _visible
   override val entity: Entity = Entity()
       .add(CoordinateComponent(coordinate))
       .add(SquareComponent(this))
+
+  override val type: SquareType get() = _type
 
   var _wallOrientation = WallOrientation.NONE
 

@@ -1,6 +1,8 @@
 package com.degrendel.outrogue.engine
 
+import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.*
+import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.github.czyzby.noise4j.map.Grid
 import com.github.czyzby.noise4j.map.generator.room.AbstractRoomGenerator
@@ -16,6 +18,8 @@ class LevelState(val ecs: ECS, val floor: Int) : Level
 
   private val squares: List<List<SquareState>>
 
+  private val rooms = mutableListOf<Entity>()
+
   init
   {
 
@@ -25,8 +29,7 @@ class LevelState(val ecs: ECS, val floor: Int) : Level
       override fun carve(room: AbstractRoomGenerator.Room, grid: Grid, value: Float)
       {
         L.debug("Carving room ({},{})->({}x{})", room.x, room.y, room.width, room.height)
-        // TODO: Add room tracking again
-        //rooms += Entity().add(PositionComponent(Position(room.x, room.y, floor))).add(RoomComponent(rooms.size, room.width, room.height))
+        rooms += Entity().add(CoordinateComponent(Coordinate(room.x, room.y, floor))).add(RoomComponent(rooms.size, room.width, room.height))
         room.fill(grid, value)
       }
 
@@ -48,14 +51,56 @@ class LevelState(val ecs: ECS, val floor: Int) : Level
           else -> throw IllegalStateException("Unexpected value ${grid[x, y]}")
         }
         L.trace("Setting ({},{}) to {}", x, y, type)
-        /*
         val roomId = if (type == SquareType.FLOOR)
-          rooms.firstOrNull { it.isWithinRoom(position) }?.getRoomData()?.id
+          rooms.firstOrNull { it.isWithinThisRoom(x, y) }?.getRoomData()?.id
         else null
-        val visibleRooms = if (roomId == null) setOf() else setOf(roomId)
-         */
-        SquareState(Coordinate(x, y, floor), type)
+        SquareState(Coordinate(x, y, floor), type, roomId)
       }
+    }
+
+    val walls = mutableListOf<SquareState>()
+    val wallify = { x: Int, y: Int ->
+      val coordinate = Coordinate(x, y, floor)
+      if (squares[x][y].type.blocked)
+      {
+        walls += squares[x][y]
+        squares[x][y]._type = SquareType.WALL
+      }
+      else
+      {
+        squares[x][y]._visible.addAll(EightWay.values()
+            .map { coordinate.move(it) }
+            .filter { it.isValid() }
+            .mapNotNull { squares[it.x][it.y].room })
+        squares[x][y]._type = SquareType.DOOR
+      }
+    }
+
+    rooms.forEach { room ->
+      val topLeft = room.getCoordinate()
+      val width: Int
+      val height: Int
+      room.getRoomData().let { width = it.width; height = it.height }
+      // TODO: Gross
+      for (x in (topLeft.x - 1)..(topLeft.x + width))
+      {
+        wallify(x, topLeft.y - 1)
+        wallify(x, topLeft.y + height)
+      }
+      for (y in (topLeft.y - 1)..(topLeft.y + height))
+      {
+        wallify(topLeft.x - 1, y)
+        wallify(topLeft.x + width, y)
+      }
+    }
+
+    walls.forEach { wall ->
+      val neighbors = Cardinal.values()
+          .filter {
+            val n = wall.coordinate.move(it)
+            n.isValid() && squares[n.x][n.y].type.roomBorder
+          }.toSet()
+      wall._wallOrientation = WallOrientation.lookup.getValue(neighbors)
     }
   }
 
