@@ -2,10 +2,11 @@ package com.degrendel.outrogue.engine
 
 import com.degrendel.outrogue.agent.RogueSoarAgent
 import com.degrendel.outrogue.common.*
-import com.degrendel.outrogue.common.ai.Action
-import com.degrendel.outrogue.common.ai.Move
-import com.degrendel.outrogue.common.ai.Sleep
+import com.degrendel.outrogue.common.ai.*
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
+import com.degrendel.outrogue.common.world.Allegiance
+import com.degrendel.outrogue.common.world.CreatureType
+import com.degrendel.outrogue.common.world.SquareType
 import com.degrendel.outrogue.common.world.World
 import com.github.czyzby.noise4j.map.generator.util.Generators
 import kotlinx.coroutines.GlobalScope
@@ -67,6 +68,7 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
       is Sleep -> P.costs.sleep
       // TODO: Charge more for diagonal?
       is Move -> P.costs.move
+      is GoDownStaircase, is GoUpStaircase -> P.costs.staircase
     }
   }
 
@@ -96,15 +98,53 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
     }
   }
 
-  override fun isValidAction(action: Action) = when (action)
+  // TODO: Return a message alongside this to report to the player
+  override fun isValidAction(action: Action): Boolean
   {
-    is Sleep -> true
-    is Move -> _world.getLevel(action.creature).canMove(action.creature.coordinate, action.direction)
+    val level = _world.getLevel(action.creature)
+
+    return when (action)
+    {
+      is Sleep -> true
+      is Move -> level.canMove(action.creature.coordinate, action.direction)
+      is GoUpStaircase ->
+      {
+        // Only rogues and their allys can leave the dungeon
+        if (level.isFirst && action.creature.allegiance != Allegiance.ROGUE)
+          false
+        else
+        {
+          val square = level.getSquare(action.creature.coordinate)
+          when
+          {
+            // Not a staircase? BE GONE
+            square.type != SquareType.STAIRCASE_UP -> false
+            // If we've passed the team check, then can always leave the dungeon
+            level.isFirst -> true
+            // Otherwise, check if the landing is clear
+            else ->
+              world.getLevel(action.creature.coordinate.floor - 1).staircasesDown[square.staircase!!].isNavigable()
+          }
+        }
+      }
+      is GoDownStaircase ->
+      {
+        val square = level.getSquare(action.creature.coordinate)
+        when
+        {
+          square.type != SquareType.STAIRCASE_DOWN -> false
+          else ->
+            world.getLevel(action.creature.coordinate.floor + 1).staircasesUp[square.staircase!!].isNavigable()
+        }
+      }
+    }
   }
 
   private fun executeAction(action: Action) = when (action)
   {
     is Sleep -> L.debug("Creature {} sleeps", action.creature)
     is Move -> _world.getLevel(action.creature).move(action.creature as CreatureState, action.direction)
+    is GoDownStaircase -> TODO()
+    is GoUpStaircase -> TODO()
   }
 }

@@ -29,6 +29,7 @@
   },
   "costs": {
     "sleep": 100,
-    "move": 120
+    "move": 120,
+    "staircase": 200
   }
 }
