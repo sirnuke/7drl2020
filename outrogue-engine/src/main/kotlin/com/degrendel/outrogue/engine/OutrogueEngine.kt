@@ -15,14 +15,16 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
-class OutrogueEngine(val frontend: Frontend, val seed: Long? = null) : Engine
+class OutrogueEngine(val frontend: Frontend, seed: Long? = null) : Engine
 {
   companion object
   {
     private val L by logger()
   }
 
-  override val random: Random = if (seed != null) Random(seed) else Random
+  val seed = seed ?: Random.nextLong()
+
+  override val random: Random = Random(this.seed)
   override val ecs = ECS()
 
   private val soarAgent = RogueSoarAgent()
@@ -35,7 +37,7 @@ class OutrogueEngine(val frontend: Frontend, val seed: Long? = null) : Engine
 
   init
   {
-    L.info("Creating engine")
+    L.info("Creating engine with seed {}", this.seed)
     Generators.setRandom(random.asJavaRandom())
   }
 

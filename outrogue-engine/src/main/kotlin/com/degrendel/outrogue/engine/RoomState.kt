@@ -5,8 +5,9 @@ import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.Room
 import com.degrendel.outrogue.common.components.CoordinateComponent
 import com.degrendel.outrogue.common.components.RoomComponent
+import kotlin.random.Random
 
-data class RoomState(override val id: Int, override val entity: Entity, override val topLeft: Coordinate, override val width: Int, override val height: Int) : Room
+data class RoomState(override val id: Int, override val entity: Entity, override val topLeft: Coordinate, override val width: Int, override val height: Int, private val random: Random) : Room
 {
   private val tiles = mutableListOf<Coordinate>()
 
@@ -30,5 +31,5 @@ data class RoomState(override val id: Int, override val entity: Entity, override
   }
 
   fun getRandomSquare(filter: (coordinate: Coordinate) -> Boolean) =
-    tiles.filter(filter).shuffled().firstOrNull()
+    tiles.filter(filter).shuffled(random).firstOrNull()
 }

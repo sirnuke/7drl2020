@@ -8,8 +8,9 @@ import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.common.world.Level
 import com.degrendel.outrogue.common.world.Square
 import java.util.*
+import kotlin.random.Random
 
-class NavigationMapImpl : NavigationMap
+class NavigationMapImpl(private val random: Random) : NavigationMap
 {
   private val _data: MutableList<MutableList<Int>> = xRange.map { yRange.map { Int.MAX_VALUE }.toMutableList() }.toMutableList()
   val data: List<List<Int>> get() = _data
@@ -72,8 +73,8 @@ class NavigationMapImpl : NavigationMap
     return when
     {
       lowest.isEmpty() -> null
-      hasStraight -> lowest.shuffled().first { !it.diagonal }
-      else -> lowest.shuffled().first()
+      hasStraight -> lowest.shuffled(random).first { !it.diagonal }
+      else -> lowest.shuffled(random).first()
     }
   }
 }

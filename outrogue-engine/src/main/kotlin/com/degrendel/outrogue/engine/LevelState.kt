@@ -20,6 +20,8 @@ class LevelState(val floor: Int, engine: Engine) : Level
     private val L by logger()
   }
 
+  private val random = engine.random
+
   private val squares: List<List<SquareState>>
 
   private val rooms = mutableListOf<RoomState>()
@@ -42,7 +44,7 @@ class LevelState(val floor: Int, engine: Engine) : Level
       {
         L.debug("Carving room ({},{})->({}x{})", room.x, room.y, room.width, room.height)
         rooms += RoomState(entity = Entity(), topLeft = Coordinate(room.x, room.y, floor), id = rooms.size,
-            width = room.width, height = room.height)
+            width = room.width, height = room.height, random = random)
         room.fill(grid, value)
       }
 
@@ -220,5 +222,5 @@ class LevelState(val floor: Int, engine: Engine) : Level
     }
   }
 
-  fun getRandomRooms(count: Int) = rooms.shuffled().dropLast(rooms.size - count)
+  fun getRandomRooms(count: Int) = rooms.shuffled(random).dropLast(rooms.size - count)
 }
