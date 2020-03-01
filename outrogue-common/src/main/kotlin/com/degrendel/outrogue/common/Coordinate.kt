@@ -18,4 +18,6 @@ data class Coordinate(val x: Int, val y: Int, val floor: Int)
         && floor < P.map.floors
         )
   }
+
+  fun eightWayNeighbors(): List<Coordinate> = EightWay.values().map { move(it) }.filter { it.isValid() }
 }
