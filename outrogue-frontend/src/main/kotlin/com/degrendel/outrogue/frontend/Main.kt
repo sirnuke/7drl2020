@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.system.exitProcess
 
-@Command(name = "ReverseRogue", mixinStandardHelpOptions = true)
+@Command(name = "Outrogue", mixinStandardHelpOptions = true)
 class Main : Callable<Int>
 {
   companion object
