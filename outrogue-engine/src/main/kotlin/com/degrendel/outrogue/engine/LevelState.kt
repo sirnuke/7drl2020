@@ -2,11 +2,11 @@ package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.*
-import com.degrendel.outrogue.common.Square.Companion.each
-import com.degrendel.outrogue.common.Square.Companion.xRange
-import com.degrendel.outrogue.common.Square.Companion.yRange
-import com.degrendel.outrogue.common.components.*
+import com.degrendel.outrogue.common.world.Square.Companion.each
+import com.degrendel.outrogue.common.world.Square.Companion.xRange
+import com.degrendel.outrogue.common.world.Square.Companion.yRange
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
+import com.degrendel.outrogue.common.world.*
 import com.github.czyzby.noise4j.map.Grid
 import com.github.czyzby.noise4j.map.generator.room.AbstractRoomGenerator
 import com.github.czyzby.noise4j.map.generator.room.RoomType

@@ -1,5 +1,7 @@
 package com.degrendel.outrogue.common
 
+import com.degrendel.outrogue.common.world.World
+
 typealias ECS = com.badlogic.ashley.core.Engine
 
 interface Engine

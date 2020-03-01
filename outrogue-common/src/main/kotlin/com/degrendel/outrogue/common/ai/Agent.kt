@@ -1,4 +1,4 @@
-package com.degrendel.outrogue.common
+package com.degrendel.outrogue.common.ai
 
 interface Agent
 {

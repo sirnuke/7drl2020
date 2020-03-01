@@ -3,6 +3,10 @@ package com.degrendel.outrogue.engine
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntityListener
 import com.degrendel.outrogue.common.*
+import com.degrendel.outrogue.common.ai.Action
+import com.degrendel.outrogue.common.ai.AgentController
+import com.degrendel.outrogue.common.ai.PlayerController
+import com.degrendel.outrogue.common.ai.SimpleController
 import com.degrendel.outrogue.common.components.getCreature
 import java.util.*
 

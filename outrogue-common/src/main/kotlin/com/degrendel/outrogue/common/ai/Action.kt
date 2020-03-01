@@ -1,4 +1,7 @@
-package com.degrendel.outrogue.common
+package com.degrendel.outrogue.common.ai
+
+import com.degrendel.outrogue.common.world.Creature
+import com.degrendel.outrogue.common.world.EightWay
 
 sealed class Action
 {

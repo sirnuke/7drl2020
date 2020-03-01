@@ -1,7 +1,7 @@
 package com.degrendel.outrogue.frontend.components
 
 import com.badlogic.ashley.core.Component
-import com.degrendel.outrogue.common.Coordinate
+import com.degrendel.outrogue.common.world.Coordinate
 import org.hexworks.zircon.api.data.Position
 
 /** Stores where this entity is currently drawn. */

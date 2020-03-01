@@ -1,8 +1,14 @@
 package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
-import com.degrendel.outrogue.common.*
+import com.degrendel.outrogue.common.ai.Controller
+import com.degrendel.outrogue.common.ai.PlayerController
+import com.degrendel.outrogue.common.ai.SimpleController
 import com.degrendel.outrogue.common.components.*
+import com.degrendel.outrogue.common.world.Allegiance
+import com.degrendel.outrogue.common.world.Coordinate
+import com.degrendel.outrogue.common.world.Creature
+import com.degrendel.outrogue.common.world.CreatureType
 import java.util.concurrent.atomic.AtomicInteger
 
 sealed class CreatureState(final override val entity: Entity, initial: Coordinate, initialCooldown: Long) : Creature

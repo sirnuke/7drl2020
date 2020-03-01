@@ -1,6 +1,7 @@
-package com.degrendel.outrogue.common
+package com.degrendel.outrogue.common.world
 
 import com.badlogic.ashley.core.Entity
+import com.degrendel.outrogue.common.world.Coordinate
 
 interface Room
 {

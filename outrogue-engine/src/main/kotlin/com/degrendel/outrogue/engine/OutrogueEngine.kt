@@ -2,6 +2,7 @@ package com.degrendel.outrogue.engine
 
 import com.degrendel.outrogue.agent.RogueSoarAgent
 import com.degrendel.outrogue.common.*
+import com.degrendel.outrogue.common.world.World
 
 class OutrogueEngine(val frontend: Frontend) : Engine
 {

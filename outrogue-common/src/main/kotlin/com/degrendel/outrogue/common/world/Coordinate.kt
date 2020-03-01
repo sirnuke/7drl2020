@@ -1,4 +1,4 @@
-package com.degrendel.outrogue.common
+package com.degrendel.outrogue.common.world
 
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 

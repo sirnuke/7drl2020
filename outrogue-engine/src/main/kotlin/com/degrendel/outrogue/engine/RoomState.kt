@@ -1,8 +1,8 @@
 package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
-import com.degrendel.outrogue.common.Coordinate
-import com.degrendel.outrogue.common.Room
+import com.degrendel.outrogue.common.world.Coordinate
+import com.degrendel.outrogue.common.world.Room
 import com.degrendel.outrogue.common.components.CoordinateComponent
 import com.degrendel.outrogue.common.components.RoomComponent
 

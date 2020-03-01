@@ -1,10 +1,10 @@
 package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
-import com.degrendel.outrogue.common.Coordinate
-import com.degrendel.outrogue.common.Square
-import com.degrendel.outrogue.common.SquareType
-import com.degrendel.outrogue.common.WallOrientation
+import com.degrendel.outrogue.common.world.Coordinate
+import com.degrendel.outrogue.common.world.Square
+import com.degrendel.outrogue.common.world.SquareType
+import com.degrendel.outrogue.common.world.WallOrientation
 import com.degrendel.outrogue.common.components.CoordinateComponent
 import com.degrendel.outrogue.common.components.OnVisibleLevel
 import com.degrendel.outrogue.common.components.SquareComponent

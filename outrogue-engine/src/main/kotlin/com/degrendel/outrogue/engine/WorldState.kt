@@ -1,11 +1,11 @@
 package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
-import com.degrendel.outrogue.common.Creature
+import com.degrendel.outrogue.common.world.Creature
 import com.degrendel.outrogue.common.ECS
-import com.degrendel.outrogue.common.Level
-import com.degrendel.outrogue.common.Level.Companion.floorRange
-import com.degrendel.outrogue.common.World
+import com.degrendel.outrogue.common.world.Level
+import com.degrendel.outrogue.common.world.Level.Companion.floorRange
+import com.degrendel.outrogue.common.world.World
 
 class WorldState(val ecs: ECS) : World
 {

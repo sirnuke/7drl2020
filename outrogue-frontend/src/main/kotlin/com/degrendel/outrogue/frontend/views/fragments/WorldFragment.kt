@@ -3,9 +3,6 @@ package com.degrendel.outrogue.frontend.views.fragments
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntityListener
 import com.badlogic.ashley.core.Family
-import com.degrendel.outrogue.common.Level
-import com.degrendel.outrogue.common.Square
-import com.degrendel.outrogue.common.SquareType
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.properties.Properties.Companion.P

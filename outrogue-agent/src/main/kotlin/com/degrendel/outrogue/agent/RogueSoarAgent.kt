@@ -1,6 +1,6 @@
 package com.degrendel.outrogue.agent
 
-import com.degrendel.outrogue.common.Agent
+import com.degrendel.outrogue.common.ai.Agent
 import com.degrendel.outrogue.common.logger
 import org.jsoar.kernel.SoarException
 import org.jsoar.runtime.ThreadedAgent

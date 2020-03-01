@@ -1,8 +1,12 @@
 package com.degrendel.outrogue.engine
 
 import com.degrendel.outrogue.common.*
-import com.degrendel.outrogue.common.Square.Companion.xRange
-import com.degrendel.outrogue.common.Square.Companion.yRange
+import com.degrendel.outrogue.common.world.Square.Companion.xRange
+import com.degrendel.outrogue.common.world.Square.Companion.yRange
+import com.degrendel.outrogue.common.world.Coordinate
+import com.degrendel.outrogue.common.world.EightWay
+import com.degrendel.outrogue.common.world.Level
+import com.degrendel.outrogue.common.world.Square
 import java.util.*
 
 class NavigationMapImpl(level: Level, sources: List<Coordinate>, skip: Set<Coordinate>) : NavigationMap

@@ -1,6 +1,6 @@
 package com.degrendel.outrogue.frontend
 
-import com.degrendel.outrogue.common.*
+import com.degrendel.outrogue.common.world.*
 import org.hexworks.zircon.api.data.Tile
 import java.util.*
 

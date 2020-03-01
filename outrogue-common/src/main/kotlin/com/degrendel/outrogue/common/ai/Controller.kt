@@ -1,4 +1,4 @@
-package com.degrendel.outrogue.common
+package com.degrendel.outrogue.common.ai
 
 sealed class Controller
 object PlayerController: Controller()

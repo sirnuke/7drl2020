@@ -1,4 +1,4 @@
-package com.degrendel.outrogue.common
+package com.degrendel.outrogue.common.world
 
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.properties.Properties
@@ -85,22 +85,22 @@ enum class WallOrientation
     // done once per level generation.  Compared to the memory hog that is Soar, probably not that expensive to just
     // keep them in memory for when the rogue starts going back up the stairs.
     val lookup = mapOf(
-        setOf<Cardinal>() to WallOrientation.NONE,
-        setOf(Cardinal.NORTH) to WallOrientation.NORTH_SOUTH,
-        setOf(Cardinal.SOUTH) to WallOrientation.NORTH_SOUTH,
-        setOf(Cardinal.NORTH, Cardinal.SOUTH) to WallOrientation.NORTH_SOUTH,
-        setOf(Cardinal.EAST) to WallOrientation.EAST_WEST,
-        setOf(Cardinal.WEST) to WallOrientation.EAST_WEST,
-        setOf(Cardinal.EAST, Cardinal.WEST) to WallOrientation.EAST_WEST,
-        setOf(Cardinal.NORTH, Cardinal.EAST) to WallOrientation.NORTH_EAST,
-        setOf(Cardinal.EAST, Cardinal.SOUTH) to WallOrientation.EAST_SOUTH,
-        setOf(Cardinal.SOUTH, Cardinal.WEST) to WallOrientation.SOUTH_WEST,
-        setOf(Cardinal.WEST, Cardinal.NORTH) to WallOrientation.WEST_NORTH,
-        setOf(Cardinal.NORTH, Cardinal.EAST, Cardinal.SOUTH) to WallOrientation.NORTH_EAST_SOUTH,
-        setOf(Cardinal.EAST, Cardinal.SOUTH, Cardinal.WEST) to WallOrientation.EAST_SOUTH_WEST,
-        setOf(Cardinal.SOUTH, Cardinal.WEST, Cardinal.NORTH) to WallOrientation.SOUTH_WEST_NORTH,
-        setOf(Cardinal.WEST, Cardinal.NORTH, Cardinal.EAST) to WallOrientation.WEST_NORTH_EAST,
-        setOf(Cardinal.NORTH, Cardinal.EAST, Cardinal.SOUTH, Cardinal.WEST) to WallOrientation.ALL
+        setOf<Cardinal>() to NONE,
+        setOf(Cardinal.NORTH) to NORTH_SOUTH,
+        setOf(Cardinal.SOUTH) to NORTH_SOUTH,
+        setOf(Cardinal.NORTH, Cardinal.SOUTH) to NORTH_SOUTH,
+        setOf(Cardinal.EAST) to EAST_WEST,
+        setOf(Cardinal.WEST) to EAST_WEST,
+        setOf(Cardinal.EAST, Cardinal.WEST) to EAST_WEST,
+        setOf(Cardinal.NORTH, Cardinal.EAST) to NORTH_EAST,
+        setOf(Cardinal.EAST, Cardinal.SOUTH) to EAST_SOUTH,
+        setOf(Cardinal.SOUTH, Cardinal.WEST) to SOUTH_WEST,
+        setOf(Cardinal.WEST, Cardinal.NORTH) to WEST_NORTH,
+        setOf(Cardinal.NORTH, Cardinal.EAST, Cardinal.SOUTH) to NORTH_EAST_SOUTH,
+        setOf(Cardinal.EAST, Cardinal.SOUTH, Cardinal.WEST) to EAST_SOUTH_WEST,
+        setOf(Cardinal.SOUTH, Cardinal.WEST, Cardinal.NORTH) to SOUTH_WEST_NORTH,
+        setOf(Cardinal.WEST, Cardinal.NORTH, Cardinal.EAST) to WEST_NORTH_EAST,
+        setOf(Cardinal.NORTH, Cardinal.EAST, Cardinal.SOUTH, Cardinal.WEST) to ALL
     )
   }
 }
