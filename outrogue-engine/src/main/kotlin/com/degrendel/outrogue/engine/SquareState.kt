@@ -8,7 +8,7 @@ import com.degrendel.outrogue.common.WallOrientation
 import com.degrendel.outrogue.common.components.CoordinateComponent
 import com.degrendel.outrogue.common.components.SquareComponent
 
-class SquareState(override val coordinate: Coordinate, var _type: SquareType, override val room: Int?) : Square
+class SquareState(override val coordinate: Coordinate, var _type: SquareType, override val room: Int?, var creature: CreatureState? = null) : Square
 {
   var _visible = mutableSetOf<Int>().also { if (room != null) it.add(room) }
   override val visible: Set<Int> get() = _visible
@@ -22,6 +22,5 @@ class SquareState(override val coordinate: Coordinate, var _type: SquareType, ov
 
   override val wallOrientation get() = _wallOrientation
 
-  // TODO: Check for creature!
-  fun isNavigable() = _type.blocked
+  override fun isNavigable() = _type.blocked && creature == null
 }

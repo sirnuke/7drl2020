@@ -102,9 +102,35 @@ class LevelState(val floor: Int) : Level
           }.toSet()
       wall._wallOrientation = WallOrientation.lookup.getValue(neighbors)
     }
+
+    // TODO: Spawn staircases
+    // TODO: Spawn creatures and items?
   }
 
-  override fun isNavigable(coordinate: Coordinate) = squares[coordinate.x][coordinate.y].isNavigable()
+  fun spawn(creature: CreatureState)
+  {
+    squares[creature.coordinate.x][creature.coordinate.y].let { square ->
+      assert(creature.coordinate.floor == floor)
+      assert(square.creature == null)
+      assert(!square.type.blocked)
+      square.creature = creature
+    }
+  }
+
+  fun move(creature: CreatureState, to: Coordinate)
+  {
+    assert(to.floor == floor)
+    assert(squares[creature.coordinate.x][creature.coordinate.y].creature == creature)
+    assert(squares[to.x][to.y].creature == null)
+    squares[to.x][to.y].creature = creature
+    squares[creature.coordinate.x][creature.coordinate.y].creature = null
+    creature.move(to)
+  }
+
+  override fun isNavigable(coordinate: Coordinate) = getSquare(coordinate).isNavigable()
 
   override fun getSquare(x: Int, y: Int): Square = squares[x][y]
+
+  fun getSquare(coordinate: Coordinate) = getSquare(coordinate.x, coordinate.y)
+  fun getRandomRooms(count: Int) = rooms.shuffled().dropLast(rooms.size - count)
 }
