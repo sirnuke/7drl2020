@@ -75,13 +75,15 @@ class LevelState(val floor: Int, engine: Engine) : Level
     if (!isLast)
     {
       val downChance = engine.random.nextDouble()
-      create(P.map.features.staircases.count { downChance < it } + 1, { !getSquare(it).type.staircase }) {
+      val count = P.map.features.staircases.count { downChance < it } + 1
+      create(count, count, { !getSquare(it).type.staircase }) {
         squares[it.x][it.y]._type = SquareType.STAIRCASE_DOWN
         _downcases += squares[it.x][it.y]
       }
     }
     val upChance = engine.random.nextDouble()
-    create(P.map.features.staircases.count { upChance < it } + 1, { !getSquare(it).type.staircase }) {
+    val count = P.map.features.staircases.count { upChance < it } + 1
+    create(count, count, { !getSquare(it).type.staircase }) {
       squares[it.x][it.y]._type = SquareType.STAIRCASE_UP
       _downcases += squares[it.x][it.y]
     }
@@ -170,19 +172,25 @@ class LevelState(val floor: Int, engine: Engine) : Level
 
   fun getSquare(coordinate: Coordinate) = getSquare(coordinate.x, coordinate.y)
 
-  private fun create(count: Int, filter: (Coordinate) -> Boolean, action: (Coordinate) -> Unit)
+  private fun create(count: Int, required: Int, filter: (Coordinate) -> Boolean, action: (Coordinate) -> Unit): Int
   {
-    // TODO: A touch icky - should be some way to do this functionally
+    assert(required <= count)
+    // TODO: A touch icky and verbose - should be some way to do this functionally
     var amount = 0
     var attempts = 0
     while (amount < count)
     {
       attempts++
       if (attempts > P.map.features.maxPlacementAttempts)
-        throw IllegalStateException("Reached max placement attempts - map is probably far too full")
+      {
+        if (amount < required)
+          throw IllegalStateException("Reached max placement attempts - map is probably far too full")
+        break
+      }
       action(getRandomRooms(1)[0].getRandomSquare(filter) ?: continue)
       amount++
     }
+    return amount
   }
 
   /**
