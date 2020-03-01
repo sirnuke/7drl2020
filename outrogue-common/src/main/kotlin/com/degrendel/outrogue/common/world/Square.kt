@@ -10,6 +10,7 @@ interface Square
   val entity: Entity
   val wallOrientation: WallOrientation
   val room: Int?
+  val staircase: Int?
   val visible: Set<Int>
 
   fun isNavigable(): Boolean

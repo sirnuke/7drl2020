@@ -9,4 +9,6 @@ interface World
   val conjurer: Creature
 
   fun getLevel(floor: Int): Level
+
+  fun getSquare(coordinate: Coordinate): Square
 }

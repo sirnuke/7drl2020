@@ -13,7 +13,7 @@ import com.github.czyzby.noise4j.map.generator.room.RoomType
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator
 import kotlin.random.Random
 
-class LevelState(val floor: Int, engine: Engine) : Level
+class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
 {
   companion object
   {
@@ -79,15 +79,27 @@ class LevelState(val floor: Int, engine: Engine) : Level
       val downChance = engine.random.nextDouble()
       val count = P.map.features.staircases.count { downChance < it } + 1
       create(count, count, { !getSquare(it).type.staircase }) {
-        squares[it.x][it.y]._type = SquareType.STAIRCASE_DOWN
-        _downcases += squares[it.x][it.y]
+        squares[it.x][it.y].let {square ->
+          square._type = SquareType.STAIRCASE_DOWN
+          square._staircase = _downcases.size
+          _downcases += square
+        }
       }
     }
-    val upChance = engine.random.nextDouble()
-    val count = P.map.features.staircases.count { upChance < it } + 1
+    // Compute the upcases
+    val count = if (isFirst)
+    {
+      val upChance = engine.random.nextDouble()
+      P.map.features.staircases.count { upChance < it } + 1
+    }
+    else
+      previous!!.staircasesDown.size
     create(count, count, { !getSquare(it).type.staircase }) {
-      squares[it.x][it.y]._type = SquareType.STAIRCASE_UP
-      _downcases += squares[it.x][it.y]
+      squares[it.x][it.y].let { square ->
+        square._type = SquareType.STAIRCASE_UP
+        square._staircase = _upcases.size
+        _upcases += square
+      }
     }
 
     val walls = mutableListOf<SquareState>()
@@ -171,8 +183,7 @@ class LevelState(val floor: Int, engine: Engine) : Level
   override fun isNavigable(coordinate: Coordinate) = getSquare(coordinate).isNavigable()
 
   override fun getSquare(x: Int, y: Int): Square = squares[x][y]
-
-  fun getSquare(coordinate: Coordinate) = getSquare(coordinate.x, coordinate.y)
+  override fun getSquare(coordinate: Coordinate) = getSquare(coordinate.x, coordinate.y)
 
   private fun create(count: Int, required: Int, filter: (Coordinate) -> Boolean, action: (Coordinate) -> Unit): Int
   {

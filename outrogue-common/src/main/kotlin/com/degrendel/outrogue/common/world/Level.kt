@@ -11,6 +11,7 @@ interface Level
   val staircasesUp: List<Square>
 
   fun getSquare(x: Int, y: Int): Square
+  fun getSquare(coordinate: Coordinate): Square
 
   fun isNavigable(coordinate: Coordinate): Boolean
 

@@ -9,7 +9,7 @@ import com.degrendel.outrogue.common.components.CoordinateComponent
 import com.degrendel.outrogue.common.components.OnVisibleLevelComponent
 import com.degrendel.outrogue.common.components.SquareComponent
 
-class SquareState(override val coordinate: Coordinate, var _type: SquareType, override val room: Int?, var creature: CreatureState? = null) : Square
+class SquareState(override val coordinate: Coordinate, var _type: SquareType, override val room: Int?, var creature: CreatureState? = null, var _staircase: Int? = null) : Square
 {
   var _visible = mutableSetOf<Int>().also { if (room != null) it.add(room) }
   override val visible: Set<Int> get() = _visible
@@ -18,6 +18,7 @@ class SquareState(override val coordinate: Coordinate, var _type: SquareType, ov
       .add(SquareComponent(this))
 
   override val type: SquareType get() = _type
+  override val staircase get() = _staircase
 
   var _wallOrientation = WallOrientation.NONE
 

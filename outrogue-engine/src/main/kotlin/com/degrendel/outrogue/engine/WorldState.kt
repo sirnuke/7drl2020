@@ -1,15 +1,21 @@
 package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
-import com.degrendel.outrogue.common.world.Creature
 import com.degrendel.outrogue.common.ECS
-import com.degrendel.outrogue.common.world.Level
+import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.Level.Companion.floorRange
-import com.degrendel.outrogue.common.world.World
 
 class WorldState(val engine: OutrogueEngine) : World
 {
-  private val levels = floorRange.map { LevelState(it, engine) }
+  private val levels: List<LevelState>
+
+  init
+  {
+    // TODO: Ick
+    var previous: LevelState? = null
+    levels = floorRange.map { previous = LevelState(it, previous, engine); previous!! }
+  }
+
   private val _conjurer: Conjurer
   private var _rogue: Rogue
 
@@ -34,6 +40,9 @@ class WorldState(val engine: OutrogueEngine) : World
   override val rogue: Creature get() = _rogue
 
   override fun getLevel(floor: Int): Level = levels[floor]
+
+  override fun getSquare(coordinate: Coordinate) = levels[coordinate.floor].getSquare(coordinate)
+
   fun getLevel(creature: Creature) = levels[creature.coordinate.floor]
 
   fun bootstrapECS()
