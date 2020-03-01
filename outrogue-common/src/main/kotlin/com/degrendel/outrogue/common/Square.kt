@@ -1,6 +1,7 @@
 package com.degrendel.outrogue.common
 
 import com.badlogic.ashley.core.Entity
+import com.degrendel.outrogue.common.properties.Properties
 
 interface Square
 {
@@ -15,11 +16,21 @@ interface Square
 
   companion object
   {
+    val xRange = (0 until Properties.P.map.width)
+    val yRange = (0 until Properties.P.map.height)
+    val all: List<Coordinate>
+
+    init
+    {
+      val _all = mutableListOf<Coordinate>()
+      each { x, y -> _all += Coordinate(x, y, 0) }
+      all = _all
+    }
+
     fun each(lambda: (x: Int, y: Int) -> Unit) =
       xRange.forEach { x -> yRange.forEach { y -> lambda(x, y) } }
 
-    val xRange = (0 until Properties.P.map.width)
-    val yRange = (0 until Properties.P.map.height)
+    fun each(lambda: (coordinate: Coordinate) -> Unit) = all.forEach(lambda)
   }
 }
 
