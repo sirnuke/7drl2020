@@ -143,7 +143,6 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
       wall._wallOrientation = WallOrientation.lookup.getValue(neighbors)
     }
 
-    // TODO: Spawn staircases
     // TODO: Spawn creatures and items?
   }
 
@@ -154,6 +153,15 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
       assert(square.creature == null)
       assert(!square.type.blocked)
       square.creature = creature
+    }
+  }
+
+  fun despawn(creature: CreatureState)
+  {
+    squares[creature.coordinate.x][creature.coordinate.y].let { square ->
+      assert(creature.coordinate.floor == floor)
+      assert(square.creature == creature)
+      square.creature = null
     }
   }
 

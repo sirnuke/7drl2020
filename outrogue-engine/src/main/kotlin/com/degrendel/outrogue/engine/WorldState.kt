@@ -1,7 +1,6 @@
 package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
-import com.degrendel.outrogue.common.ECS
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.Level.Companion.floorRange
 
@@ -48,5 +47,39 @@ class WorldState(val engine: OutrogueEngine) : World
   fun bootstrapECS()
   {
     levels.forEach { it.bootstrapECS(engine.ecs, conjurer.coordinate.floor) }
+  }
+
+  fun setVisibleFloor(floor: Int)
+  {
+    levels.forEach { it.setOnVisibleLevel(floor == it.floor) }
+  }
+
+  // TODO: These functions are nearly identical
+  fun goDownStaircase(creature: CreatureState)
+  {
+    val currentLevel = getLevel(creature)
+    val staircase = currentLevel.getSquare(creature.coordinate).staircase!!
+    val newLevel = levels[creature.coordinate.floor + 1]
+    val landing = newLevel.staircasesUp[staircase].coordinate
+    currentLevel.despawn(creature)
+    creature.move(landing)
+    newLevel.spawn(creature)
+    if (creature == conjurer)
+      setVisibleFloor(newLevel.floor)
+  }
+
+  fun goUpStaircase(creature: CreatureState)
+  {
+    val currentLevel = getLevel(creature)
+    val staircase = currentLevel.getSquare(creature.coordinate).staircase!!
+    if (currentLevel.isFirst)
+      TODO("Need to implement leaving the dungeon")
+    val newLevel = levels[creature.coordinate.floor - 1]
+    val landing = newLevel.staircasesDown[staircase].coordinate
+    currentLevel.despawn(creature)
+    creature.move(landing)
+    newLevel.spawn(creature)
+    if (creature == conjurer)
+      setVisibleFloor(newLevel.floor)
   }
 }

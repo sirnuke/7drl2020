@@ -144,7 +144,7 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
   {
     is Sleep -> L.debug("Creature {} sleeps", action.creature)
     is Move -> _world.getLevel(action.creature).move(action.creature as CreatureState, action.direction)
-    is GoDownStaircase -> TODO()
-    is GoUpStaircase -> TODO()
+    is GoDownStaircase -> _world.goDownStaircase(action.creature as CreatureState)
+    is GoUpStaircase -> _world.goUpStaircase(action.creature as CreatureState)
   }
 }
