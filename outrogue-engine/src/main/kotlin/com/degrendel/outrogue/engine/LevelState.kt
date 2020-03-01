@@ -104,5 +104,7 @@ class LevelState(val ecs: ECS, val floor: Int) : Level
     }
   }
 
+  override fun isNavigable(coordinate: Coordinate) = squares[coordinate.x][coordinate.y].isNavigable()
+
   override fun getSquare(x: Int, y: Int): Square = squares[x][y]
 }

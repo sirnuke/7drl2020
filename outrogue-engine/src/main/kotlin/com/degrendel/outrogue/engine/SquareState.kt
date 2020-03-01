@@ -21,4 +21,7 @@ class SquareState(override val coordinate: Coordinate, var _type: SquareType, ov
   var _wallOrientation = WallOrientation.NONE
 
   override val wallOrientation get() = _wallOrientation
+
+  // TODO: Check for creature!
+  fun isNavigable() = _type.blocked
 }
