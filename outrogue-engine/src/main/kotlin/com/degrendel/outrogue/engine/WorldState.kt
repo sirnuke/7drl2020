@@ -9,5 +9,5 @@ class WorldState(val ecs: ECS) : World
 {
   private val levels: List<Level> = (0 until P.map.floors).map { LevelState(ecs, it) }
 
-  override fun getLevel(floor: Int) = levels.get(floor)
+  override fun getLevel(floor: Int) = levels[floor]
 }
