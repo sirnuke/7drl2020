@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.EntityListener
 import com.badlogic.ashley.core.Family
 import com.degrendel.outrogue.common.*
 import com.degrendel.outrogue.common.ai.*
+import com.degrendel.outrogue.common.components.ActiveComponent
 import com.degrendel.outrogue.common.components.CreatureComponent
 import com.degrendel.outrogue.common.components.getCreature
 import java.util.*
@@ -27,7 +28,7 @@ class ActionQueue(private val engine: OutrogueEngine) : EntityListener
 
   init
   {
-    val family = Family.all(CreatureComponent::class.java).get()
+    val family = Family.all(CreatureComponent::class.java, ActiveComponent::class.java).get()
     engine.ecs.addEntityListener(family, this)
   }
 

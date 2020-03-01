@@ -10,7 +10,10 @@ object VisibleComponent : Component
 object KnownComponent : Component
 
 /** Indicates that this entity is on the current visible level, from the Conjurer's point of view. */
-object OnVisibleLevel : Component
+object OnVisibleLevelComponent : Component
+
+/** Indicates that this creature is active, and its controller should fire. */
+object ActiveComponent: Component
 
 /** Tracks the position of this entity in the map. */
 data class CoordinateComponent(val coordinate: Coordinate) : Component

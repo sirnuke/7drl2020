@@ -28,6 +28,10 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
 
   override val id = nextId.getAndIncrement()
 
+  private var _active = false
+
+  override val active get() = _active
+
   init
   {
     entity.add(CreatureComponent(this))
@@ -53,9 +57,18 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   fun setOnVisibleLevel(visible: Boolean)
   {
     if (visible)
-      entity.add(OnVisibleLevel)
+      entity.add(OnVisibleLevelComponent)
     else
-      entity.remove(OnVisibleLevel::class.java)
+      entity.remove(OnVisibleLevelComponent::class.java)
+  }
+
+  fun setActive(active: Boolean)
+  {
+    _active = active
+    if (active)
+      entity.add(ActiveComponent)
+    else
+      entity.remove(ActiveComponent::class.java)
   }
 }
 
@@ -68,6 +81,7 @@ class Rogue(entity: Entity, initial: Coordinate, cooldown: Long) : CreatureState
   init
   {
     updateComponents()
+    setActive(true)
   }
 }
 
@@ -80,11 +94,12 @@ class Conjurer(entity: Entity, initial: Coordinate, cooldown: Long) : CreatureSt
   init
   {
     updateComponents()
+    setActive(true)
   }
 }
 
 class Minion(entity: Entity, initial: Coordinate, private var _allegiance: Allegiance, override val type: CreatureType,
-             initialController: Controller, cooldown: Long)
+             initialController: Controller, cooldown: Long, active: Boolean)
   : CreatureState(entity, initial, cooldown)
 {
   private var _controller = initialController
@@ -95,5 +110,6 @@ class Minion(entity: Entity, initial: Coordinate, private var _allegiance: Alleg
   init
   {
     updateComponents()
+    setActive(active)
   }
 }

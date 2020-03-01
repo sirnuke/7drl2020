@@ -12,6 +12,7 @@ interface Creature
   val id: Int
   val cooldown: Long
   val controller: Controller
+  val active: Boolean
 }
 
 enum class CreatureType

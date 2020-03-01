@@ -33,11 +33,11 @@ class WorldFragment(val app: Application, screen: Screen)
   private val baseLayer = LayerData().also { screen.addLayer(it.layer) }
   private val creatureLayer = LayerData().also { screen.addLayer(it.layer) }
 
-  private val visibleSquares = Family.all(SquareComponent::class.java, OnVisibleLevel::class.java).get()
+  private val visibleSquares = Family.all(SquareComponent::class.java, OnVisibleLevelComponent::class.java).get()
 
-  private val toDrawCreatures = Family.all(CreatureComponent::class.java, OnVisibleLevel::class.java).exclude(DrawnAtComponent::class.java).get()
-  private val toEraseCreatures = Family.all(CreatureComponent::class.java, DrawnAtComponent::class.java).exclude(OnVisibleLevel::class.java).get()
-  private val toUpdateCreatures = Family.all(CreatureComponent::class.java, OnVisibleLevel::class.java, DrawnAtComponent::class.java).get()
+  private val toDrawCreatures = Family.all(CreatureComponent::class.java, OnVisibleLevelComponent::class.java).exclude(DrawnAtComponent::class.java).get()
+  private val toEraseCreatures = Family.all(CreatureComponent::class.java, DrawnAtComponent::class.java).exclude(OnVisibleLevelComponent::class.java).get()
+  private val toUpdateCreatures = Family.all(CreatureComponent::class.java, OnVisibleLevelComponent::class.java, DrawnAtComponent::class.java).get()
 
   init
   {
