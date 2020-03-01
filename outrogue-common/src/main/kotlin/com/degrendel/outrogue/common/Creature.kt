@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity
 
 interface Creature
 {
+  val coordinate: Coordinate
   val entity: Entity
   val allegiance: Allegiance
 }
