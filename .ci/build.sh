@@ -23,14 +23,14 @@ if [ "$BUILD_TYPE" = "release" ] ; then
     echo "not a release, aborting!"
     exit 1
   fi
-  itch_channel="sirnuke:outrogue/win-linux-mac-stable"
+  itch_channel="sirnuke/outrogue:win-linux-mac-stable"
   echo "$version" > github-version
 elif [ "$BUILD_TYPE" = "snapshot" ] ; then
   if [ -z "$version" ] ; then
     echo "not a snapshot, aborting!"
     exit 1
   fi
-  itch_channel="sirnuke:outrogue/win-linux-mac-snapshot"
+  itch_channel="sirnuke/outrogue:win-linux-mac-snapshot"
 else
   echo "Unknown BUILD_TYPE '$BUILD_TYPE', aborting!"
   exit 1
