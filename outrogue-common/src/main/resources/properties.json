@@ -6,9 +6,13 @@
     "fps-limit": 120
   },
   "map": {
-    "width": 32,
-    "height": 64,
-    "floors": 10
+    "width": 64,
+    "height": 32,
+    "floors": 10,
+    "rooms": {
+      "min-size": 5,
+      "max-number": 12
+    }
   },
   "views": {
     "world": {
