@@ -2,6 +2,7 @@ package com.degrendel.outrogue.common
 
 import com.degrendel.outrogue.common.ai.Action
 import com.degrendel.outrogue.common.world.World
+import kotlinx.coroutines.Job
 
 typealias ECS = com.badlogic.ashley.core.Engine
 
@@ -19,4 +20,8 @@ interface Engine
   fun bootstrapECS()
 
   fun computeCost(action: Action): Long
+
+  fun runGame(): Job
+
+  fun isValidAction(action: Action): Boolean
 }
