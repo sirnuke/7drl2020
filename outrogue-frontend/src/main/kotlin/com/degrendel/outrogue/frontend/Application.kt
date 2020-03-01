@@ -77,10 +77,16 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
     }
 
     tileGrid.dock(inGameView)
+
+    engine.bootstrapECS()
+    refreshMap(0)
+
+    // TODO: Start the main loop?
   }
 
   override fun refreshMap(floor: Int)
   {
+    inGameView.refreshMap(floor)
   }
 }
 

@@ -7,6 +7,7 @@ interface Creature
   val coordinate: Coordinate
   val entity: Entity
   val allegiance: Allegiance
+  val type: CreatureType
 }
 
 enum class CreatureType

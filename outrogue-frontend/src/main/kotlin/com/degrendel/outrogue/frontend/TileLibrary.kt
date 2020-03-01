@@ -1,19 +1,19 @@
 package com.degrendel.outrogue.frontend
 
-import com.degrendel.outrogue.common.WallOrientation
+import com.degrendel.outrogue.common.*
 import org.hexworks.zircon.api.data.Tile
 import java.util.*
 
 object TileLibrary
 {
-  val floorTile = Tile.defaultTile().withCharacter('.')
-  val blockedTile = Tile.defaultTile().withCharacter(' ')
-  val corridorTile = Tile.defaultTile().withCharacter('#')
-  val doorTile = Tile.defaultTile().withCharacter('+')
-  val rogueTile = Tile.defaultTile().withCharacter(0x263A.toChar())
-  val conjurerTile = Tile.defaultTile().withCharacter('@')
+  private val floorTile = Tile.defaultTile().withCharacter('.')
+  private val blockedTile = Tile.defaultTile().withCharacter(' ')
+  private val corridorTile = Tile.defaultTile().withCharacter('#')
+  private val doorTile = Tile.defaultTile().withCharacter('+')
+  private val rogueTile = Tile.defaultTile().withCharacter(0x263A.toChar())
+  private val conjurerTile = Tile.defaultTile().withCharacter('@')
 
-  val wallTiles = EnumMap<WallOrientation, Tile>(WallOrientation::class.java)
+  private val wallTiles = EnumMap<WallOrientation, Tile>(WallOrientation::class.java)
 
   init
   {
@@ -28,5 +28,26 @@ object TileLibrary
     wallTiles[WallOrientation.SOUTH_WEST_NORTH] = Tile.defaultTile().withCharacter(0x2563.toChar())
     wallTiles[WallOrientation.WEST_NORTH_EAST] = Tile.defaultTile().withCharacter(0x2569.toChar())
     wallTiles[WallOrientation.ALL] = Tile.defaultTile().withCharacter(0x256C.toChar())
+  }
+
+  fun getSquareTile(square: Square): Tile
+  {
+    return when (square.type)
+    {
+      SquareType.BLOCKED -> blockedTile
+      SquareType.CORRIDOR -> corridorTile
+      SquareType.FLOOR -> floorTile
+      SquareType.WALL -> wallTiles.getValue(square.wallOrientation)
+      SquareType.DOOR -> doorTile
+    }
+  }
+
+  fun getCreatureTile(creature: Creature): Tile
+  {
+    return when (creature.type)
+    {
+      CreatureType.CONJURER -> conjurerTile
+      CreatureType.ROGUE -> rogueTile
+    }
   }
 }

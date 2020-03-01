@@ -138,13 +138,24 @@ class LevelState(val floor: Int) : Level
    *
    * This is intended to be done once right after startup, once all families and listeners are wired up and ready to go.
    */
-  fun bootstrapECS(ecs: ECS)
+  fun bootstrapECS(ecs: ECS, visibleFloor: Int)
   {
+    setOnVisibleLevel(floor == visibleFloor)
     rooms.forEach { ecs.addEntity(it.entity) }
     each { x, y ->
       squares[x][y].let {
         ecs.addEntity(it.entity)
         it.creature?.let { creature -> ecs.addEntity(creature.entity) }
+      }
+    }
+  }
+
+  fun setOnVisibleLevel(visible: Boolean)
+  {
+    each { x, y ->
+      squares[x][y].let {
+        it.setOnVisibleLevel(visible)
+        it.creature?.setOnVisibleLevel(visible)
       }
     }
   }

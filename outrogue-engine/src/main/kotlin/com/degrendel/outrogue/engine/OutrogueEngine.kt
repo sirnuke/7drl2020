@@ -29,6 +29,14 @@ class OutrogueEngine(val frontend: Frontend) : Engine
 
   override fun bootstrapECS()
   {
+    L.info("Bootstrapping ECS")
     _world.bootstrapECS()
+    updateECS()
+  }
+
+  private fun updateECS()
+  {
+    L.info("Updating ECS")
+    ecs.update(0.0f)
   }
 }

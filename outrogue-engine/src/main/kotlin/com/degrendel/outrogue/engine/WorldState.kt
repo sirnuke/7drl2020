@@ -37,6 +37,6 @@ class WorldState(val ecs: ECS) : World
 
   fun bootstrapECS()
   {
-    levels.forEach { it.bootstrapECS(ecs) }
+    levels.forEach { it.bootstrapECS(ecs, conjurer.coordinate.floor) }
   }
 }

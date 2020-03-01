@@ -9,6 +9,9 @@ object VisibleComponent : Component
 /** Indicates that this entity has been seen by the Rogue, even if it is not currently visible. */
 object KnownComponent : Component
 
+/** Indicates that this entity is on the current visible level, from the Conjurer's point of view. */
+object OnVisibleLevel : Component
+
 /** Tracks the position of this entity in the map. */
 data class CoordinateComponent(val coordinate: Coordinate) : Component
 

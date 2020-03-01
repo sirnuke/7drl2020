@@ -23,14 +23,13 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
 
   fun refreshMap(floor: Int)
   {
-    world.floor = floor
-    world.refreshMap()
+    world.refreshMap(floor)
   }
 
   override fun onDock()
   {
     L.info("Docking InGameView")
-    world.refreshMap()
+    world.refreshMap(0)
   }
 
   override fun onUndock()
