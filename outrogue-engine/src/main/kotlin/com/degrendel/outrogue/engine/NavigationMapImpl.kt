@@ -31,11 +31,11 @@ class NavigationMapImpl : NavigationMap
     }
   }
 
-  private fun getNeighbors(level: Level, coordinate: Coordinate, skip: Set<Coordinate>) = coordinate
-      .eightWayNeighbors()
-      .filter { _data[it.x][it.y] == Int.MAX_VALUE }
-      .filter { it in skip }
-      .filter { level.isNavigable(it) }
+  private fun getNeighbors(level: Level, coordinate: Coordinate, skip: Set<Coordinate>) = EightWay.values()
+      .filter { level.canMove(coordinate, it) }
+      .map { coordinate.move(it) }
+      .filter { _data[it.x][it.y] != Int.MAX_VALUE }
+      .filter { it !in skip }
 
   override fun getBestMove(coordinate: Coordinate): EightWay?
   {
