@@ -32,12 +32,15 @@ class Main : Callable<Int>
   @Option(names = ["--fullscreen"])
   private var fullscreen = false
 
+  @Option(names = ["--random-seed"], description = ["Override the random seed"])
+  private var randomSeed: Long? = null
+
   override fun call(): Int
   {
     L.info("Outrogue {}", VERSION_STRING)
     L.info("Built on {}", BUILD_DATE)
     val launchProfile = LaunchProfile(fullscreen = fullscreen, soarDebugger = soarDebugger,
-        debugDrawGrid = drawZirconGrid, zirconDebugMode = zirconDebugMode)
+        debugDrawGrid = drawZirconGrid, zirconDebugMode = zirconDebugMode, randomSeed = randomSeed)
     L.info("Launching with {}", launchProfile)
     Application(lock, condition, launchProfile)
     lock.withLock { condition.await() }

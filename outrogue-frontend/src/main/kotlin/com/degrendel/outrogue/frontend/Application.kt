@@ -28,7 +28,7 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
 
   val tileGrid: TileGrid
   val inGameView: InGameView
-  val engine = OutrogueEngine(this)
+  val engine = OutrogueEngine(this, profile.randomSeed)
 
   init
   {
@@ -89,4 +89,5 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
 data class LaunchProfile(val fullscreen: Boolean,
                          val soarDebugger: Boolean,
                          val zirconDebugMode: Boolean,
-                         val debugDrawGrid: Boolean)
+                         val debugDrawGrid: Boolean,
+                         val randomSeed: Long?)

@@ -12,6 +12,7 @@ interface Engine
   val world: World
   val ecs: ECS
   val random: Random
+  val seed: Long
 
   fun openAgentDebuggers()
 
