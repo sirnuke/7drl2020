@@ -1,0 +1,16 @@
+proc declare-goal { var name body } {
+    CORE_CreateMacroVar $var $name
+    NGS_DeclareGoal $name $body
+}
+
+# Root goal for this agent
+declare-goal G_ROOT AchieveBeatTheChamp ""
+
+# Decision for which behavior to apply
+CORE_CreateMacroVar D_DECIDE_SELECT_BEHAVIOR DecideSelectBehavior
+
+# Option for applying the sleep behavior
+declare-goal G_SELECT_SLEEP AchieveSelectSleepBehavior ""
+
+# Goal for outputting a sleep action (might be used by multiple different goal)
+declare-goal G_OUTPUT_SLEEP AchieveOutputSleepAction ""

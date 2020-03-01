@@ -1,0 +1,8 @@
+Glide::set-scope behaviors decide
+set SCOPE $Glide::_scope
+
+sp "$SCOPE*elaborate*decision
+    [ngs-match-goal <s> $G_ROOT <g>]
+-->
+    [ngs-irequest-decision <g> $D_DECIDE_SELECT_BEHAVIOR <g> behavior]
+"

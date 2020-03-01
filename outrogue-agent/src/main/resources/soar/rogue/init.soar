@@ -1,0 +1,9 @@
+Glide::set-scope root init
+set SCOPE $Glide::_scope
+
+sp "$SCOPE*elaborate*startup
+    [ngs-match-goalpool <s> <pool> $G_ROOT]
+-->
+    [ngs-log $SCOPE $NGS_INFO "Starting agent"]
+    [ngs-create-goal-in-place <pool> $G_ROOT $NGS_GB_ACHIEVE <g>]
+"

@@ -2,7 +2,17 @@
 
 ## Input
 
+* input:
+  * ^creatures: Creatures
+    * ^creature: Creature
+      * ^id: Int
+      * ^self: Boolean?
+        
 ## Output
+
+* output:
+  * ^action: Action
+    * ^type: String \[sleep,move,go-down,go-up\]
 
 ## Goal Hierarchy
 

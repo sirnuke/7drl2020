@@ -1,1 +1,4 @@
+CORE_Source goals.soar
+CORE_Source init.soar
 CORE_LoadDir behaviors
+CORE_LoadDir actions

@@ -1,0 +1,12 @@
+input Creatures {
+    creature: Creature!+
+}
+
+input Creature {
+    id: Int!
+    self: Boolean!?
+}
+
+output Action {
+    type: String!
+}
