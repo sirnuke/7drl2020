@@ -14,6 +14,9 @@
     "rooms": {
       "min-size": 5,
       "max-number": 12
+    },
+    "features": {
+      "staircases": [0.2, 0.05]
     }
   },
   "views": {

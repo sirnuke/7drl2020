@@ -21,7 +21,8 @@ data class Properties(val window: Window, val map: Map, val views: Views, val co
 }
 
 data class Window(val width: Int, val height: Int, val title: String, val fpsLimit: Int, val displayVersion: Boolean, val displayBuildDate: Boolean)
-data class Map(val width: Int, val height: Int, val floors: Int, val rooms: Rooms)
+data class Map(val width: Int, val height: Int, val floors: Int, val rooms: Rooms, val features: Features)
+data class Features(val staircases: List<Double>)
 data class Rooms(val minSize: Int, val maxNumber: Int)
 data class Views(val world: World)
 data class World(val mapX: Int, val mapY: Int, val maxQueuedActions: Int)
