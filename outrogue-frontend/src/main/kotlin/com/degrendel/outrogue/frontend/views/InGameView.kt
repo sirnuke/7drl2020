@@ -1,8 +1,6 @@
 package com.degrendel.outrogue.frontend.views
 
-import com.degrendel.outrogue.common.ai.Action
-import com.degrendel.outrogue.common.ai.Move
-import com.degrendel.outrogue.common.ai.Sleep
+import com.degrendel.outrogue.common.ai.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.EightWay
@@ -42,50 +40,85 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
       {
         KeyCode.LEFT, KeyCode.KEY_A, KeyCode.NUMPAD_4 ->
         {
+          L.trace("Move WEST pressed {}", event.code)
           Zircon.eventBus.publish(PlayerActionInput(Move(app.engine.world.conjurer, EightWay.WEST), this))
           Processed
         }
         KeyCode.RIGHT, KeyCode.KEY_D, KeyCode.NUMPAD_6 ->
         {
+          L.trace("Move EAST pressed {}", event.code)
           Zircon.eventBus.publish(PlayerActionInput(Move(app.engine.world.conjurer, EightWay.EAST), this))
           Processed
         }
         KeyCode.UP, KeyCode.KEY_W, KeyCode.NUMPAD_8 ->
         {
+          L.trace("Move NORTH pressed {}", event.code)
           Zircon.eventBus.publish(PlayerActionInput(Move(app.engine.world.conjurer, EightWay.NORTH), this))
           Processed
         }
         KeyCode.DOWN, KeyCode.KEY_X, KeyCode.NUMPAD_2 ->
         {
+          L.trace("Move SOUTH pressed {}", event.code)
           Zircon.eventBus.publish(PlayerActionInput(Move(app.engine.world.conjurer, EightWay.SOUTH), this))
           Processed
         }
         KeyCode.HOME, KeyCode.KEY_Q, KeyCode.NUMPAD_7 ->
         {
+          L.trace("Move NORTH_WEST pressed {}", event.code)
           Zircon.eventBus.publish(PlayerActionInput(Move(app.engine.world.conjurer, EightWay.NORTH_WEST), this))
           Processed
         }
         KeyCode.PAGE_UP, KeyCode.KEY_E, KeyCode.NUMPAD_9 ->
         {
+          L.trace("Move NORTH_EAST pressed {}", event.code)
           Zircon.eventBus.publish(PlayerActionInput(Move(app.engine.world.conjurer, EightWay.NORTH_EAST), this))
           Processed
         }
         KeyCode.END, KeyCode.KEY_Z, KeyCode.NUMPAD_1 ->
         {
+          L.trace("Move SOUTH_WEST pressed {}", event.code)
           Zircon.eventBus.publish(PlayerActionInput(Move(app.engine.world.conjurer, EightWay.SOUTH_WEST), this))
           Processed
         }
         KeyCode.PAGE_DOWN, KeyCode.KEY_C, KeyCode.NUMPAD_3 ->
         {
+          L.trace("Move SOUTH_EAST pressed {}", event.code)
           Zircon.eventBus.publish(PlayerActionInput(Move(app.engine.world.conjurer, EightWay.SOUTH_EAST), this))
           Processed
         }
         KeyCode.KEY_S, KeyCode.NUMPAD_5 ->
         {
+          L.trace("Sleep pressed {}", event.code)
           Zircon.eventBus.publish(PlayerActionInput(Sleep(app.engine.world.conjurer), this))
           Processed
         }
-        else -> Pass
+        KeyCode.COMMA ->
+        {
+          if (event.shiftDown)
+          {
+            L.trace("Go Up pressed {}", event.code)
+            Zircon.eventBus.publish(PlayerActionInput(GoUpStaircase(app.engine.world.conjurer), this))
+            Processed
+          }
+          else
+            Pass
+        }
+        KeyCode.PERIOD ->
+        {
+          if (event.shiftDown)
+          {
+            L.trace("Go Down pressed {}", event.code)
+            Zircon.eventBus.publish(PlayerActionInput(GoDownStaircase(app.engine.world.conjurer), this))
+            Processed
+          }
+          else
+            Pass
+        }
+        else ->
+        {
+          L.trace("Ignoring {}", event.code)
+          Pass
+        }
       }
     }
 
