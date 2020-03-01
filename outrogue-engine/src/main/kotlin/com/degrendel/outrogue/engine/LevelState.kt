@@ -117,6 +117,8 @@ class LevelState(val floor: Int) : Level
     }
   }
 
+  fun move(creature: CreatureState, direction: EightWay) = move(creature, creature.coordinate.move(direction))
+
   fun move(creature: CreatureState, to: Coordinate)
   {
     assert(to.floor == floor)
@@ -125,6 +127,11 @@ class LevelState(val floor: Int) : Level
     squares[to.x][to.y].creature = creature
     squares[creature.coordinate.x][creature.coordinate.y].creature = null
     creature.move(to)
+  }
+
+  override fun canMove(from: Coordinate, direction: EightWay): Boolean
+  {
+    from.move(direction).let { return (it.isValid() && getSquare(it).isNavigable()) }
   }
 
   override fun isNavigable(coordinate: Coordinate) = getSquare(coordinate).isNavigable()

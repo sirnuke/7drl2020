@@ -34,6 +34,7 @@ class WorldState(val ecs: ECS) : World
   override val rogue: Creature get() = _rogue
 
   override fun getLevel(floor: Int): Level = levels[floor]
+  fun getLevel(creature: Creature) = levels[creature.coordinate.floor]
 
   fun bootstrapECS()
   {

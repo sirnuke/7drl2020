@@ -8,6 +8,8 @@ interface Level
 
   fun isNavigable(coordinate: Coordinate): Boolean
 
+  fun canMove(from: Coordinate, direction: EightWay): Boolean
+
   companion object
   {
     fun each(lambda: (floor: Int) -> Unit) =
