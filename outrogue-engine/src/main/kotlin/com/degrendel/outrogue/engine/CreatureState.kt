@@ -17,6 +17,12 @@ sealed class CreatureState(initial: Coordinate) : Creature
     entity.add(CoordinateComponent(coordinate))
         .add(AllegianceComponent(allegiance))
   }
+
+  fun move(to: Coordinate)
+  {
+    _coordinate = to
+    updateComponents()
+  }
 }
 
 class Rogue(override val entity: Entity, initial: Coordinate) : CreatureState(initial)
