@@ -3,6 +3,7 @@ package com.degrendel.outrogue.common
 import com.degrendel.outrogue.common.ai.Action
 import com.degrendel.outrogue.common.world.World
 import kotlinx.coroutines.Job
+import kotlin.random.Random
 
 typealias ECS = com.badlogic.ashley.core.Engine
 
@@ -10,6 +11,8 @@ interface Engine
 {
   val world: World
   val ecs: ECS
+  val random: Random
+
   fun openAgentDebuggers()
 
   /**

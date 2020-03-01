@@ -4,6 +4,12 @@ import com.degrendel.outrogue.common.properties.Properties.Companion.P
 
 interface Level
 {
+  val isFirst: Boolean
+  val isLast: Boolean
+
+  val staircasesDown: List<Square>
+  val staircasesUp: List<Square>
+
   fun getSquare(x: Int, y: Int): Square
 
   fun isNavigable(coordinate: Coordinate): Boolean

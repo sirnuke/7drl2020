@@ -7,30 +7,36 @@ import com.degrendel.outrogue.common.ai.Move
 import com.degrendel.outrogue.common.ai.Sleep
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.World
+import com.github.czyzby.noise4j.map.generator.util.Generators
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.random.Random
+import kotlin.random.asJavaRandom
 
-class OutrogueEngine(val frontend: Frontend) : Engine
+class OutrogueEngine(val frontend: Frontend, val seed: Long? = null) : Engine
 {
   companion object
   {
     private val L by logger()
   }
 
+  override val random: Random = if (seed != null) Random(seed) else Random
   override val ecs = ECS()
 
   private val soarAgent = RogueSoarAgent()
 
-  private val _world = WorldState(ecs)
+  private val _world = WorldState(this)
   override val world: World get() = _world
 
   private val actionQueue = ActionQueue(this)
 
+
   init
   {
     L.info("Creating engine")
+    Generators.setRandom(random.asJavaRandom())
   }
 
   override fun openAgentDebuggers()

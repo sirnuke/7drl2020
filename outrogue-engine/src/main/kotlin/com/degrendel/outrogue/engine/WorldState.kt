@@ -7,9 +7,9 @@ import com.degrendel.outrogue.common.world.Level
 import com.degrendel.outrogue.common.world.Level.Companion.floorRange
 import com.degrendel.outrogue.common.world.World
 
-class WorldState(val ecs: ECS) : World
+class WorldState(val engine: OutrogueEngine) : World
 {
-  private val levels = floorRange.map { LevelState(it) }
+  private val levels = floorRange.map { LevelState(it, engine) }
   private val _conjurer: Conjurer
   private var _rogue: Rogue
 
@@ -38,6 +38,6 @@ class WorldState(val ecs: ECS) : World
 
   fun bootstrapECS()
   {
-    levels.forEach { it.bootstrapECS(ecs, conjurer.coordinate.floor) }
+    levels.forEach { it.bootstrapECS(engine.ecs, conjurer.coordinate.floor) }
   }
 }

@@ -11,8 +11,9 @@ import com.github.czyzby.noise4j.map.Grid
 import com.github.czyzby.noise4j.map.generator.room.AbstractRoomGenerator
 import com.github.czyzby.noise4j.map.generator.room.RoomType
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator
+import kotlin.random.Random
 
-class LevelState(val floor: Int) : Level
+class LevelState(val floor: Int, engine: Engine) : Level
 {
   companion object
   {
@@ -23,9 +24,17 @@ class LevelState(val floor: Int) : Level
 
   private val rooms = mutableListOf<RoomState>()
 
+  override val isFirst = (floor == 0)
+  override val isLast = (floor + 1 == P.map.floors)
+
+  private val _downcases = mutableListOf<SquareState>()
+  private val _upcases = mutableListOf<SquareState>()
+
+  override val staircasesDown: List<Square> get() = _downcases
+  override val staircasesUp: List<Square> get() = _upcases
+
   init
   {
-
     val dungeonGenerator = DungeonGenerator()
     dungeonGenerator.addRoomType(object : RoomType
     {
@@ -60,6 +69,21 @@ class LevelState(val floor: Int) : Level
         else null
         SquareState(Coordinate(x, y, floor), type, roomId)
       }
+    }
+
+    // Compute the downcases
+    if (!isLast)
+    {
+      val downChance = engine.random.nextDouble()
+      create(P.map.features.staircases.count { downChance < it } + 1, { !getSquare(it).type.staircase }) {
+        squares[it.x][it.y]._type = SquareType.STAIRCASE_DOWN
+        _downcases += squares[it.x][it.y]
+      }
+    }
+    val upChance = engine.random.nextDouble()
+    create(P.map.features.staircases.count { upChance < it } + 1, { !getSquare(it).type.staircase }) {
+      squares[it.x][it.y]._type = SquareType.STAIRCASE_UP
+      _downcases += squares[it.x][it.y]
     }
 
     val walls = mutableListOf<SquareState>()
@@ -145,6 +169,21 @@ class LevelState(val floor: Int) : Level
   override fun getSquare(x: Int, y: Int): Square = squares[x][y]
 
   fun getSquare(coordinate: Coordinate) = getSquare(coordinate.x, coordinate.y)
+
+  private fun create(count: Int, filter: (Coordinate) -> Boolean, action: (Coordinate) -> Unit)
+  {
+    // TODO: A touch icky - should be some way to do this functionally
+    var amount = 0
+    var attempts = 0
+    while (amount < count)
+    {
+      attempts++
+      if (attempts > P.map.features.maxPlacementAttempts)
+        throw IllegalStateException("Reached max placement attempts - map is probably far too full")
+      action(getRandomRooms(1)[0].getRandomSquare(filter) ?: continue)
+      amount++
+    }
+  }
 
   /**
    * Adds the tiles, rooms, and spawned creature entities to the system.
