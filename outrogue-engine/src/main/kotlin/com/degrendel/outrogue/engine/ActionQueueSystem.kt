@@ -49,11 +49,12 @@ class ActionQueueSystem(private val engine: OutrogueEngine) : EntityListener
     L.debug("Executing turn for {}", creature)
     val action = when (controller)
     {
-      is PlayerController -> TODO("Not yet implemented")
-      // TODO: Actually implement the agent
+      is PlayerController -> engine.frontend.getPlayerInput()
+      // TODO: Actually implement the soar agent
       is AgentController -> Sleep(creature)
       is SimpleController -> executeSimpleAI(engine, creature, controller)
     }
+    L.info("Creature {} will perform {}", creature, action)
     // TODO: Double check the logic here
     creature.addCooldown(engine.computeCost(action))
     queue.add(creature)
