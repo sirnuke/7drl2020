@@ -23,7 +23,7 @@ class SquareState(override val coordinate: Coordinate, var _type: SquareType, ov
 
   override val wallOrientation get() = _wallOrientation
 
-  override fun isNavigable() = _type.blocked && creature == null
+  override fun isNavigable() = !_type.blocked && creature == null
 
   fun setOnVisibleLevel(visible: Boolean)
   {
