@@ -5,7 +5,7 @@ plugins {
   kotlin("jvm") version "1.3.61" apply false
   java
   `maven-publish`
-   id("net.researchgate.release") version "2.6.0"
+  id("net.researchgate.release") version "2.6.0"
 }
 
 allprojects {
@@ -22,10 +22,10 @@ release {
 }
 
 dependencies {
-    // Make the root project archives configuration depend on every subproject
-    subprojects.forEach {
-        archives(it)
-    }
+  // Make the root project archives configuration depend on every subproject
+  subprojects.forEach {
+    archives(it)
+  }
 }
 
 tasks.register("printVersion") {
@@ -39,47 +39,43 @@ subprojects {
   apply(plugin = "org.jetbrains.kotlin.jvm")
   apply(plugin = "maven-publish")
 
-  // TODO: Would be nice to make this optional
-  val internalNexusUsername: String by project
-  val internalNexusPassword: String by project
-  val internalNexusURL: String by project
+  if (project.properties.containsKey("internalNexusURL"))
+  {
+    val internalNexusUsername: String by project
+    val internalNexusPassword: String by project
+    val internalNexusURL: String by project
 
-  publishing {
-    publications {
-      create<MavenPublication>("maven") {
-        from(components["java"])
+    publishing {
+      publications {
+        create<MavenPublication>("maven") {
+          from(components["java"])
+        }
+      }
+      repositories {
+        maven {
+          credentials {
+            username = internalNexusUsername
+            password = internalNexusPassword
+          }
+          val releasesRepoUrl = "$internalNexusURL/repository/maven-releases/"
+          val snapshotsRepoUrl = "$internalNexusURL/repository/maven-snapshots/"
+          url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
+          name = "Internal-Nexus"
+        }
       }
     }
+
     repositories {
       maven {
         credentials {
           username = internalNexusUsername
           password = internalNexusPassword
         }
-        val releasesRepoUrl = "$internalNexusURL/repository/maven-releases/"
-        val snapshotsRepoUrl = "$internalNexusURL/repository/maven-snapshots/"
-        url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
+        url = uri("$internalNexusURL/repository/maven-public")
         name = "Internal-Nexus"
       }
     }
   }
-
-  /*
-  repositories {
-    maven {
-      credentials {
-        username = internalNexusUsername
-        password = internalNexusPassword
-      }
-      url = uri("$internalNexusURL/repository/maven-public")
-      // NOTE: Gradle 7 isn't going to play ball with http unless this is set.  However, while this option exists
-      // in 6.2.1, it is not (yet) part of the Kotlin DSL :/
-      // allowInsecureProtocol = true
-      name = "Internal-Nexus"
-    }
-  }
-  */
-
 
   dependencies {
     implementation(kotlin("stdlib-jdk8"))
