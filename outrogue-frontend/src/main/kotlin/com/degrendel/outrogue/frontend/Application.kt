@@ -3,6 +3,7 @@ package com.degrendel.outrogue.frontend
 import com.degrendel.outrogue.common.BUILD_DATE
 import com.degrendel.outrogue.common.Frontend
 import com.degrendel.outrogue.common.VERSION_STRING
+import com.degrendel.outrogue.common.ai.Action
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.engine.OutrogueEngine
@@ -76,18 +77,13 @@ class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProf
       }
     }
 
-    tileGrid.dock(inGameView)
-
     engine.bootstrapECS()
-    refreshMap(0)
 
-    // TODO: Start the main loop?
+    tileGrid.dock(inGameView)
   }
 
-  override fun refreshMap(floor: Int)
-  {
-    inGameView.refreshMap(floor)
-  }
+  override suspend fun refreshMap() = inGameView.refreshMap()
+  override suspend fun getPlayerInput() = inGameView.getPlayerInput()
 }
 
 data class LaunchProfile(val fullscreen: Boolean,

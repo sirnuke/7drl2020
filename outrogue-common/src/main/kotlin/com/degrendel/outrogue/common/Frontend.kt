@@ -1,6 +1,9 @@
 package com.degrendel.outrogue.common
 
+import com.degrendel.outrogue.common.ai.Action
+
 interface Frontend
 {
-  fun refreshMap(floor: Int)
+  suspend fun refreshMap()
+  suspend fun getPlayerInput(): Action
 }

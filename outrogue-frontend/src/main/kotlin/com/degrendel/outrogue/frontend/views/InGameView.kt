@@ -21,15 +21,15 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
     screen.theme = ColorThemes.adriftInDreams()
   }
 
-  fun refreshMap(floor: Int)
+  fun refreshMap()
   {
-    world.refreshMap(floor)
+    world.refreshMap()
   }
 
   override fun onDock()
   {
     L.info("Docking InGameView")
-    world.refreshMap(0)
+    world.refreshMap()
   }
 
   override fun onUndock()
