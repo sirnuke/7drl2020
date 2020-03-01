@@ -24,5 +24,5 @@ data class Window(val width: Int, val height: Int, val title: String, val fpsLim
 data class Map(val width: Int, val height: Int, val floors: Int, val rooms: Rooms)
 data class Rooms(val minSize: Int, val maxNumber: Int)
 data class Views(val world: World)
-data class World(val mapX: Int, val mapY: Int)
+data class World(val mapX: Int, val mapY: Int, val maxQueuedActions: Int)
 data class Costs(val sleep: Long, val move: Long)
