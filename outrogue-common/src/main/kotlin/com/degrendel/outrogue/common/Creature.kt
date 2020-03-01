@@ -8,6 +8,9 @@ interface Creature
   val entity: Entity
   val allegiance: Allegiance
   val type: CreatureType
+  val id: Int
+  val cooldown: Long
+  val controller: Controller
 }
 
 enum class CreatureType
