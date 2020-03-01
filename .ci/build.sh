@@ -38,5 +38,5 @@ fi
 
 ./gradlew clean outrogue-frontend:shadowJar publish
 
-butler push outrogue-frontend/build/libs/*.jar $itch_channel
+butler push outrogue-frontend/build/libs/outrogue-$version.jar $itch_channel
 
