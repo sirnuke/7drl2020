@@ -73,9 +73,9 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
   }
 
   override fun runGame(): Job = GlobalScope.launch {
-    // TODO: If we need a lot more performance with drawing, this /should/ work as expected
-    //      the frontend access the levels, but the actual modifications shouldn't impact it?
-    //      It desyncs the drawing from the turn execution, which is visible noticable, however
+    // TODO: If we need a lot more performance with drawing, this /should/ work as expected.
+    //      The frontend accesses the levels, but the actual modifications shouldn't impact it?
+    //      It visibly desyncs the drawing from the turn execution, however
     /*
     launch {
       while (true)
@@ -85,15 +85,16 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
       }
     }
      */
+    updateECS()
     frontend.refreshMap()
     while (this.isActive)
     {
-      updateECS()
-      val action = actionQueue.execute()
-      executeAction(action)
+      executeNextAction()
+      _world.computeVisibleAndKnown()
       // TODO: Alternatively for performance, offer a 'peak ahead' in actionQueueSystem.  If the next action is a
       //       simple AI (i.e. should be near immediately), skip refreshing the map.  Could also have a timer that
       //       asserts it hasn't been too long.
+      updateECS()
       frontend.refreshMap()
     }
   }
@@ -140,7 +141,9 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
     }
   }
 
-  private fun executeAction(action: Action) = when (action)
+  private suspend fun executeNextAction() = applyAction(actionQueue.execute())
+
+  private fun applyAction(action: Action) = when (action)
   {
     is Sleep -> L.debug("Creature {} sleeps", action.creature)
     is Move -> _world.getLevel(action.creature).move(action.creature as CreatureState, action.direction)
