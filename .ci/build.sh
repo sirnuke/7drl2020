@@ -17,8 +17,8 @@ export GRADLE_USER_HOME="${BUILD_DIR}/gradle"
 cd source
 
 
-version=`./gradlew printVersion`
-isSnapshot=`./gradlew printVersion|grep "\-SNAPSHOT" || true`
+version=`./gradlew -q printVersion`
+isSnapshot=`./gradlew -q printVersion|grep "\-SNAPSHOT" || true`
 
 echo "FYI: version is $version"
 
