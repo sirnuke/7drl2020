@@ -20,6 +20,8 @@ cd source
 version=`./gradlew printVersion`
 isSnapshot=`./gradlew printVersion|grep "\-SNAPSHOT" || true`
 
+echo "FYI: version is $version"
+
 if [ "$BUILD_TYPE" = "release" ] ; then
   if [ ! -z "$isSnapshot" ] ; then
     echo "not a release, aborting!"
