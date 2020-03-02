@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.system.exitProcess
 
-class Application(lock: ReentrantLock, condition: Condition, profile: LaunchProfile) : Frontend
+class Application(lock: ReentrantLock, condition: Condition, val profile: LaunchProfile) : Frontend
 {
   companion object
   {

@@ -9,6 +9,7 @@ import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.Level
 import com.degrendel.outrogue.common.world.Square
 import com.degrendel.outrogue.frontend.Application
+import com.degrendel.outrogue.frontend.MouseButtons
 import com.degrendel.outrogue.frontend.TileLibrary
 import com.degrendel.outrogue.frontend.components.DrawnAtComponent
 import com.degrendel.outrogue.frontend.components.getDrawnAt
@@ -19,6 +20,8 @@ import org.hexworks.zircon.api.data.Size
 import org.hexworks.zircon.api.data.Tile
 import org.hexworks.zircon.api.graphics.Layer
 import org.hexworks.zircon.api.screen.Screen
+import org.hexworks.zircon.api.uievent.MouseEventType
+import org.hexworks.zircon.api.uievent.Pass
 
 /**
  * Handles drawing the map.
@@ -124,6 +127,15 @@ class WorldFragment(val app: Application, screen: Screen)
         visibleSquaresLayer.erase(entity.getSquare().coordinate.toPosition())
       }
     })
+
+    if (app.profile.zirconDebugMode)
+    {
+      screen.handleMouseEvents(MouseEventType.MOUSE_CLICKED) { event, _ ->
+        if (event.button == MouseButtons.MIDDLE.id)
+          L.info("Mouse click at {}, {}", event.position.x, event.position.y)
+        Pass
+      }
+    }
   }
 
   fun refreshMap()
