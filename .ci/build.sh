@@ -28,7 +28,8 @@ if [ "$BUILD_TYPE" = "release" ] ; then
     exit 1
   fi
   itch_channel="sirnuke/outrogue:win-linux-mac-stable"
-  echo "$version" > github-version
+  mkdir -p github-release
+  echo "$version" > github-release/github-version
 elif [ "$BUILD_TYPE" = "snapshot" ] ; then
   if [ -z "$isSnapshot" ] ; then
     echo "not a snapshot, aborting!"
@@ -42,5 +43,11 @@ fi
 
 ./gradlew clean outrogue-frontend:shadowJar publish
 
-butler push outrogue-frontend/build/libs/outrogue-$version.jar $itch_channel
+mv outrogue-frontend/build/libs/outrogue-$version.jar .
+
+butler push outrogue-$version.jar $itch_channel
+
+if [ "$BUILD_TYPE" = "release" ] ; then
+  mv outrogue-$version.jar github-release
+fi
 
