@@ -193,6 +193,9 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
   override fun getSquare(x: Int, y: Int): Square = squares[x][y]
   override fun getSquare(coordinate: Coordinate) = getSquare(coordinate.x, coordinate.y)
 
+  fun getSquareState(x: Int, y: Int) = squares[x][y]
+  fun getSquareState(coordinate: Coordinate) = getSquareState(coordinate.x, coordinate.y)
+
   private fun create(count: Int, required: Int, filter: (Coordinate) -> Boolean, action: (Coordinate) -> Unit): Int
   {
     assert(required <= count)
@@ -240,6 +243,8 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
       }
     }
   }
+
+  fun getRoom(id: Int) = rooms[id]
 
   fun getRandomRooms(count: Int) = rooms.shuffled(random).dropLast(rooms.size - count)
 }
