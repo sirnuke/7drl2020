@@ -1,6 +1,7 @@
 package com.degrendel.outrogue.frontend
 
 import com.degrendel.outrogue.common.world.*
+import org.hexworks.zircon.api.color.TileColor
 import org.hexworks.zircon.api.data.Tile
 import java.util.*
 
@@ -16,6 +17,9 @@ object TileLibrary
   private val conjurerTile = Tile.defaultTile().withCharacter('@')
 
   private val wallTiles = EnumMap<WallOrientation, Tile>(WallOrientation::class.java)
+
+  val knownOverlayTile = Tile.defaultTile().withBackgroundColor(TileColor.create(red = 110, green = 110, blue = 110, alpha = 128))
+  val visibleOverlayTile = Tile.defaultTile().withBackgroundColor(TileColor.create(red = 110, green = 110, blue = 110, alpha = 64))
 
   init
   {

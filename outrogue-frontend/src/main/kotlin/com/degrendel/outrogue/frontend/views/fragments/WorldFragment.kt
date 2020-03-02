@@ -6,6 +6,8 @@ import com.badlogic.ashley.core.Family
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
+import com.degrendel.outrogue.common.world.Level
+import com.degrendel.outrogue.common.world.Square
 import com.degrendel.outrogue.frontend.Application
 import com.degrendel.outrogue.frontend.TileLibrary
 import com.degrendel.outrogue.frontend.components.DrawnAtComponent
@@ -32,8 +34,17 @@ class WorldFragment(val app: Application, screen: Screen)
 
   private val baseLayer = LayerData().also { screen.addLayer(it.layer) }
   private val creatureLayer = LayerData().also { screen.addLayer(it.layer) }
+  private val knownSquaresLayer = LayerData().also { screen.addLayer(it.layer) }
+  private val visibleSquaresLayer = LayerData().also { screen.addLayer(it.layer) }
 
   private val visibleSquares = Family.all(SquareComponent::class.java, OnVisibleLevelComponent::class.java).get()
+
+  // NOTE: Draw visible/known only for the user because:
+  // 1. Because conveying whether the rogue team can see that monster that ran away probably isn't that important
+  // 2. The player should have to remember that sort of thing themselves
+  // 3. And most importantly, it simplifies the logic here quite a bit
+  private val rogueVisibleSquares = Family.all(SquareComponent::class.java, OnVisibleLevelComponent::class.java, VisibleToRogueComponent::class.java).get()
+  private val rogueKnownSquares = Family.all(SquareComponent::class.java, OnVisibleLevelComponent::class.java, KnownToRogueComponent::class.java).get()
 
   private val toDrawCreatures = Family.all(CreatureComponent::class.java, OnVisibleLevelComponent::class.java).exclude(DrawnAtComponent::class.java).get()
   private val toEraseCreatures = Family.all(CreatureComponent::class.java, DrawnAtComponent::class.java).exclude(OnVisibleLevelComponent::class.java).get()
@@ -84,6 +95,35 @@ class WorldFragment(val app: Application, screen: Screen)
       {
       }
     })
+
+    // NOTE: These bois assume the entity still have the square component
+    // Probably a safe assumption BUT do they retain their square components after being removed from the ECS?
+    // TODO: Do the removes always fire before adds?  Might have to track where actually drawn
+    app.engine.ecs.addEntityListener(rogueKnownSquares, object : EntityListener
+    {
+      override fun entityAdded(entity: Entity)
+      {
+        knownSquaresLayer[entity.getSquare().coordinate.toPosition()] = TileLibrary.knownOverlayTile
+      }
+
+      override fun entityRemoved(entity: Entity)
+      {
+        knownSquaresLayer.erase(entity.getSquare().coordinate.toPosition())
+      }
+    })
+
+    app.engine.ecs.addEntityListener(rogueVisibleSquares, object : EntityListener
+    {
+      override fun entityAdded(entity: Entity)
+      {
+        visibleSquaresLayer[entity.getSquare().coordinate.toPosition()] = TileLibrary.visibleOverlayTile
+      }
+
+      override fun entityRemoved(entity: Entity)
+      {
+        visibleSquaresLayer.erase(entity.getSquare().coordinate.toPosition())
+      }
+    })
   }
 
   fun refreshMap()
@@ -91,6 +131,7 @@ class WorldFragment(val app: Application, screen: Screen)
     // NOTE: to add 'blocking' animations, start them as suspendCoroutines that terminate on the callback.  Return the
     // list of coroutines.  Can't really do that for moving, not at least without doing it through GDC
     L.trace("Refreshing map")
+    // TODO: Do the non creature layers need to be drawn each cycle?  Consider switching to an atomic 'updated' boolean
     baseLayer.draw()
 
     val updatedCreatures = mutableSetOf<Position>()
@@ -110,9 +151,12 @@ class WorldFragment(val app: Application, screen: Screen)
       updatedCreatures.add(newPosition)
       it.add(DrawnAtComponent(newPosition))
     }
+    // TODO: Doesn't catch the first update, unfortunately
+    // if (updatedCreatures.isNotEmpty())
     creatureLayer.draw()
-    // TODO: visible/known effects for squares
     // TODO: fire/etc effects for squares?
+    knownSquaresLayer.draw()
+    visibleSquaresLayer.draw()
   }
 
   class LayerData
