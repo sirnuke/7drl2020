@@ -4,16 +4,16 @@ import com.badlogic.ashley.core.Component
 import com.degrendel.outrogue.common.world.*
 
 /** Indicates that this entity is currently visible to the Rogue. */
-object VisibleComponent : Component
+object VisibleToRogueComponent : Component
 
 /** Indicates that this entity has been seen by the Rogue, even if it is not currently visible. */
-object KnownComponent : Component
+object KnownToRogueComponent : Component
 
 /** Indicates that this entity is on the current visible level, from the Conjurer's point of view. */
 object OnVisibleLevelComponent : Component
 
 /** Indicates that this creature is active, and its controller should fire. */
-object ActiveComponent: Component
+object ActiveComponent : Component
 
 /** Tracks the position of this entity in the map. */
 data class CoordinateComponent(val coordinate: Coordinate) : Component
@@ -27,6 +27,11 @@ data class RoomComponent(val room: Room) : Component
 /** Indicates this entity is a creature. */
 data class CreatureComponent(val creature: Creature) : Component
 
-/** Indicates what team this creature belongs to. */
-data class AllegianceComponent(val allegiance: Allegiance) : Component
+/** Indicates this creature belongs to the Rogue team. */
+object RogueAllegianceComponent : Component
 
+/** Indicates this creature belongs to the Conjurer team. */
+object ConjurerAllegianceComponent : Component
+
+/** Indicate this creature belongs to the Neutral team. */
+object NeutralAllegianceComponent : Component
