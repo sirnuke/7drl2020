@@ -124,10 +124,9 @@ class WorldState(val engine: OutrogueEngine) : World
     // TODO: Will need to do this with things as well
     visible.forEach {
       levels[it.floor].getSquareState(it).let { square ->
+        if (square.type.blocked) return@let
         square.entity.add(VisibleToRogueComponent).add(KnownToRogueComponent)
-        square.creature?.entity?.let { creature ->
-          creature.add(VisibleToRogueComponent).add(KnownToRogueComponent)
-        }
+        square.creature?.entity?.add(VisibleToRogueComponent)?.add(KnownToRogueComponent)
       }
     }
   }
