@@ -7,7 +7,7 @@ proc declare-goal { var name body } {
 declare-goal G_ROOT AchieveBeatTheChamp ""
 
 # Decision for which behavior to apply
-CORE_CreateMacroVar D_DECIDE_SELECT_BEHAVIOR DecideSelectBehavior
+declare-goal D_DECIDE_SELECT_BEHAVIOR DecideSelectBehavior ""
 
 # Option for applying the sleep behavior
 declare-goal G_SELECT_SLEEP AchieveSelectSleepBehavior ""

@@ -1,2 +1,17 @@
 Glide::set-scope behaviors sleep
 set SCOPE $Glide::_scope
+
+sp "$SCOPE*elaborate*behavior*decision*sleep*option
+    [ngs-match-goal-to-create-subgoal <s> $D_DECIDE_SELECT_BEHAVIOR <d> $G_SELECT_SLEEP <pool>]
+-->
+    [ngs-create-goal-in-place <pool> $G_SELECT_SLEEP $NGS_GB_ACHIEVE <g>]
+    [ngs-assign-decision <g> $D_DECIDE_SELECT_BEHAVIOR $NGS_NO]
+"
+
+sp "$SCOPE*propose*select*sleep
+    [ngs-match-to-make-choice <ss> $D_DECIDE_SELECT_BEHAVIOR <g> $G_SELECT_SLEEP]
+    [ngs-is-decision-choice <ss> <choice> $G_SELECT_SLEEP]
+-->
+    [ngs-make-choice-by-operator <ss> <choice>]
+    [ngs-add-log-side-effect $SCOPE $NGS_INFO "Selecting sleep operator"]
+"
