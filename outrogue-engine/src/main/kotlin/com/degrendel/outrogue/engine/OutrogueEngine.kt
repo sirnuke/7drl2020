@@ -29,7 +29,7 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
   override val random: Random = Random(seed)
   override val ecs = ECS()
 
-  private val soarAgent = RogueSoarAgent()
+  private val soarAgent = RogueSoarAgent(this)
 
   private val _world = WorldState(this)
   override val world: World get() = _world
