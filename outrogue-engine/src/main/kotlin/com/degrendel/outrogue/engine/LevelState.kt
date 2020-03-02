@@ -79,7 +79,7 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
       val downChance = engine.random.nextDouble()
       val count = P.map.features.staircases.count { downChance < it } + 1
       create(count, count, { !getSquare(it).type.staircase }) {
-        squares[it.x][it.y].let {square ->
+        squares[it.x][it.y].let { square ->
           square._type = SquareType.STAIRCASE_DOWN
           square._staircase = _downcases.size
           _downcases += square
@@ -104,19 +104,22 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
 
     val walls = mutableListOf<SquareState>()
     val wallify = { x: Int, y: Int ->
-      val coordinate = Coordinate(x, y, floor)
-      if (squares[x][y].type.blocked)
+      val square = squares[x][y]
+      if (square.type.blocked)
       {
-        walls += squares[x][y]
-        squares[x][y]._type = SquareType.WALL
+        walls += square
+        square._type = SquareType.WALL
       }
       else
       {
-        squares[x][y]._visible.addAll(EightWay.values()
-            .map { coordinate.move(it) }
-            .filter { it.isValid() }
-            .mapNotNull { squares[it.x][it.y].room })
-        squares[x][y]._type = SquareType.DOOR
+        square._visible.addAll(square.coordinate.eightWayNeighbors()
+            .map { getSquare(it) }
+            .filter { it.room != null }
+            .also {
+              it.forEach { neighbor -> rooms[neighbor.room!!].addDoor(square.coordinate) }
+            }
+            .mapNotNull { it.room })
+        square._type = SquareType.DOOR
       }
     }
 
