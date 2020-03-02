@@ -1,6 +1,6 @@
 package com.degrendel.outrogue.common
 
-import com.degrendel.outrogue.common.ai.Action
+import com.degrendel.outrogue.common.agent.Action
 
 interface Frontend
 {

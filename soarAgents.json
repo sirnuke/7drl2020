@@ -1,9 +1,0 @@
-{
-    "entryPoints": [
-        {
-            "path": "outrogue-agent/src/main/resources/soar/load.soar",
-            "name": "rogue"
-        }
-    ],
-    "active": "rogue"
-}

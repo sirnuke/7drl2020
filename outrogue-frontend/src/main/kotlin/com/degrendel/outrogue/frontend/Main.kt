@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.system.exitProcess
 
-@Command(name = "Outrogue", mixinStandardHelpOptions = true, version = [VERSION, GIT_SHA, DIRTY.toString(), BUILD_DATE])
+@Command(name = "OUTROGUE", mixinStandardHelpOptions = true, version = [VERSION, GIT_SHA, DIRTY.toString(), BUILD_DATE])
 class Main : Callable<Int>
 {
   companion object
@@ -20,8 +20,8 @@ class Main : Callable<Int>
   private val lock = ReentrantLock()
   private val condition = lock.newCondition()
 
-  @Option(names = ["--soar-debugger"])
-  private var soarDebugger = false
+  @Option(names = ["--rogue-agent-debugging"])
+  private var rogueAgentDebugging = false
 
   @Option(names = ["--zircon-debug-mode"])
   private var zirconDebugMode = false
@@ -39,7 +39,7 @@ class Main : Callable<Int>
   {
     L.info("Outrogue {}", VERSION_STRING)
     L.info("Built on {}", BUILD_DATE)
-    val launchProfile = LaunchProfile(fullscreen = fullscreen, soarDebugger = soarDebugger,
+    val launchProfile = LaunchProfile(fullscreen = fullscreen, rogueAgentDebugging = rogueAgentDebugging,
         debugDrawGrid = drawZirconGrid, zirconDebugMode = zirconDebugMode, randomSeed = randomSeed)
     L.info("Launching with {}", launchProfile)
     Application(lock, condition, launchProfile)

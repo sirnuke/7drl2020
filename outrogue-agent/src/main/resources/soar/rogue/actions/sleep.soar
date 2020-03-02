@@ -1,2 +1,0 @@
-Glide::set-scope actions sleep
-set SCOPE $Glide::_scope

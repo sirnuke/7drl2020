@@ -1,8 +1,8 @@
 package com.degrendel.outrogue.engine
 
-import com.degrendel.outrogue.common.ai.Action
-import com.degrendel.outrogue.common.ai.SimpleController
-import com.degrendel.outrogue.common.ai.Sleep
+import com.degrendel.outrogue.common.agent.Action
+import com.degrendel.outrogue.common.agent.SimpleController
+import com.degrendel.outrogue.common.agent.Sleep
 
 fun executeSimpleAI(engine: OutrogueEngine, creature: CreatureState, ai: SimpleController): Action
 {

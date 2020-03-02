@@ -1,10 +1,9 @@
 package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
-import com.degrendel.outrogue.common.ai.AgentController
-import com.degrendel.outrogue.common.ai.Controller
-import com.degrendel.outrogue.common.ai.PlayerController
-import com.degrendel.outrogue.common.ai.SimpleController
+import com.degrendel.outrogue.common.agent.AgentController
+import com.degrendel.outrogue.common.agent.Controller
+import com.degrendel.outrogue.common.agent.PlayerController
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.world.Allegiance
 import com.degrendel.outrogue.common.world.Coordinate

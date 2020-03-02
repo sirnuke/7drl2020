@@ -1,11 +1,10 @@
 package com.degrendel.outrogue.engine
 
-import com.degrendel.outrogue.agent.RogueSoarAgent
+import com.degrendel.outrogue.agent.RogueAgent
 import com.degrendel.outrogue.common.*
-import com.degrendel.outrogue.common.ai.*
+import com.degrendel.outrogue.common.agent.*
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.Allegiance
-import com.degrendel.outrogue.common.world.CreatureType
 import com.degrendel.outrogue.common.world.SquareType
 import com.degrendel.outrogue.common.world.World
 import com.github.czyzby.noise4j.map.generator.util.Generators
@@ -29,7 +28,7 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
   override val random: Random = Random(seed)
   override val ecs = ECS()
 
-  private val soarAgent = RogueSoarAgent(this)
+  private val rogueAgent = RogueAgent(this)
 
   private val _world = WorldState(this)
   override val world: World get() = _world
@@ -43,9 +42,14 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
     Generators.setRandom(random.asJavaRandom())
   }
 
-  override fun openAgentDebuggers()
+  override fun enableRogueAgentDebugging()
   {
-    soarAgent.openDebugger()
+    rogueAgent.enableDebugging()
+  }
+
+  override fun enableAllAgentDebugging()
+  {
+    TODO("not implemented")
   }
 
   override fun bootstrapECS()

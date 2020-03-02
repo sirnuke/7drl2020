@@ -1,4 +1,4 @@
-package com.degrendel.outrogue.common.ai
+package com.degrendel.outrogue.common.agent
 
 import com.degrendel.outrogue.common.world.Creature
 import com.degrendel.outrogue.common.world.EightWay

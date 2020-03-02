@@ -1,6 +1,6 @@
 package com.degrendel.outrogue.frontend.views
 
-import com.degrendel.outrogue.common.ai.*
+import com.degrendel.outrogue.common.agent.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.EightWay

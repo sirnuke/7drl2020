@@ -3,7 +3,6 @@ package com.degrendel.outrogue.frontend
 import com.degrendel.outrogue.common.BUILD_DATE
 import com.degrendel.outrogue.common.Frontend
 import com.degrendel.outrogue.common.VERSION_STRING
-import com.degrendel.outrogue.common.ai.Action
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.engine.OutrogueEngine
@@ -32,8 +31,8 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
 
   init
   {
-    if (profile.soarDebugger)
-      engine.openAgentDebuggers()
+    if (profile.rogueAgentDebugging)
+      engine.enableRogueAgentDebugging()
 
     val debugConfig = if (profile.debugDrawGrid)
       DebugConfig(displayGrid = true, displayCoordinates = true, displayFps = true)
@@ -87,7 +86,7 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
 }
 
 data class LaunchProfile(val fullscreen: Boolean,
-                         val soarDebugger: Boolean,
+                         val rogueAgentDebugging: Boolean,
                          val zirconDebugMode: Boolean,
                          val debugDrawGrid: Boolean,
                          val randomSeed: Long?)

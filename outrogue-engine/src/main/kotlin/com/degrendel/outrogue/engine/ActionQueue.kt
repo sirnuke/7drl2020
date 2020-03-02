@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntityListener
 import com.badlogic.ashley.core.Family
 import com.degrendel.outrogue.common.*
-import com.degrendel.outrogue.common.ai.*
+import com.degrendel.outrogue.common.agent.*
 import com.degrendel.outrogue.common.components.ActiveComponent
 import com.degrendel.outrogue.common.components.CreatureComponent
 import com.degrendel.outrogue.common.components.getCreature
