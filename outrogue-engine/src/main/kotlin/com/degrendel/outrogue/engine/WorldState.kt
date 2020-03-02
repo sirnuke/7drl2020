@@ -3,11 +3,17 @@ package com.degrendel.outrogue.engine
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.Family
 import com.degrendel.outrogue.common.components.*
+import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.Level.Companion.floorRange
 
 class WorldState(val engine: OutrogueEngine) : World
 {
+  companion object
+  {
+    private val L by logger()
+  }
+
   private val levels: List<LevelState>
 
   init
@@ -107,7 +113,7 @@ class WorldState(val engine: OutrogueEngine) : World
     }
     // Iterate through the visible rooms, add them to visible
     rooms.forEach { (floor, id) ->
-      levels[floor].getRoom(id).forEach { visible.add(it) }
+      levels[floor].getRoom(id).forEachAndDoors { visible.add(it) }
     }
     // Iterate through all visible, if not in the set remove visible component
     // (Convert asSequence.asIterable to duplicate the array since it messes with the iterators otherwise :/
