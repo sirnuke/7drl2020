@@ -42,10 +42,17 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
     _cooldown += amount
   }
 
+  // NOTE: Does /not/ remove old allegiance components, that should be handled by the caller
   protected fun updateComponents()
   {
     entity.add(CoordinateComponent(coordinate))
-        .add(AllegianceComponent(allegiance))
+    when (allegiance)
+    {
+      Allegiance.ROGUE ->
+        entity.add(RogueAllegianceComponent).add(VisibleToRogueComponent).add(KnownToRogueComponent)
+      Allegiance.CONJURER -> entity.add(ConjurerAllegianceComponent)
+      Allegiance.NEUTRAL -> entity.add(NeutralAllegianceComponent)
+    }
   }
 
   fun move(to: Coordinate)
@@ -82,6 +89,7 @@ class Rogue(entity: Entity, initial: Coordinate, cooldown: Long) : CreatureState
   {
     updateComponents()
     setActive(true)
+    entity.add(KnownToRogueComponent).add(VisibleToRogueComponent)
   }
 }
 
