@@ -85,17 +85,15 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
       }
     }
      */
-    updateECS()
-    frontend.refreshMap()
     while (this.isActive)
     {
-      executeNextAction()
       _world.computeVisibleAndKnown()
+      updateECS()
+      frontend.refreshMap()
+      executeNextAction()
       // TODO: Alternatively for performance, offer a 'peak ahead' in actionQueueSystem.  If the next action is a
       //       simple AI (i.e. should be near immediately), skip refreshing the map.  Could also have a timer that
       //       asserts it hasn't been too long.
-      updateECS()
-      frontend.refreshMap()
     }
   }
 
