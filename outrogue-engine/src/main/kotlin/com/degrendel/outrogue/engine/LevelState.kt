@@ -124,19 +124,7 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
       }
     }
 
-    rooms.forEach { room ->
-      // TODO: Gross
-      for (x in (room.topLeft.x - 1)..(room.topLeft.x + room.width))
-      {
-        wallify(x, room.topLeft.y - 1)
-        wallify(x, room.topLeft.y + room.height)
-      }
-      for (y in (room.topLeft.y - 1)..(room.topLeft.y + room.height))
-      {
-        wallify(room.topLeft.x - 1, y)
-        wallify(room.topLeft.x + room.width, y)
-      }
-    }
+    rooms.map { it.border }.forEach { set -> set.forEach { wallify(it.x, it.y) } }
 
     walls.forEach { wall ->
       val neighbors = Cardinal.values()
