@@ -32,7 +32,10 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
   init
   {
     if (profile.rogueAgentDebugging)
-      engine.enableRogueAgentDebugging()
+      engine.rogueAgent.enableDebugging()
+
+    if (profile.rogueAgentLogging)
+      engine.rogueAgent.enableLogging()
 
     val debugConfig = if (profile.debugDrawGrid)
       DebugConfig(displayGrid = true, displayCoordinates = true, displayFps = true)
@@ -87,6 +90,7 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
 
 data class LaunchProfile(val fullscreen: Boolean,
                          val rogueAgentDebugging: Boolean,
+                         val rogueAgentLogging: Boolean,
                          val zirconDebugMode: Boolean,
                          val debugDrawGrid: Boolean,
                          val randomSeed: Long?)

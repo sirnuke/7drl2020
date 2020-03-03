@@ -1,6 +1,8 @@
 package com.degrendel.outrogue.frontend
 
 import com.degrendel.outrogue.common.world.*
+import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.common.world.creatures.CreatureType
 import org.hexworks.zircon.api.color.TileColor
 import org.hexworks.zircon.api.data.Tile
 import java.util.*

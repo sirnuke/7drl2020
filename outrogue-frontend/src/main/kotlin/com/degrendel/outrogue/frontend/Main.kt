@@ -23,6 +23,9 @@ class Main : Callable<Int>
   @Option(names = ["--rogue-agent-debugging"])
   private var rogueAgentDebugging = false
 
+  @Option(names = ["--rogue-agent-logging"])
+  private var rogueAgentLogging = false
+
   @Option(names = ["--zircon-debug-mode"])
   private var zirconDebugMode = false
 
@@ -40,7 +43,8 @@ class Main : Callable<Int>
     L.info("Outrogue {}", VERSION_STRING)
     L.info("Built on {}", BUILD_DATE)
     val launchProfile = LaunchProfile(fullscreen = fullscreen, rogueAgentDebugging = rogueAgentDebugging,
-        debugDrawGrid = drawZirconGrid, zirconDebugMode = zirconDebugMode, randomSeed = randomSeed)
+        rogueAgentLogging = rogueAgentLogging, debugDrawGrid = drawZirconGrid, zirconDebugMode = zirconDebugMode,
+        randomSeed = randomSeed)
     L.info("Launching with {}", launchProfile)
     Application(lock, condition, launchProfile)
     lock.withLock { condition.await() }
