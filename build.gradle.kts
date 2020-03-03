@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   base
-  kotlin("jvm") version "1.3.61" apply false
+  kotlin("jvm") version "1.3.70" apply false
   java
   `maven-publish`
   id("net.researchgate.release") version "2.6.0"
