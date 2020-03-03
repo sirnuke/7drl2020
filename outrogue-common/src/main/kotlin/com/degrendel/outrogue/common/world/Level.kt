@@ -13,9 +13,6 @@ interface Level
   fun getSquare(x: Int, y: Int): Square
   fun getSquare(coordinate: Coordinate): Square
 
-  fun canMoveCheckingCreatures(from: Coordinate, direction: EightWay): Boolean
-  fun canMoveIgnoringCreatures(from: Coordinate, direction: EightWay): Boolean
-
   companion object
   {
     fun each(lambda: (floor: Int) -> Unit) =

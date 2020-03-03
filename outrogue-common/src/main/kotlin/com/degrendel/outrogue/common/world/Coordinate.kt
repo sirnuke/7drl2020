@@ -1,6 +1,7 @@
 package com.degrendel.outrogue.common.world
 
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
+import kotlin.math.abs
 
 data class Coordinate(val x: Int, val y: Int, val floor: Int)
 {
@@ -17,6 +18,20 @@ data class Coordinate(val x: Int, val y: Int, val floor: Int)
         && floor >= 0
         && floor < P.map.floors
         )
+  }
+
+  fun canInteract(world: World, other: Coordinate): Boolean
+  {
+    if (floor != other.floor) return false
+    val deltaX = abs(x - other.x)
+    val deltaY = abs(y - other.y)
+    return if (deltaX > 1 || deltaY > 1)
+      false
+    else if (deltaX == 0 || deltaY == 0)
+      true
+    else
+      (!world.getSquare(x, other.y, floor).type.blocked
+          && !world.getSquare(other.x, other.y, floor).type.blocked)
   }
 
   fun eightWayNeighbors(): List<Coordinate> = EightWay.values().map { move(it) }.filter { it.isValid() }

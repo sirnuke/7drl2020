@@ -2,6 +2,7 @@ package com.degrendel.outrogue.common
 
 import com.degrendel.outrogue.common.agent.Action
 import com.degrendel.outrogue.common.agent.Agent
+import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.common.world.World
 import kotlinx.coroutines.Job
 import kotlin.random.Random
@@ -31,4 +32,6 @@ interface Engine
   fun runGame(): Job
 
   fun isValidAction(action: Action): Boolean
+
+  fun contextualAction(eightWay: EightWay): Action?
 }

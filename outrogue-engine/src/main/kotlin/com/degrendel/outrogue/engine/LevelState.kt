@@ -148,18 +148,18 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
     }
   }
 
-  fun populate()
+  fun populate(world: World)
   {
-    populateMonsters()
-    // populateItems()
+    populateMonsters(world)
+    // populateItems(world)
   }
 
-  private fun populateItems()
+  private fun populateItems(world: World)
   {
     TODO("Stub!")
   }
 
-  private fun populateMonsters()
+  private fun populateMonsters(world: World)
   {
     var monsterBudget = P.map.features.monsterSpawnStart + P.map.features.monsterSpawnScale.pow(floor)
     L.debug("Floor {} has monster budget {}", floor, monsterBudget)
@@ -169,7 +169,7 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
     {
       val toSpawn = monsters.keys.random(random)
       val definition = monsters.getValue(toSpawn)
-      val controller = SimpleController(definition.behaviors, (0..0), NavigationMapImpl(random))
+      val controller = SimpleController(definition.behaviors, (0..0), NavigationMapImpl(random, world))
       val spawned = create(1, 0, {
         getSquareState(it).let { option: SquareState -> option.creature == null && !option.type.staircase }
       }) {
@@ -216,21 +216,7 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
     creature.move(to)
   }
 
-  override fun canMoveCheckingCreatures(from: Coordinate, direction: EightWay) = canMove(from, direction, true)
-  override fun canMoveIgnoringCreatures(from: Coordinate, direction: EightWay) = canMove(from, direction, false)
-
-  private fun canMove(from: Coordinate, direction: EightWay, checkCreatures: Boolean): Boolean
-  {
-    from.move(direction).let { to ->
-      val square = getSquare(to)
-      return (to.isValid()
-          && (!checkCreatures || square.creature == null)
-          && !square.type.blocked
-          && direction.diagonalChecks
-          .map { getSquare(from.x + it.first, from.y + it.second) }
-          .all { !it.type.blocked })
-    }
-  }
+  // TODO: Probably should be in world
 
   override fun getSquare(x: Int, y: Int): Square = squares[x][y]
   override fun getSquare(coordinate: Coordinate) = getSquare(coordinate.x, coordinate.y)

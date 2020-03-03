@@ -41,22 +41,23 @@ class WorldState(val engine: OutrogueEngine) : World
         // TODO: Filter to avoid staircases
         _conjurer = ConjurerState(Entity(), rooms[0].getRandomSquare { true }!!, 0L)
             .also { level.spawn(it) }
-        _rogue = RogueState(engine, Entity(), rooms[1].getRandomSquare { true }!!, 0L)
+        _rogue = RogueState(engine, this, Entity(), rooms[1].getRandomSquare { true }!!, 0L)
             .also { level.spawn(it) }
       }
     }
 
-    levels.forEach { it.populate() }
+    levels.forEach { it.populate(this) }
   }
 
   override val conjurer: Creature get() = _conjurer
   override val rogue: Rogue get() = _rogue
 
   override fun getLevel(floor: Int): Level = levels[floor]
-
+  override fun getLevel(coordinate: Coordinate): Level = levels[coordinate.floor]
   override fun getSquare(coordinate: Coordinate) = levels[coordinate.floor].getSquare(coordinate)
+  override fun getSquare(x: Int, y: Int, floor: Int) = levels[floor].getSquare(x, y)
 
-  fun getLevel(creature: Creature) = levels[creature.coordinate.floor]
+  fun getLevelState(creature: Creature) = levels[creature.coordinate.floor]
 
   fun bootstrapECS()
   {
@@ -71,7 +72,7 @@ class WorldState(val engine: OutrogueEngine) : World
   // TODO: These functions are nearly identical
   fun goDownStaircase(creature: CreatureState)
   {
-    val currentLevel = getLevel(creature)
+    val currentLevel = getLevelState(creature)
     val staircase = currentLevel.getSquare(creature.coordinate).staircase!!
     val newLevel = levels[creature.coordinate.floor + 1]
     val landing = newLevel.staircasesUp[staircase].coordinate
@@ -84,7 +85,7 @@ class WorldState(val engine: OutrogueEngine) : World
 
   fun goUpStaircase(creature: CreatureState)
   {
-    val currentLevel = getLevel(creature)
+    val currentLevel = getLevelState(creature)
     val staircase = currentLevel.getSquare(creature.coordinate).staircase!!
     if (currentLevel.isFirst)
       TODO("Need to implement leaving the dungeon")
@@ -139,5 +140,17 @@ class WorldState(val engine: OutrogueEngine) : World
         square.creature?.entity?.add(VisibleToRogueComponent)?.add(KnownToRogueComponent)
       }
     }
+  }
+
+  override fun canMoveCheckingCreatures(from: Coordinate, direction: EightWay) = canMoveCheckingCreatures(from, from.move(direction))
+  override fun canMoveIgnoringCreatures(from: Coordinate, direction: EightWay) = canMoveIgnoringCreatures(from, from.move(direction))
+  override fun canMoveCheckingCreatures(from: Coordinate, to: Coordinate) = canMove(from, to, true)
+  override fun canMoveIgnoringCreatures(from: Coordinate, to: Coordinate) = canMove(from, to, false)
+
+  private fun canMove(from: Coordinate, to: Coordinate, checkCreatures: Boolean): Boolean
+  {
+    return (to.isValid()
+        && (!checkCreatures || getSquare(to).creature == null)
+        && from.canInteract(this, to))
   }
 }

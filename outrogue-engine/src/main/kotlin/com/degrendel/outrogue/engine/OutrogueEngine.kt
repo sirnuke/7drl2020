@@ -4,6 +4,7 @@ import com.degrendel.outrogue.agent.RogueAgent
 import com.degrendel.outrogue.common.*
 import com.degrendel.outrogue.common.agent.*
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
+import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.common.world.creatures.Allegiance
 import com.degrendel.outrogue.common.world.SquareType
 import com.degrendel.outrogue.common.world.World
@@ -67,6 +68,8 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
       // TODO: Charge more for diagonal?
       is Move -> P.costs.move
       is GoDownStaircase, is GoUpStaircase -> P.costs.staircase
+      is MeleeAttack -> TODO()
+      is ProdCreature -> TODO()
     }
   }
 
@@ -98,12 +101,12 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
   // TODO: Return a message alongside this to report to the player
   override fun isValidAction(action: Action): Boolean
   {
-    val level = _world.getLevel(action.creature)
+    val level = _world.getLevel(action.creature.coordinate)
 
     return when (action)
     {
       is Sleep -> true
-      is Move -> level.canMoveCheckingCreatures(action.creature.coordinate, action.direction)
+      is Move -> world.canMoveCheckingCreatures(action.creature.coordinate, action.direction)
       is GoUpStaircase ->
       {
         // Only rogues and their allys can leave the dungeon
@@ -134,6 +137,27 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
             world.getLevel(action.creature.coordinate.floor + 1).staircasesUp[square.staircase!!].creature == null
         }
       }
+      // TODO: Ick
+      is ProdCreature ->
+      {
+        if (action.target !is MinionState)
+          false
+        else if (!action.creature.coordinate.canInteract(world, action.target.coordinate))
+          false
+        else if (action.creature.allegiance == Allegiance.ROGUE && action.target.allegiance == Allegiance.CONJURER)
+          false
+        else !(action.creature.allegiance == Allegiance.CONJURER && action.target.allegiance == Allegiance.ROGUE)
+      }
+      is MeleeAttack ->
+      {
+        if (!action.creature.coordinate.canInteract(world, action.target.coordinate))
+          false
+        else if (action.creature.allegiance == action.target.allegiance)
+          false
+        else if (action.creature.allegiance == Allegiance.NEUTRAL)
+          false
+        else action.target.allegiance != Allegiance.NEUTRAL
+      }
     }
   }
 
@@ -150,8 +174,27 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
   private fun applyAction(action: Action) = when (action)
   {
     is Sleep -> L.debug("Creature {} sleeps", action.creature)
-    is Move -> _world.getLevel(action.creature).move(action.creature as CreatureState, action.direction)
+    is Move -> _world.getLevelState(action.creature).move(action.creature as CreatureState, action.direction)
     is GoDownStaircase -> _world.goDownStaircase(action.creature as CreatureState)
     is GoUpStaircase -> _world.goUpStaircase(action.creature as CreatureState)
+    is MeleeAttack -> TODO("Stub!")
+    is ProdCreature -> (action.target as MinionState)._prodded = true
+  }
+
+  override fun contextualAction(eightWay: EightWay): Action?
+  {
+    // Can't move even when ignoring creatures? bad direction/into wall/etc
+    if (!world.canMoveIgnoringCreatures(world.conjurer.coordinate, eightWay)) return null
+    val coordinate = world.conjurer.coordinate.move(eightWay)
+    val target = world.getSquare(coordinate)
+    // Nothing at the target? Move to action
+    if (target.creature == null)
+      return Move(world.conjurer, eightWay)
+    val creature = target.creature!!
+    // Team Rogue in the way?  Attack!
+    if (creature.allegiance == Allegiance.ROGUE)
+      return MeleeAttack(world.conjurer, creature)
+    // Else, prod the blocking creature
+    return ProdCreature(world.conjurer, creature)
   }
 }

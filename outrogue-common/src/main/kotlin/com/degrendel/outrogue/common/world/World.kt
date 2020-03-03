@@ -8,7 +8,14 @@ interface World
   val rogue: Rogue
   val conjurer: Creature
 
+  fun getLevel(coordinate: Coordinate): Level
   fun getLevel(floor: Int): Level
 
   fun getSquare(coordinate: Coordinate): Square
+  fun getSquare(x: Int, y: Int, floor: Int): Square
+
+  fun canMoveCheckingCreatures(from: Coordinate, direction: EightWay): Boolean
+  fun canMoveIgnoringCreatures(from: Coordinate, direction: EightWay): Boolean
+  fun canMoveCheckingCreatures(from: Coordinate, to: Coordinate): Boolean
+  fun canMoveIgnoringCreatures(from: Coordinate, to: Coordinate): Boolean
 }

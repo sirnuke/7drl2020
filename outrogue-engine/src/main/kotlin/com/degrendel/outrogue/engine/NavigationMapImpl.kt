@@ -1,26 +1,20 @@
 package com.degrendel.outrogue.engine
 
 import com.degrendel.outrogue.common.NavigationMap
+import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.Square.Companion.xRange
 import com.degrendel.outrogue.common.world.Square.Companion.yRange
-import com.degrendel.outrogue.common.world.Coordinate
-import com.degrendel.outrogue.common.world.EightWay
-import com.degrendel.outrogue.common.world.Level
-import com.degrendel.outrogue.common.world.Square
 import java.util.*
 import kotlin.random.Random
 
-class NavigationMapImpl(private val random: Random,
+class NavigationMapImpl(private val random: Random, private val world: World,
                         private val filterSquares: (Square) -> Boolean = { it.creature == null && !it.type.blocked }) : NavigationMap
 {
   private val _data: MutableList<MutableList<Int>> = xRange.map { yRange.map { Int.MAX_VALUE }.toMutableList() }.toMutableList()
   val data: List<List<Int>> get() = _data
 
-  private lateinit var level: Level
-
-  override fun compute(level: Level, sources: Map<Coordinate, Int>, skip: Set<Coordinate>)
+  override fun compute(sources: Map<Coordinate, Int>, skip: Set<Coordinate>)
   {
-    this.level = level
     Square.each { x, y -> _data[x][y] = Int.MAX_VALUE }
     sources.forEach { (coordinate, cost) -> _data[coordinate.x][coordinate.y] = cost }
     // TODO: This needs to be a priority queue ordered by the last cost
@@ -38,10 +32,10 @@ class NavigationMapImpl(private val random: Random,
   }
 
   private fun getNeighbors(coordinate: Coordinate, skip: Set<Coordinate>) = EightWay.values()
-      .filter { level.canMoveIgnoringCreatures(coordinate, it) }
+      .filter { world.canMoveIgnoringCreatures(coordinate, it) }
       .map { coordinate.move(it) }
       .filter { it.isValid() }
-      .filter { filterSquares(level.getSquare(it)) }
+      .filter { filterSquares(world.getSquare(it)) }
       .filter { _data[it.x][it.y] == Int.MAX_VALUE && it !in skip }
 
   override fun getBestMove(coordinate: Coordinate): EightWay?
@@ -59,8 +53,8 @@ class NavigationMapImpl(private val random: Random,
       // Unreachable or higher cost than current min cost? skip
       if (newCost == Int.MAX_VALUE || newCost > cost)
         return@forEach
-      // Can't move due to monster? Skip (done after cost in case forgot to call compute)
-      else if (!level.canMoveCheckingCreatures(coordinate, it))
+      // Can't move due to monster? Skip
+      else if (!world.canMoveCheckingCreatures(coordinate, it))
         return@forEach
       // Equal to current min cost? Add to list
       else if (newCost == cost)

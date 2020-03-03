@@ -9,10 +9,12 @@ import com.degrendel.outrogue.common.world.creatures.Allegiance
 import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.common.world.Square
+import com.degrendel.outrogue.common.world.World
 import com.degrendel.outrogue.common.world.creatures.Creature
 import com.degrendel.outrogue.common.world.creatures.CreatureType
 import com.degrendel.outrogue.common.world.creatures.Rogue
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.abs
 
 sealed class CreatureState(final override val entity: Entity, initial: Coordinate, startingClock: Long) : Creature
 {
@@ -81,7 +83,7 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   }
 }
 
-class RogueState(val engine: OutrogueEngine, entity: Entity, initial: Coordinate, clock: Long) : CreatureState(entity, initial, clock), Rogue
+class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initial: Coordinate, clock: Long) : CreatureState(entity, initial, clock), Rogue
 {
   override val allegiance = Allegiance.ROGUE
   override val type = CreatureType.ROGUE
@@ -89,7 +91,7 @@ class RogueState(val engine: OutrogueEngine, entity: Entity, initial: Coordinate
 
   override val prodded = false
 
-  private val exploreMap = NavigationMapImpl(engine.random) {
+  private val exploreMap = NavigationMapImpl(engine.random, world) {
     !it.type.blocked && (!it.visibleToRogue || it.creature == null)
   }
 
@@ -109,7 +111,7 @@ class RogueState(val engine: OutrogueEngine, entity: Entity, initial: Coordinate
     Square.each { x, y ->
       level.getSquare(x, y).let { if (!it.type.blocked && !it.knownToRogue) sources[it.coordinate] = 0 }
     }
-    exploreMap.compute(level, sources, setOf())
+    exploreMap.compute(sources, setOf())
     return exploreMap.getBestMove(coordinate)
   }
 }

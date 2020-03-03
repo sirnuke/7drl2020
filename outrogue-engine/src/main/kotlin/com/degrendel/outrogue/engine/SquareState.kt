@@ -2,11 +2,9 @@ package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.components.*
-import com.degrendel.outrogue.common.world.Coordinate
-import com.degrendel.outrogue.common.world.Square
-import com.degrendel.outrogue.common.world.SquareType
-import com.degrendel.outrogue.common.world.WallOrientation
+import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.creatures.Creature
+import kotlin.math.abs
 
 class SquareState(override val coordinate: Coordinate, var _type: SquareType, override val room: Int?, var _creature: CreatureState? = null, var _staircase: Int? = null) : Square
 {
@@ -50,6 +48,5 @@ class SquareState(override val coordinate: Coordinate, var _type: SquareType, ov
     }
     else
       entity.remove(VisibleToRogueComponent::class.java)
-
   }
 }
