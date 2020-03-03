@@ -2,6 +2,7 @@ package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.*
+import com.degrendel.outrogue.common.agent.SimpleController
 import com.degrendel.outrogue.common.world.Square.Companion.each
 import com.degrendel.outrogue.common.world.Square.Companion.xRange
 import com.degrendel.outrogue.common.world.Square.Companion.yRange
@@ -11,6 +12,7 @@ import com.github.czyzby.noise4j.map.Grid
 import com.github.czyzby.noise4j.map.generator.room.AbstractRoomGenerator
 import com.github.czyzby.noise4j.map.generator.room.RoomType
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator
+import kotlin.math.pow
 
 class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
 {
@@ -76,7 +78,7 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
     if (!isLast)
     {
       val downChance = engine.random.nextDouble()
-      val count = P.map.features.staircases.count { downChance < it } + 1
+      val count = P.map.features.extraStaircases.count { downChance < it } + 1
       create(count, count, { !getSquare(it).type.staircase }) {
         squares[it.x][it.y].let { square ->
           square._type = SquareType.STAIRCASE_DOWN
@@ -89,7 +91,7 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
     val count = if (isFirst)
     {
       val upChance = engine.random.nextDouble()
-      P.map.features.staircases.count { upChance < it } + 1
+      P.map.features.extraStaircases.count { upChance < it } + 1
     }
     else
       previous!!.staircasesDown.size
@@ -145,7 +147,29 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
       wall._wallOrientation = WallOrientation.lookup.getValue(neighbors)
     }
 
-    // TODO: Spawn creatures and items?
+    var monsterBudget = P.map.features.monsterSpawnStart + P.map.features.monsterSpawnScale.pow(floor)
+    L.debug("Floor {} has monster budget {}", floor, monsterBudget)
+
+    val monsters = P.creatures.filterValues { it.earliestLevel <= floor }
+
+    while (monsterBudget > 0)
+    {
+      val toSpawn = monsters.keys.random(engine.random)
+      val definition = monsters.getValue(toSpawn)
+      val controller = SimpleController(definition.behaviors, (0..0), NavigationMapImpl(engine.random))
+      val spawned = create(1, 0, { getSquareState(it).creature == null }) {
+        spawn(MinionState(Entity(), it, definition.allegiance, toSpawn, controller, 0L, false))
+      }
+      if (spawned == 0)
+      {
+        L.warn("Unable to spawn, terminating spawn loop with {} budget left", monsterBudget)
+        break
+      }
+      else
+        monsterBudget -= definition.cost * count
+    }
+
+    // TODO: Spawn items
   }
 
   fun spawn(creature: CreatureState)
