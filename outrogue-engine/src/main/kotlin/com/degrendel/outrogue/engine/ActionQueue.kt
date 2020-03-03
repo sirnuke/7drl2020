@@ -51,8 +51,7 @@ class ActionQueue(private val engine: OutrogueEngine) : EntityListener
     val action = when (controller)
     {
       is PlayerController -> engine.frontend.getPlayerInput()
-      // TODO: Actually implement the soar agent
-      is AgentController -> Sleep(creature)
+      is AgentController -> engine.rogueAgent.requestAction()
       is SimpleController -> executeSimpleAI(engine, creature, controller)
     }
     L.info("Creature {} will perform {}", creature, action)
