@@ -15,8 +15,15 @@ data class RoomState(override val id: Int, override val entity: Entity, override
     private val L by logger()
   }
 
-  private val coordinates = mutableSetOf<Coordinate>()
-  private val coordinatesPlusDoors = mutableSetOf<Coordinate>()
+  private val _interior = mutableSetOf<Coordinate>()
+  private val _walkable = mutableSetOf<Coordinate>()
+  private val _border = mutableSetOf<Coordinate>()
+  private val _entire = mutableSetOf<Coordinate>()
+
+  override val interior: Set<Coordinate> get() = _interior
+  override val walkable: Set<Coordinate> get() = _walkable
+  override val border: Set<Coordinate> get() = _border
+  override val entire: Set<Coordinate> get() = _entire
 
   private val _doors = mutableSetOf<Coordinate>()
 
@@ -27,22 +34,28 @@ data class RoomState(override val id: Int, override val entity: Entity, override
     entity.add(CoordinateComponent(topLeft)).add(RoomComponent(this))
     (topLeft.x until topLeft.x + width).forEach { x ->
       (topLeft.y until topLeft.y + height).forEach { y ->
-        Coordinate(x, y, topLeft.floor).let {
-          coordinates += it
-          coordinatesPlusDoors += it
-        }
+        _interior += Coordinate(x, y, topLeft.floor)
       }
     }
+    (topLeft.x - 1 until topLeft.x + width + 1).forEach { x ->
+      _border += Coordinate(x, topLeft.y - 1, topLeft.floor)
+      _border += Coordinate(x, topLeft.y + height, topLeft.floor)
+    }
+    (topLeft.y - 1 until topLeft.y + height + 1).forEach { y ->
+      _border += Coordinate(topLeft.x - 1, y, topLeft.floor)
+      _border += Coordinate(topLeft.x + width, y, topLeft.floor)
+    }
+
+    _walkable.addAll(_interior)
+    _entire.addAll(_interior)
+    _entire.addAll(_border)
   }
 
   fun addDoor(coordinate: Coordinate)
   {
     _doors += coordinate
-    coordinatesPlusDoors += coordinate
+    _walkable += coordinate
   }
-
-  fun forEachNoDoors(lambda: (Coordinate) -> Unit) = coordinates.forEach(lambda)
-  fun forEachAndDoors(lambda: (Coordinate) -> Unit) = coordinatesPlusDoors.forEach(lambda)
 
   override fun isWithin(x: Int, y: Int): Boolean
   {
@@ -53,5 +66,5 @@ data class RoomState(override val id: Int, override val entity: Entity, override
   }
 
   fun getRandomSquare(filter: (coordinate: Coordinate) -> Boolean) =
-    coordinates.filter(filter).shuffled(random).firstOrNull()
+    interior.filter(filter).shuffled(random).firstOrNull()
 }
