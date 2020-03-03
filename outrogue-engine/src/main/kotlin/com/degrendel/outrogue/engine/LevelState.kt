@@ -14,7 +14,7 @@ import com.github.czyzby.noise4j.map.generator.room.RoomType
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator
 import kotlin.math.pow
 
-class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
+class LevelState(val floor: Int, previous: Level?, private val engine: Engine) : Level
 {
   companion object
   {
@@ -161,7 +161,7 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
       val spawned = create(1, 0, {
         getSquareState(it).let { option: SquareState -> option.creature == null && !option.type.staircase }
       }) {
-        spawn(MinionState(Entity(), it, definition.allegiance, toSpawn, controller, 0L, false))
+        spawn(MinionState(Entity(), it, definition.allegiance, toSpawn, controller))
       }
       if (spawned == 0)
       {

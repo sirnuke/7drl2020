@@ -178,7 +178,7 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
     is GoDownStaircase -> _world.navigateStaircase(action.creature as CreatureState, descending = true)
     is GoUpStaircase -> _world.navigateStaircase(action.creature as CreatureState, descending = false)
     is MeleeAttack -> _world.performMeleeAttack(action.creature as CreatureState, action.target as CreatureState)
-    is ProdCreature -> (action.target as MinionState)._prodded = true
+    is ProdCreature -> (action.target as MinionState).prod(clock)
   }
 
   override fun contextualAction(eightWay: EightWay): Action?
