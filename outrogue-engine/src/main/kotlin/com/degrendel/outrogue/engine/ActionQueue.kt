@@ -20,10 +20,10 @@ class ActionQueue(private val engine: OutrogueEngine) : EntityListener
   private val queue = PriorityQueue<CreatureState>(10, Comparator<CreatureState> { c1, c2 ->
     assert(c1 != c2)
     assert(c1.id != c2.id)
-    if (c1.cooldown == c2.cooldown)
+    if (c1.clock == c2.clock)
       c1.id - c2.id
     else
-      (c1.cooldown - c2.cooldown).toInt()
+      (c1.clock - c2.clock).toInt()
   })
 
   init
@@ -55,8 +55,9 @@ class ActionQueue(private val engine: OutrogueEngine) : EntityListener
       is SimpleController -> executeSimpleAI(engine, creature, controller)
     }
     L.info("Creature {} will perform {}", creature, action)
-    engine.applyCooldown(engine.computeCost(action), creature)
+    engine.updateClock(engine.computeCost(action), creature)
     queue.add(creature)
+    assert(engine.clock <= queue.peek().clock)
     return action
   }
 }

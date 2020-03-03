@@ -139,10 +139,12 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
 
   private suspend fun executeNextAction() = applyAction(actionQueue.execute())
 
-  fun applyCooldown(amount: Long, creature: CreatureState)
+  fun updateClock(cooldown: Long, creature: CreatureState)
   {
-    _clock += amount
-    creature.addCooldown(amount)
+    assert(_clock <= creature.clock)
+    _clock = creature.clock
+    creature.addCooldown(cooldown)
+    L.debug("Applied cooldown {} to {}, clock is now {}", cooldown, creature, _clock)
   }
 
   private fun applyAction(action: Action) = when (action)

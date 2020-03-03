@@ -14,7 +14,7 @@ import com.degrendel.outrogue.common.world.creatures.CreatureType
 import com.degrendel.outrogue.common.world.creatures.Rogue
 import java.util.concurrent.atomic.AtomicInteger
 
-sealed class CreatureState(final override val entity: Entity, initial: Coordinate, initialCooldown: Long) : Creature
+sealed class CreatureState(final override val entity: Entity, initial: Coordinate, startingClock: Long) : Creature
 {
   companion object
   {
@@ -25,8 +25,8 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   private var _coordinate: Coordinate = initial
   override val coordinate get() = _coordinate
 
-  private var _cooldown = initialCooldown
-  override val cooldown get() = _cooldown
+  private var _clock = startingClock
+  override val clock get() = _clock
 
   override val id = nextId.getAndIncrement()
 
@@ -41,7 +41,7 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
 
   fun addCooldown(amount: Long)
   {
-    _cooldown += amount
+    _clock += amount
   }
 
   // NOTE: Does /not/ remove old allegiance components, that should be handled by the caller
@@ -81,11 +81,13 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   }
 }
 
-class RogueState(val engine: OutrogueEngine, entity: Entity, initial: Coordinate, cooldown: Long) : CreatureState(entity, initial, cooldown), Rogue
+class RogueState(val engine: OutrogueEngine, entity: Entity, initial: Coordinate, clock: Long) : CreatureState(entity, initial, clock), Rogue
 {
   override val allegiance = Allegiance.ROGUE
   override val type = CreatureType.ROGUE
   override val controller = AgentController
+
+  override val prodded = false
 
   private val exploreMap = NavigationMapImpl(engine.random) {
     !it.type.blocked && (!it.visibleToRogue || it.creature == null)
@@ -112,11 +114,12 @@ class RogueState(val engine: OutrogueEngine, entity: Entity, initial: Coordinate
   }
 }
 
-class ConjurerState(entity: Entity, initial: Coordinate, cooldown: Long) : CreatureState(entity, initial, cooldown)
+class ConjurerState(entity: Entity, initial: Coordinate, clock: Long) : CreatureState(entity, initial, clock)
 {
   override val allegiance = Allegiance.CONJURER
   override val type = CreatureType.CONJURER
   override val controller = PlayerController
+  override val prodded = false
 
   init
   {
@@ -126,13 +129,16 @@ class ConjurerState(entity: Entity, initial: Coordinate, cooldown: Long) : Creat
 }
 
 class MinionState(entity: Entity, initial: Coordinate, private var _allegiance: Allegiance, override val type: CreatureType,
-                  initialController: Controller, cooldown: Long, active: Boolean)
-  : CreatureState(entity, initial, cooldown)
+                  initialController: Controller, clock: Long, active: Boolean)
+  : CreatureState(entity, initial, clock)
 {
   private var _controller = initialController
   override val allegiance get() = _allegiance
 
   override val controller get() = _controller
+
+  var _prodded = false
+  override val prodded get() = _prodded
 
   init
   {

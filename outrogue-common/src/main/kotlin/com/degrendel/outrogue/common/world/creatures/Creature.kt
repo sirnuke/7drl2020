@@ -6,14 +6,24 @@ import com.degrendel.outrogue.common.world.Coordinate
 
 interface Creature
 {
+  // Where this creature is located in the world (mutable)
   val coordinate: Coordinate
+  // The Ashley entity for this creature
   val entity: Entity
+  // The allegiance (usually mutable)
   val allegiance: Allegiance
+  // What type of creature this is
   val type: CreatureType
+  // The unique identifier for this creature
   val id: Int
-  val cooldown: Long
+  // When this creature can act again (mutable)
+  val clock: Long
+  // The AI controller for this creature (largely immutable)
   val controller: Controller
+  // Whether this creature is active and can produce actions
   val active: Boolean
+  // Whether this creature has been prodded to move out of the way
+  val prodded: Boolean
 }
 
 enum class CreatureType(val humanName: String)
