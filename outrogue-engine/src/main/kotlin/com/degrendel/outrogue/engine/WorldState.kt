@@ -46,7 +46,7 @@ class WorldState(val engine: OutrogueEngine) : World
       }
     }
 
-    // TODO: Tell levels to spawn initial creatures, items, etc
+    levels.forEach { it.populate() }
   }
 
   override val conjurer: Creature get() = _conjurer

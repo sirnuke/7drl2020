@@ -146,17 +146,30 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
           }.toSet()
       wall._wallOrientation = WallOrientation.lookup.getValue(neighbors)
     }
+  }
 
+  fun populate()
+  {
+    populateMonsters()
+    // populateItems()
+  }
+
+  private fun populateItems()
+  {
+    TODO("Stub!")
+  }
+
+  private fun populateMonsters()
+  {
     var monsterBudget = P.map.features.monsterSpawnStart + P.map.features.monsterSpawnScale.pow(floor)
     L.debug("Floor {} has monster budget {}", floor, monsterBudget)
-
     val monsters = P.creatures.filterValues { it.earliestLevel <= floor }
 
     while (monsterBudget > 0)
     {
-      val toSpawn = monsters.keys.random(engine.random)
+      val toSpawn = monsters.keys.random(random)
       val definition = monsters.getValue(toSpawn)
-      val controller = SimpleController(definition.behaviors, (0..0), NavigationMapImpl(engine.random))
+      val controller = SimpleController(definition.behaviors, (0..0), NavigationMapImpl(random))
       val spawned = create(1, 0, {
         getSquareState(it).let { option: SquareState -> option.creature == null && !option.type.staircase }
       }) {
@@ -168,10 +181,8 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
         break
       }
       else
-        monsterBudget -= definition.cost * count
+        monsterBudget -= definition.cost * spawned
     }
-
-    // TODO: Spawn items
   }
 
   fun spawn(creature: CreatureState)
