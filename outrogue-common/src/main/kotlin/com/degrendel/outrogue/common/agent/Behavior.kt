@@ -1,5 +1,9 @@
 package com.degrendel.outrogue.common.agent
 
-sealed class Behavior
-object MoveToConjurer : Behavior()
-object MoveToRogue : Behavior()
+enum class Behavior
+{
+  MOVE_TO_CONJURER,
+  MOVE_TO_ROGUE,
+  ;
+}
+
