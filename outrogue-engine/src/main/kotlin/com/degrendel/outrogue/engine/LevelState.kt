@@ -157,7 +157,9 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
       val toSpawn = monsters.keys.random(engine.random)
       val definition = monsters.getValue(toSpawn)
       val controller = SimpleController(definition.behaviors, (0..0), NavigationMapImpl(engine.random))
-      val spawned = create(1, 0, { getSquareState(it).creature == null }) {
+      val spawned = create(1, 0, {
+        getSquareState(it).let { option: SquareState -> option.creature == null && !option.type.staircase }
+      }) {
         spawn(MinionState(Entity(), it, definition.allegiance, toSpawn, controller, 0L, false))
       }
       if (spawned == 0)
