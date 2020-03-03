@@ -87,7 +87,9 @@ class RogueState(val engine: OutrogueEngine, entity: Entity, initial: Coordinate
   override val type = CreatureType.ROGUE
   override val controller = AgentController
 
-  val exploreMap = NavigationMapImpl(engine.random)
+  private val exploreMap = NavigationMapImpl(engine.random) {
+    !it.type.blocked && (!it.visibleToRogue || it.creature == null)
+  }
 
   init
   {
@@ -101,9 +103,9 @@ class RogueState(val engine: OutrogueEngine, entity: Entity, initial: Coordinate
     // TODO: If other entities get the ability to explore, reuse this map?
     // TODO: TBH, I suspect a simple breadth first search will be sufficient
     val level = engine.world.getLevel(coordinate.floor)
-    val sources = mutableListOf<Coordinate>()
+    val sources = mutableMapOf<Coordinate, Int>()
     Square.each { x, y ->
-      level.getSquare(x, y).let { if (!it.type.blocked && !it.knownToRogue) sources += it.coordinate }
+      level.getSquare(x, y).let { if (!it.type.blocked && !it.knownToRogue) sources[it.coordinate] = 0 }
     }
     exploreMap.compute(level, sources, setOf())
     return exploreMap.getBestMove(coordinate)

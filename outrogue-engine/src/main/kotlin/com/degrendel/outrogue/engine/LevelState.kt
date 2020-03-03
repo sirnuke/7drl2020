@@ -180,7 +180,7 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
       assert(creature.coordinate.floor == floor)
       assert(square.creature == null)
       assert(!square.type.blocked)
-      square.creature = creature
+      square._creature = creature
     }
   }
 
@@ -189,7 +189,7 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
     squares[creature.coordinate.x][creature.coordinate.y].let { square ->
       assert(creature.coordinate.floor == floor)
       assert(square.creature == creature)
-      square.creature = null
+      square._creature = null
     }
   }
 
@@ -200,23 +200,26 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
     assert(to.floor == floor)
     assert(squares[creature.coordinate.x][creature.coordinate.y].creature == creature)
     assert(squares[to.x][to.y].creature == null)
-    squares[to.x][to.y].creature = creature
-    squares[creature.coordinate.x][creature.coordinate.y].creature = null
+    squares[to.x][to.y]._creature = creature
+    squares[creature.coordinate.x][creature.coordinate.y]._creature = null
     creature.move(to)
   }
 
-  override fun canMove(from: Coordinate, direction: EightWay): Boolean
+  override fun canMoveCheckingCreatures(from: Coordinate, direction: EightWay) = canMove(from, direction, true)
+  override fun canMoveIgnoringCreatures(from: Coordinate, direction: EightWay) = canMove(from, direction, false)
+
+  private fun canMove(from: Coordinate, direction: EightWay, checkCreatures: Boolean): Boolean
   {
     from.move(direction).let { to ->
+      val square = getSquare(to)
       return (to.isValid()
-          && getSquare(to).isNavigable()
+          && (!checkCreatures || square.creature == null)
+          && !square.type.blocked
           && direction.diagonalChecks
           .map { getSquare(from.x + it.first, from.y + it.second) }
           .all { !it.type.blocked })
     }
   }
-
-  override fun isNavigable(coordinate: Coordinate) = getSquare(coordinate).isNavigable()
 
   override fun getSquare(x: Int, y: Int): Square = squares[x][y]
   override fun getSquare(coordinate: Coordinate) = getSquare(coordinate.x, coordinate.y)
@@ -267,7 +270,7 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
     each { x, y ->
       squares[x][y].let {
         it.setOnVisibleLevel(visible)
-        it.creature?.setOnVisibleLevel(visible)
+        it._creature?.setOnVisibleLevel(visible)
       }
     }
   }

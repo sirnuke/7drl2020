@@ -13,9 +13,8 @@ interface Level
   fun getSquare(x: Int, y: Int): Square
   fun getSquare(coordinate: Coordinate): Square
 
-  fun isNavigable(coordinate: Coordinate): Boolean
-
-  fun canMove(from: Coordinate, direction: EightWay): Boolean
+  fun canMoveCheckingCreatures(from: Coordinate, direction: EightWay): Boolean
+  fun canMoveIgnoringCreatures(from: Coordinate, direction: EightWay): Boolean
 
   companion object
   {

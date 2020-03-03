@@ -6,6 +6,6 @@ import com.degrendel.outrogue.common.world.Level
 
 interface NavigationMap
 {
-  fun compute(level: Level, sources: List<Coordinate>, skip: Set<Coordinate>)
+  fun compute(level: Level, sources: Map<Coordinate, Int>, skip: Set<Coordinate>)
   fun getBestMove(coordinate: Coordinate): EightWay?
 }

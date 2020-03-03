@@ -2,6 +2,7 @@ package com.degrendel.outrogue.common.world
 
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.properties.Properties
+import com.degrendel.outrogue.common.world.creatures.Creature
 
 interface Square
 {
@@ -12,11 +13,10 @@ interface Square
   val room: Int?
   val staircase: Int?
   val visible: Set<Int>
+  val creature: Creature?
 
   val visibleToRogue: Boolean
   val knownToRogue: Boolean
-
-  fun isNavigable(): Boolean
 
   companion object
   {

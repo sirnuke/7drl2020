@@ -6,8 +6,9 @@ import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.Square
 import com.degrendel.outrogue.common.world.SquareType
 import com.degrendel.outrogue.common.world.WallOrientation
+import com.degrendel.outrogue.common.world.creatures.Creature
 
-class SquareState(override val coordinate: Coordinate, var _type: SquareType, override val room: Int?, var creature: CreatureState? = null, var _staircase: Int? = null) : Square
+class SquareState(override val coordinate: Coordinate, var _type: SquareType, override val room: Int?, var _creature: CreatureState? = null, var _staircase: Int? = null) : Square
 {
   var _visible = mutableSetOf<Int>().also { if (room != null) it.add(room) }
   override val visible: Set<Int> get() = _visible
@@ -18,6 +19,9 @@ class SquareState(override val coordinate: Coordinate, var _type: SquareType, ov
   override val type: SquareType get() = _type
   override val staircase get() = _staircase
 
+  override val creature: Creature? get() = _creature
+
+
   private var _visibleToRogue = false
   override val visibleToRogue get() = _visibleToRogue
   private var _knownToRogue = false
@@ -26,8 +30,6 @@ class SquareState(override val coordinate: Coordinate, var _type: SquareType, ov
   var _wallOrientation = WallOrientation.NONE
 
   override val wallOrientation get() = _wallOrientation
-
-  override fun isNavigable() = !_type.blocked && creature == null
 
   fun setOnVisibleLevel(visible: Boolean)
   {

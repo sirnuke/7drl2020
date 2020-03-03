@@ -101,7 +101,7 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
     return when (action)
     {
       is Sleep -> true
-      is Move -> level.canMove(action.creature.coordinate, action.direction)
+      is Move -> level.canMoveCheckingCreatures(action.creature.coordinate, action.direction)
       is GoUpStaircase ->
       {
         // Only rogues and their allys can leave the dungeon
@@ -118,7 +118,7 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
             level.isFirst -> true
             // Otherwise, check if the landing is clear
             else ->
-              world.getLevel(action.creature.coordinate.floor - 1).staircasesDown[square.staircase!!].isNavigable()
+              world.getLevel(action.creature.coordinate.floor - 1).staircasesDown[square.staircase!!].creature == null
           }
         }
       }
@@ -129,7 +129,7 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
         {
           square.type != SquareType.STAIRCASE_DOWN -> false
           else ->
-            world.getLevel(action.creature.coordinate.floor + 1).staircasesUp[square.staircase!!].isNavigable()
+            world.getLevel(action.creature.coordinate.floor + 1).staircasesUp[square.staircase!!].creature == null
         }
       }
     }
