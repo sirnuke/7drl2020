@@ -4,19 +4,18 @@ import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.agent.AgentController
 import com.degrendel.outrogue.common.agent.Controller
 import com.degrendel.outrogue.common.agent.PlayerController
+import com.degrendel.outrogue.common.agent.SimpleController
 import com.degrendel.outrogue.common.components.*
-import com.degrendel.outrogue.common.world.creatures.Allegiance
+import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.common.world.Square
 import com.degrendel.outrogue.common.world.World
-import com.degrendel.outrogue.common.world.creatures.Creature
-import com.degrendel.outrogue.common.world.creatures.CreatureType
-import com.degrendel.outrogue.common.world.creatures.Rogue
+import com.degrendel.outrogue.common.world.creatures.*
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.abs
 
-sealed class CreatureState(final override val entity: Entity, initial: Coordinate, startingClock: Long) : Creature
+sealed class CreatureState(final override val entity: Entity, initial: Coordinate) : Creature
 {
   companion object
   {
@@ -27,7 +26,7 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   private var _coordinate: Coordinate = initial
   override val coordinate get() = _coordinate
 
-  private var _clock = startingClock
+  private var _clock = 0L
   override val clock get() = _clock
 
   override val id = nextId.getAndIncrement()
@@ -73,9 +72,10 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
       entity.remove(OnVisibleLevelComponent::class.java)
   }
 
-  fun setActive(active: Boolean)
+  protected fun setActive(active: Boolean, clock: Long)
   {
     _active = active
+    _clock = clock
     if (active)
       entity.add(ActiveComponent)
     else
@@ -83,7 +83,7 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   }
 }
 
-class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initial: Coordinate, clock: Long) : CreatureState(entity, initial, clock), Rogue
+class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initial: Coordinate, initialClock: Long) : CreatureState(entity, initial), Rogue
 {
   override val allegiance = Allegiance.ROGUE
   override val type = CreatureType.ROGUE
@@ -98,7 +98,7 @@ class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initi
   init
   {
     updateComponents()
-    setActive(true)
+    setActive(true, initialClock)
     entity.add(KnownToRogueComponent).add(VisibleToRogueComponent)
   }
 
@@ -116,7 +116,7 @@ class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initi
   }
 }
 
-class ConjurerState(entity: Entity, initial: Coordinate, clock: Long) : CreatureState(entity, initial, clock)
+class ConjurerState(entity: Entity, initial: Coordinate) : CreatureState(entity, initial)
 {
   override val allegiance = Allegiance.CONJURER
   override val type = CreatureType.CONJURER
@@ -126,25 +126,51 @@ class ConjurerState(entity: Entity, initial: Coordinate, clock: Long) : Creature
   init
   {
     updateComponents()
-    setActive(true)
+    setActive(true, 0L)
   }
 }
 
 class MinionState(entity: Entity, initial: Coordinate, private var _allegiance: Allegiance, override val type: CreatureType,
-                  initialController: Controller, clock: Long, active: Boolean)
-  : CreatureState(entity, initial, clock)
+                  initialController: SimpleController)
+  : CreatureState(entity, initial)
 {
+  companion object
+  {
+    private val L by logger()
+  }
+
   private var _controller = initialController
   override val allegiance get() = _allegiance
 
-  override val controller get() = _controller
+  private var _activeStatus = ActiveStatus.ASLEEP
+  val activeStatus get() = _activeStatus
 
-  var _prodded = false
+  override val controller: Controller get() = _controller
+
+  private var _prodded = false
   override val prodded get() = _prodded
+
+  fun prod(clock: Long)
+  {
+    L.trace("Prodded {} at {}", this, clock)
+    _prodded = true
+    if (activeStatus == ActiveStatus.ASLEEP)
+    {
+      _activeStatus = ActiveStatus.PRODDED
+      setActive(true, clock)
+    }
+  }
+
+  fun wakeFromContact(clock: Long)
+  {
+    L.trace("Set {} active due to contact at {}", this, clock)
+    if (!active)
+      setActive(true, clock)
+    _activeStatus = ActiveStatus.CONTACT
+  }
 
   init
   {
     updateComponents()
-    setActive(active)
   }
 }
