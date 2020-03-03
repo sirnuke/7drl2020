@@ -69,28 +69,20 @@ class WorldState(val engine: OutrogueEngine) : World
     levels.forEach { it.setOnVisibleLevel(floor == it.floor) }
   }
 
-  // TODO: These functions are nearly identical
-  fun goDownStaircase(creature: CreatureState)
+  fun navigateStaircase(creature: CreatureState, descending: Boolean)
   {
     val currentLevel = getLevelState(creature)
     val staircase = currentLevel.getSquare(creature.coordinate).staircase!!
-    val newLevel = levels[creature.coordinate.floor + 1]
-    val landing = newLevel.staircasesUp[staircase].coordinate
-    currentLevel.despawn(creature)
-    creature.move(landing)
-    newLevel.spawn(creature)
-    if (creature == conjurer)
-      setVisibleFloor(newLevel.floor)
-  }
-
-  fun goUpStaircase(creature: CreatureState)
-  {
-    val currentLevel = getLevelState(creature)
-    val staircase = currentLevel.getSquare(creature.coordinate).staircase!!
-    if (currentLevel.isFirst)
+    if (!descending && currentLevel.isFirst)
       TODO("Need to implement leaving the dungeon")
-    val newLevel = levels[creature.coordinate.floor - 1]
-    val landing = newLevel.staircasesDown[staircase].coordinate
+    val newLevel = if (descending)
+      levels[creature.coordinate.floor + 1]
+    else
+      levels[creature.coordinate.floor - 1]
+    val landing = if (descending)
+      newLevel.staircasesUp[staircase].coordinate
+    else
+      newLevel.staircasesDown[staircase].coordinate
     currentLevel.despawn(creature)
     creature.move(landing)
     newLevel.spawn(creature)
@@ -116,7 +108,7 @@ class WorldState(val engine: OutrogueEngine) : World
     }
     // Iterate through the visible rooms, add them to visible
     rooms.forEach { (floor, id) ->
-      levels[floor].getRoom(id).forEachAndDoors { visible.add(it) }
+      levels[floor].getRoomState(id).walkable.forEach { visible.add(it) }
     }
     // Iterate through all visible, if not in the set remove visible component
     // (Convert asSequence.asIterable to duplicate the array since it messes with the iterators otherwise :/

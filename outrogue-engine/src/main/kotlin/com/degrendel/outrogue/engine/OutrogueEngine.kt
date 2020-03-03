@@ -175,8 +175,8 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
   {
     is Sleep -> L.debug("Creature {} sleeps", action.creature)
     is Move -> _world.getLevelState(action.creature).move(action.creature as CreatureState, action.direction)
-    is GoDownStaircase -> _world.goDownStaircase(action.creature as CreatureState)
-    is GoUpStaircase -> _world.goUpStaircase(action.creature as CreatureState)
+    is GoDownStaircase -> _world.navigateStaircase(action.creature as CreatureState, descending = true)
+    is GoUpStaircase -> _world.navigateStaircase(action.creature as CreatureState, descending = false)
     is MeleeAttack -> _world.performMeleeAttack(action.creature as CreatureState, action.target as CreatureState)
     is ProdCreature -> (action.target as MinionState)._prodded = true
   }
