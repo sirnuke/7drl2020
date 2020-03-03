@@ -40,4 +40,18 @@ enum class Allegiance
   CONJURER,
   NEUTRAL,
   ;
+
+  fun isHostileTo(other: Allegiance) = when (this)
+  {
+    ROGUE -> other == CONJURER
+    CONJURER -> other == ROGUE
+    NEUTRAL -> false
+  }
+}
+
+enum class ActiveStatus
+{
+  CONTACT,
+  PRODDED,
+  ASLEEP
 }

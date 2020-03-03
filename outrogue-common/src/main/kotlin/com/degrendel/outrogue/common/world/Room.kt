@@ -11,5 +11,10 @@ interface Room
   val width: Int
   val height: Int
 
+  val interior: Set<Coordinate>
+  val walkable: Set<Coordinate>
+  val border: Set<Coordinate>
+  val entire: Set<Coordinate>
+
   fun isWithin(x: Int, y: Int): Boolean
 }
