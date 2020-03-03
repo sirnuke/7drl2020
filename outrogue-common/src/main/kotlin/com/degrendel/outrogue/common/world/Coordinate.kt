@@ -31,7 +31,7 @@ data class Coordinate(val x: Int, val y: Int, val floor: Int)
       true
     else
       (!world.getSquare(x, other.y, floor).type.blocked
-          && !world.getSquare(other.x, other.y, floor).type.blocked)
+          && !world.getSquare(other.x, y, floor).type.blocked)
   }
 
   fun eightWayNeighbors(): List<Coordinate> = EightWay.values().map { move(it) }.filter { it.isValid() }
