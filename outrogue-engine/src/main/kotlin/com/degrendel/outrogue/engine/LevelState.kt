@@ -224,6 +224,17 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
   fun getSquareState(x: Int, y: Int) = squares[x][y]
   fun getSquareState(coordinate: Coordinate) = getSquareState(coordinate.x, coordinate.y)
 
+  /**
+   * Randomly places some number of things.
+   *
+   * Gives up if unable to do so in some number of times.  Raises exception if unable to do so at least required times.
+   *
+   * @param count The number of identical things to place.
+   * @param required Minimum number that must be successfully placed.
+   * @param filter Lambda that returns true if this coordinate is acceptable for placement.
+   * @param action Lambda that creates the thing.
+   * @return The number of things successfully placed.
+   */
   private fun create(count: Int, required: Int, filter: (Coordinate) -> Boolean, action: (Coordinate) -> Unit): Int
   {
     assert(required <= count)
@@ -272,7 +283,7 @@ class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
     }
   }
 
-  fun getRoom(id: Int) = rooms[id]
+  fun getRoomState(id: Int) = rooms[id]
 
   fun getRandomRooms(count: Int) = rooms.shuffled(random).dropLast(rooms.size - count)
 }
