@@ -32,7 +32,9 @@
   "costs": {
     "sleep": 100,
     "move": 120,
-    "staircase": 200
+    "staircase": 200,
+    "prod": 80,
+    "melee": 120
   },
   "creatures":
   {

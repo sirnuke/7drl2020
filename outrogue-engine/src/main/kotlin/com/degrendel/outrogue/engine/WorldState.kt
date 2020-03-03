@@ -149,8 +149,17 @@ class WorldState(val engine: OutrogueEngine) : World
 
   private fun canMove(from: Coordinate, to: Coordinate, checkCreatures: Boolean): Boolean
   {
+    val square = getSquare(to)
     return (to.isValid()
-        && (!checkCreatures || getSquare(to).creature == null)
+        && (!checkCreatures || square.creature == null)
+        && !square.type.blocked
         && from.canInteract(this, to))
+  }
+
+  fun performMeleeAttack(attacker: CreatureState, defender: CreatureState)
+  {
+    // TODO: Get weapons (or fists) definitions, +/- based on junk, compute whether he hits.  Probably want to return a
+    //       string update of some sort?  Probably message enum
+    L.warn("TODO: {} attacks {}!", attacker, defender)
   }
 }

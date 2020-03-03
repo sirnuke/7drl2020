@@ -68,8 +68,8 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
       // TODO: Charge more for diagonal?
       is Move -> P.costs.move
       is GoDownStaircase, is GoUpStaircase -> P.costs.staircase
-      is MeleeAttack -> TODO()
-      is ProdCreature -> TODO()
+      is MeleeAttack -> P.costs.melee
+      is ProdCreature -> P.costs.prod
     }
   }
 
@@ -177,7 +177,7 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
     is Move -> _world.getLevelState(action.creature).move(action.creature as CreatureState, action.direction)
     is GoDownStaircase -> _world.goDownStaircase(action.creature as CreatureState)
     is GoUpStaircase -> _world.goUpStaircase(action.creature as CreatureState)
-    is MeleeAttack -> TODO("Stub!")
+    is MeleeAttack -> _world.performMeleeAttack(action.creature as CreatureState, action.target as CreatureState)
     is ProdCreature -> (action.target as MinionState)._prodded = true
   }
 

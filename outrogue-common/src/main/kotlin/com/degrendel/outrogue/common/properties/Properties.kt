@@ -34,7 +34,7 @@ data class Features(val maxPlacementAttempts: Int, // When to give up on attempt
 data class Rooms(val minSize: Int, val maxNumber: Int)
 data class Views(val world: World)
 data class World(val mapX: Int, val mapY: Int, val maxQueuedActions: Int)
-data class Costs(val sleep: Long, val move: Long, val staircase: Long)
+data class Costs(val sleep: Long, val move: Long, val staircase: Long, val prod: Long, val melee: Long)
 data class Creature(val hp: Int, // The base HP of this creature
                     val cost: Double, // The cost of this creature, when randomly spawning it
                     val earliestLevel: Int, // The earliest level this creature can appear
