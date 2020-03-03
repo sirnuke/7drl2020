@@ -60,6 +60,7 @@ class RogueAgent(val engine: Engine) : Agent
     L.info("Requesting action...")
     val rogue = engine.world.rogue
     session.setGlobal("creature", rogue)
+    session.setGlobal("level", engine.world.getLevel(rogue.coordinate.floor))
 
     rogue.computeExploreDirection()?.let { session.insert(ExploreOption(it)) }
 
@@ -67,7 +68,7 @@ class RogueAgent(val engine: Engine) : Agent
     session.insert(rootGoal)
     session.fireAllRules()
     val actions = session.getObjects { it is Action }.map { it as Action }
-    session.getFactHandles<FactHandle> { it is AutoClean }.forEach { session.delete(it) }
+    session.getFactHandles<FactHandle> { it is AutoClean || it is Action }.forEach { session.delete(it) }
     if (!rootGoal.accomplished)
       L.warn("Unable to accomplish decide action goal!")
     return when

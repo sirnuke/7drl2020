@@ -3,6 +3,7 @@
 package com.degrendel.outrogue.agent.rules
 
 import com.degrendel.outrogue.agent.goals.*
+import com.degrendel.outrogue.agent.goals.actions.*
 import com.degrendel.outrogue.agent.RogueAgent
 import org.slf4j.Logger
 
@@ -31,13 +32,36 @@ then
     L.debug("New goal: {}", $goal)
 end
 
+rule "Select explore action goal"
+salience 12
+when
+    not ActionGoal(selected == true)
+    not ActionGoal(evaluated == false)
+    $goal : ExploreGoal(applicable == true, $action : action)
+then
+    L.debug("Selecting explore goal: {}", $goal)
+    modify($goal) { selected = true, accomplished = true }
+    insert($action)
+end
 
-rule "Action goal selected"
+rule "Select sleep action goal"
+salience 10
+when
+    not ActionGoal(selected == true)
+    not ActionGoal(evaluated == false)
+    $goal : SleepGoal(applicable == true, $action : action)
+then
+    L.debug("Selecting sleep action goal: {}", $goal)
+    modify($goal) { selected = true, accomplished = true }
+    insert($action)
+end
+
+rule "Action goal accomplished"
 when
     $goal : DecideAction()
     $subgoal : ActionGoal(accomplished == true)
 then
-    L.debug("Decided on action goal: {}", $subgoal)
+    L.debug("Action goal accomplished, done: {}", $subgoal)
     modify($goal) { accomplished = true }
 end
 

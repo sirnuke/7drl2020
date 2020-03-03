@@ -3,7 +3,9 @@
 package com.degrendel.outrogue.agent.rules
 
 import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.common.world.Level
 import com.degrendel.outrogue.common.agent.Move
+import com.degrendel.outrogue.common.agent.GoDownStaircase
 import com.degrendel.outrogue.agent.goals.*
 import com.degrendel.outrogue.agent.goals.actions.ExploreGoal
 import com.degrendel.outrogue.agent.inputs.ExploreOption
@@ -13,10 +15,12 @@ import org.slf4j.Logger
 global Logger L
 global RogueAgent agent
 global Creature creature
+global Level level
 
 dialect "mvel"
 
 rule "Create explore goal"
+salience 50
 when
     DecideAction()
 then
@@ -24,24 +28,36 @@ then
     insertLogical(new ExploreGoal())
 end
 
-rule "Reject explore goal when there's nothing to explore"
+rule "Reject explore goal when there's nothing to explore and on last level"
 when
     $goal : ExploreGoal()
     not ExploreOption()
+    eval(level.isLast == true)
 then
     L.debug("Rejecting explore due to lack of option")
-    modify($goal) {
-        evaluated = true
-    }
+    modify($goal) { evaluated = true, applicable = false }
 end
 
 // TODO: Check for higher priority goals
+// TODO: Not on staircase? Navigate towards it
+// TODO: On staircase? Go down
+//rule "Nothing left on this level, dive deeper to continue exploring the dungeon"
+//when
+//    $goal : ExploreGoal()
+//    // not TinkerGoal(evaluated == true, applicable == true)
+//    creature.onStaircase
+//    not ExploreOption()
+//    eval(level.isLast == false)
+//then
+//    L.debug("Diving deeper due to lack of exploration left on this level")
+//    modify ($goal) { evaluated = true, applicable = true, action =  }
+//end
+
 rule "Select explore goal when there's something to explore and nothing higher priority"
 when
     $goal : ExploreGoal()
     ExploreOption($direction : direction)
 then
-    L.debug("Selecting explore {} due to option and no higher priority action goals", $direction)
-    insertLogical(new Move(creature, $direction))
-    modify ($goal) { evaluated = true, accomplished = true }
+    L.debug("Proposing explore {} due to explore option", $direction)
+    modify ($goal) { evaluated = true, applicable = true, action = new Move(creature, $direction) }
 end

@@ -16,21 +16,10 @@ global Creature creature
 dialect "mvel"
 
 rule "Create sleep goal"
+salience 50
 when
     DecideAction()
 then
     L.debug("Inserting sleep goal")
     insertLogical(new SleepGoal())
-end
-
-rule "Fallback to sleep goal"
-when
-    $goal : SleepGoal()
-    ExploreGoal(evaluated == true, accomplished == false)
-then
-    L.debug("Deciding on sleep")
-    modify($goal) {
-        setAccomplished(true)
-    }
-    insertLogical(new Sleep(creature))
 end
