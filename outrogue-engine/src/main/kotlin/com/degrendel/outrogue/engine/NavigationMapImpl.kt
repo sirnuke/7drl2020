@@ -35,8 +35,7 @@ class NavigationMapImpl(private val random: Random) : NavigationMap
   private fun getNeighbors(level: Level, coordinate: Coordinate, skip: Set<Coordinate>) = EightWay.values()
       .filter { level.canMove(coordinate, it) }
       .map { coordinate.move(it) }
-      .filter { _data[it.x][it.y] != Int.MAX_VALUE }
-      .filter { it !in skip }
+      .filter { _data[it.x][it.y] == Int.MAX_VALUE  && it !in skip }
 
   override fun getBestMove(coordinate: Coordinate): EightWay?
   {
