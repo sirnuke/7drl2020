@@ -17,7 +17,9 @@
     },
     "features": {
       "max-placement-attempts": 1000,
-      "staircases": [0.2, 0.05]
+      "extra-staircases": [0.2, 0.05],
+      "monster-spawn-start": 10.0,
+      "monster-spawn-scale": 2.0
     }
   },
   "views": {
@@ -31,5 +33,15 @@
     "sleep": 100,
     "move": 120,
     "staircase": 200
+  },
+  "creatures":
+  {
+    "KESTREL" : {
+      "hp": 10,
+      "cost": 2.0,
+      "earliest-level": 0,
+      "allegiance": "CONJURER",
+      "behaviors": []
+    }
   }
 }
