@@ -1,6 +1,6 @@
 package com.degrendel.outrogue.common.agent
 
-import com.degrendel.outrogue.common.world.Creature
+import com.degrendel.outrogue.common.world.creatures.Creature
 import com.degrendel.outrogue.common.world.EightWay
 
 sealed class Action

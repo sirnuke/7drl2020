@@ -13,6 +13,9 @@ interface Square
   val staircase: Int?
   val visible: Set<Int>
 
+  val visibleToRogue: Boolean
+  val knownToRogue: Boolean
+
   fun isNavigable(): Boolean
 
   companion object

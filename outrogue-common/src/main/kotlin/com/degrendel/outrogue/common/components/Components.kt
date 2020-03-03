@@ -2,6 +2,7 @@ package com.degrendel.outrogue.common.components
 
 import com.badlogic.ashley.core.Component
 import com.degrendel.outrogue.common.world.*
+import com.degrendel.outrogue.common.world.creatures.Creature
 
 /** Indicates that this entity is currently visible to the Rogue. */
 object VisibleToRogueComponent : Component

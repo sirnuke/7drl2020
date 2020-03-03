@@ -4,5 +4,7 @@ interface Agent
 {
   fun enableDebugging()
 
+  fun enableLogging()
+
   suspend fun requestAction(): Action
 }

@@ -1,6 +1,7 @@
 package com.degrendel.outrogue.common
 
 import com.degrendel.outrogue.common.agent.Action
+import com.degrendel.outrogue.common.agent.Agent
 import com.degrendel.outrogue.common.world.World
 import kotlinx.coroutines.Job
 import kotlin.random.Random
@@ -14,9 +15,8 @@ interface Engine
   val random: Random
   val seed: Long
 
-  fun enableRogueAgentDebugging()
+  val rogueAgent: Agent
 
-  fun enableAllAgentDebugging()
 
   /**
    * Finalizes the initial state of the ECS.
