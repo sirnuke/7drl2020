@@ -27,11 +27,7 @@ jobs:
           nexus_username: ((nexus_username))
           nexus_password: ((nexus_password))
           itch_api_key: ((itch_api_key))
-        outputs:
-          - name: github-release
       - put: gh-release
-        inputs:
-          - name: github-release
         params:
           name: github-release/github-version
           tag: github-release/github-version

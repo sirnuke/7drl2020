@@ -17,3 +17,5 @@ caches:
   - path: gradle/caches
 run:
   path: source/.ci/build.sh
+outputs:
+  - name: github-release

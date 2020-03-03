@@ -22,13 +22,14 @@ isSnapshot=`./gradlew -q printVersion|grep "\-SNAPSHOT" || true`
 
 echo "FYI: version is $version"
 
+mkdir -p github-release
+
 if [ "$BUILD_TYPE" = "release" ] ; then
   if [ ! -z "$isSnapshot" ] ; then
     echo "not a release, aborting!"
     exit 1
   fi
   itch_channel="sirnuke/outrogue:win-linux-mac-stable"
-  mkdir -p github-release
   echo "$version" > github-release/github-version
 elif [ "$BUILD_TYPE" = "snapshot" ] ; then
   if [ -z "$isSnapshot" ] ; then
