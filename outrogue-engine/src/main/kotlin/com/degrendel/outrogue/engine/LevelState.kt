@@ -11,7 +11,6 @@ import com.github.czyzby.noise4j.map.Grid
 import com.github.czyzby.noise4j.map.generator.room.AbstractRoomGenerator
 import com.github.czyzby.noise4j.map.generator.room.RoomType
 import com.github.czyzby.noise4j.map.generator.room.dungeon.DungeonGenerator
-import kotlin.random.Random
 
 class LevelState(val floor: Int, previous: Level?, engine: Engine) : Level
 {

@@ -1,13 +1,11 @@
 package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
+import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.Square
 import com.degrendel.outrogue.common.world.SquareType
 import com.degrendel.outrogue.common.world.WallOrientation
-import com.degrendel.outrogue.common.components.CoordinateComponent
-import com.degrendel.outrogue.common.components.OnVisibleLevelComponent
-import com.degrendel.outrogue.common.components.SquareComponent
 
 class SquareState(override val coordinate: Coordinate, var _type: SquareType, override val room: Int?, var creature: CreatureState? = null, var _staircase: Int? = null) : Square
 {
@@ -19,6 +17,11 @@ class SquareState(override val coordinate: Coordinate, var _type: SquareType, ov
 
   override val type: SquareType get() = _type
   override val staircase get() = _staircase
+
+  private var _visibleToRogue = false
+  override val visibleToRogue get() = _visibleToRogue
+  private var _knownToRogue = false
+  override val knownToRogue get() = _knownToRogue
 
   var _wallOrientation = WallOrientation.NONE
 
@@ -32,5 +35,19 @@ class SquareState(override val coordinate: Coordinate, var _type: SquareType, ov
       entity.add(OnVisibleLevelComponent)
     else
       entity.remove(OnVisibleLevelComponent::class.java)
+  }
+
+  fun setRogueVisible(visible: Boolean)
+  {
+    _visibleToRogue = visible
+    if (visible)
+    {
+      _knownToRogue = true
+      entity.add(KnownToRogueComponent)
+      entity.add(VisibleToRogueComponent)
+    }
+    else
+      entity.remove(VisibleToRogueComponent::class.java)
+
   }
 }

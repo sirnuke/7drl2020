@@ -5,11 +5,15 @@ import com.degrendel.outrogue.common.agent.AgentController
 import com.degrendel.outrogue.common.agent.Controller
 import com.degrendel.outrogue.common.agent.PlayerController
 import com.degrendel.outrogue.common.components.*
-import com.degrendel.outrogue.common.world.Allegiance
+import com.degrendel.outrogue.common.world.creatures.Allegiance
 import com.degrendel.outrogue.common.world.Coordinate
-import com.degrendel.outrogue.common.world.Creature
-import com.degrendel.outrogue.common.world.CreatureType
+import com.degrendel.outrogue.common.world.EightWay
+import com.degrendel.outrogue.common.world.Square
+import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.common.world.creatures.CreatureType
+import com.degrendel.outrogue.common.world.creatures.Rogue
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.random.Random
 
 sealed class CreatureState(final override val entity: Entity, initial: Coordinate, initialCooldown: Long) : Creature
 {
@@ -78,11 +82,13 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   }
 }
 
-class Rogue(entity: Entity, initial: Coordinate, cooldown: Long) : CreatureState(entity, initial, cooldown)
+class RogueState(val engine: OutrogueEngine, entity: Entity, initial: Coordinate, cooldown: Long) : CreatureState(entity, initial, cooldown), Rogue
 {
   override val allegiance = Allegiance.ROGUE
   override val type = CreatureType.ROGUE
   override val controller = AgentController
+
+  val exploreMap = NavigationMapImpl(engine.random)
 
   init
   {
@@ -90,9 +96,22 @@ class Rogue(entity: Entity, initial: Coordinate, cooldown: Long) : CreatureState
     setActive(true)
     entity.add(KnownToRogueComponent).add(VisibleToRogueComponent)
   }
+
+  override fun computeExploreDirection(): EightWay?
+  {
+    // TODO: If other entities get the ability to explore, reuse this map?
+    // TODO: TBH, I suspect a simple breadth first search will be sufficient
+    val level = engine.world.getLevel(coordinate.floor)
+    val sources = mutableListOf<Coordinate>()
+    Square.each { x, y ->
+      level.getSquare(x, y).let { if (!it.type.blocked && !it.knownToRogue) sources += it.coordinate }
+    }
+    exploreMap.compute(level, sources, setOf())
+    return exploreMap.getBestMove(coordinate)
+  }
 }
 
-class Conjurer(entity: Entity, initial: Coordinate, cooldown: Long) : CreatureState(entity, initial, cooldown)
+class ConjurerState(entity: Entity, initial: Coordinate, cooldown: Long) : CreatureState(entity, initial, cooldown)
 {
   override val allegiance = Allegiance.CONJURER
   override val type = CreatureType.CONJURER
@@ -105,8 +124,8 @@ class Conjurer(entity: Entity, initial: Coordinate, cooldown: Long) : CreatureSt
   }
 }
 
-class Minion(entity: Entity, initial: Coordinate, private var _allegiance: Allegiance, override val type: CreatureType,
-             initialController: Controller, cooldown: Long, active: Boolean)
+class MinionState(entity: Entity, initial: Coordinate, private var _allegiance: Allegiance, override val type: CreatureType,
+                  initialController: Controller, cooldown: Long, active: Boolean)
   : CreatureState(entity, initial, cooldown)
 {
   private var _controller = initialController

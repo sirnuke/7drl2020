@@ -6,6 +6,8 @@ import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.Level.Companion.floorRange
+import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.common.world.creatures.Rogue
 
 class WorldState(val engine: OutrogueEngine) : World
 {
@@ -23,13 +25,13 @@ class WorldState(val engine: OutrogueEngine) : World
     levels = floorRange.map { previous = LevelState(it, previous, engine); previous!! }
   }
 
-  val rogueTeam = Family.all(CreatureComponent::class.java, RogueAllegianceComponent::class.java).get()
+  val rogueTeam: Family = Family.all(CreatureComponent::class.java, RogueAllegianceComponent::class.java).get()
 
-  val creaturesVisibleToRogue = Family.all(CreatureComponent::class.java, VisibleToRogueComponent::class.java).get()
-  val squaresVisibleToRogue = Family.all(SquareComponent::class.java, VisibleToRogueComponent::class.java).get()
+  val creaturesVisibleToRogue: Family = Family.all(CreatureComponent::class.java, VisibleToRogueComponent::class.java).get()
+  val squaresVisibleToRogue: Family = Family.all(SquareComponent::class.java, VisibleToRogueComponent::class.java).get()
 
-  private val _conjurer: Conjurer
-  private var _rogue: Rogue
+  private val _conjurer: ConjurerState
+  private var _rogue: RogueState
 
   init
   {
@@ -37,9 +39,9 @@ class WorldState(val engine: OutrogueEngine) : World
       level.getRandomRooms(2).let { rooms ->
         assert(rooms.size == 2)
         // TODO: Filter to avoid staircases
-        _conjurer = Conjurer(Entity(), rooms[0].getRandomSquare { true }!!, 0L)
+        _conjurer = ConjurerState(Entity(), rooms[0].getRandomSquare { true }!!, 0L)
             .also { level.spawn(it) }
-        _rogue = Rogue(Entity(), rooms[1].getRandomSquare { true }!!, 0L)
+        _rogue = RogueState(engine, Entity(), rooms[1].getRandomSquare { true }!!, 0L)
             .also { level.spawn(it) }
       }
     }
@@ -48,7 +50,7 @@ class WorldState(val engine: OutrogueEngine) : World
   }
 
   override val conjurer: Creature get() = _conjurer
-  override val rogue: Creature get() = _rogue
+  override val rogue: Rogue get() = _rogue
 
   override fun getLevel(floor: Int): Level = levels[floor]
 
@@ -119,10 +121,11 @@ class WorldState(val engine: OutrogueEngine) : World
     // (Convert asSequence.asIterable to duplicate the array since it messes with the iterators otherwise :/
     engine.ecs.getEntitiesFor(squaresVisibleToRogue).asSequence().asIterable().forEach {
       if (it.getCoordinate() !in visible)
-        it.remove(VisibleToRogueComponent::class.java)
+        (it.getSquare() as SquareState).setRogueVisible(false)
     }
     // For each currently visible thing, if not in set<Coordinate> remove visible component
     engine.ecs.getEntitiesFor(creaturesVisibleToRogue).asSequence().asIterable().forEach {
+      // TODO: Replace this with a helper
       if (it.getCoordinate() !in visible)
         it.remove(VisibleToRogueComponent::class.java)
     }
@@ -131,7 +134,8 @@ class WorldState(val engine: OutrogueEngine) : World
     visible.forEach {
       levels[it.floor].getSquareState(it).let { square ->
         if (square.type.blocked) return@let
-        square.entity.add(VisibleToRogueComponent).add(KnownToRogueComponent)
+        square.setRogueVisible(true)
+        // TODO: Replace this with a a helper
         square.creature?.entity?.add(VisibleToRogueComponent)?.add(KnownToRogueComponent)
       }
     }
