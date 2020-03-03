@@ -16,10 +16,11 @@ interface Creature
   val active: Boolean
 }
 
-enum class CreatureType
+enum class CreatureType(val humanName: String)
 {
-  ROGUE,
-  CONJURER,
+  ROGUE("Rogue"),
+  CONJURER("Conjurer"),
+  KESTREL("Kestrel")
   ;
 }
 

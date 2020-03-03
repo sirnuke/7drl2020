@@ -17,6 +17,7 @@ object TileLibrary
   private val upCaseTile = Tile.defaultTile().withCharacter('<')
   private val rogueTile = Tile.defaultTile().withCharacter(0x263A.toChar())
   private val conjurerTile = Tile.defaultTile().withCharacter('@')
+  private val kestrelTile = Tile.defaultTile().withCharacter('k')
 
   private val wallTiles = EnumMap<WallOrientation, Tile>(WallOrientation::class.java)
 
@@ -58,6 +59,7 @@ object TileLibrary
     {
       CreatureType.CONJURER -> conjurerTile
       CreatureType.ROGUE -> rogueTile
+      CreatureType.KESTREL -> kestrelTile
     }
   }
 }
