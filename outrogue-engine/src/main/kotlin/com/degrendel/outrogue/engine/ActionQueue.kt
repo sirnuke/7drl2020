@@ -55,8 +55,7 @@ class ActionQueue(private val engine: OutrogueEngine) : EntityListener
       is SimpleController -> executeSimpleAI(engine, creature, controller)
     }
     L.info("Creature {} will perform {}", creature, action)
-    // TODO: Double check the logic here
-    creature.addCooldown(engine.computeCost(action))
+    engine.applyCooldown(engine.computeCost(action), creature)
     queue.add(creature)
     return action
   }

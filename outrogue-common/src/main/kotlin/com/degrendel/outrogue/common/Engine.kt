@@ -14,6 +14,7 @@ interface Engine
   val ecs: ECS
   val random: Random
   val seed: Long
+  val clock: Long
 
   val rogueAgent: Agent
 

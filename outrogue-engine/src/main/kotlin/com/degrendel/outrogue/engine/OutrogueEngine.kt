@@ -24,6 +24,8 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
 
   override val seed = overrideSeed ?: Random.nextLong()
 
+  private var _clock = 0L
+  override val clock get() = _clock
 
   override val random: Random = Random(seed)
   override val ecs = ECS()
@@ -136,6 +138,12 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
   }
 
   private suspend fun executeNextAction() = applyAction(actionQueue.execute())
+
+  fun applyCooldown(amount: Long, creature: CreatureState)
+  {
+    _clock += amount
+    creature.addCooldown(amount)
+  }
 
   private fun applyAction(action: Action) = when (action)
   {
