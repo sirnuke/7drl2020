@@ -1,0 +1,36 @@
+// Rules related to performing the sleeping behavior, if nothing else is available
+
+package com.degrendel.outrogue.agent.rules
+
+import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.common.agent.Sleep
+import com.degrendel.outrogue.agent.goals.*
+import com.degrendel.outrogue.agent.goals.actions.*
+import com.degrendel.outrogue.agent.RogueAgent
+import org.slf4j.Logger
+
+global Logger L
+global RogueAgent agent
+global Creature creature
+
+dialect "mvel"
+
+rule "Create sleep goal"
+when
+    DecideAction()
+then
+    L.debug("Inserting sleep goal")
+    insertLogical(new SleepGoal())
+end
+
+rule "Fallback to sleep goal"
+when
+    $goal : SleepGoal()
+    ExploreGoal(evaluated == true, accomplished == false)
+then
+    L.debug("Deciding on sleep")
+    modify($goal) {
+        setAccomplished(true)
+    }
+    insertLogical(new Sleep(creature))
+end

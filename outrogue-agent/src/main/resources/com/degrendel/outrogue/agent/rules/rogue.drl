@@ -1,0 +1,43 @@
+// Comon level rules
+
+package com.degrendel.outrogue.agent.rules
+
+import com.degrendel.outrogue.agent.goals.*
+import com.degrendel.outrogue.agent.RogueAgent
+import org.slf4j.Logger
+
+// Salience:
+// 100 propose
+// 50  apply
+
+global Logger L
+global RogueAgent agent
+
+dialect "mvel"
+
+rule "Monitor new decision request"
+salience 100
+when
+    DecideAction()
+then
+    L.debug("Decide action requested")
+end
+
+rule "Monitor new goal"
+salience 90
+when
+    $goal : Goal()
+then
+    L.debug("New goal: {}", $goal)
+end
+
+
+rule "Action goal selected"
+when
+    $goal : DecideAction()
+    $subgoal : ActionGoal(accomplished == true)
+then
+    L.debug("Decided on action goal: {}", $subgoal)
+    modify($goal) { accomplished = true }
+end
+

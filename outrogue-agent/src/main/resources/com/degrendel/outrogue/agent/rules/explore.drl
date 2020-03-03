@@ -1,0 +1,47 @@
+// Rules related to exploring
+
+package com.degrendel.outrogue.agent.rules
+
+import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.common.agent.Move
+import com.degrendel.outrogue.agent.goals.*
+import com.degrendel.outrogue.agent.goals.actions.ExploreGoal
+import com.degrendel.outrogue.agent.inputs.ExploreOption
+import com.degrendel.outrogue.agent.RogueAgent
+import org.slf4j.Logger
+
+global Logger L
+global RogueAgent agent
+global Creature creature
+
+dialect "mvel"
+
+rule "Create explore goal"
+when
+    DecideAction()
+then
+    L.debug("Inserting explore evaluation goal")
+    insertLogical(new ExploreGoal())
+end
+
+rule "Reject explore goal when there's nothing to explore"
+when
+    $goal : ExploreGoal()
+    not ExploreOption()
+then
+    L.debug("Rejecting explore due to lack of option")
+    modify($goal) {
+        evaluated = true
+    }
+end
+
+// TODO: Check for higher priority goals
+rule "Select explore goal when there's something to explore and nothing higher priority"
+when
+    $goal : ExploreGoal()
+    ExploreOption($direction : direction)
+then
+    L.debug("Selecting explore {} due to option and no higher priority action goals", $direction)
+    insertLogical(new Move(creature, $direction))
+    modify ($goal) { evaluated = true, accomplished = true }
+end
