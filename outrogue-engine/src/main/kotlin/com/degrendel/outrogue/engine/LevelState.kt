@@ -181,6 +181,30 @@ class LevelState(val floor: Int, previous: Level?, private val engine: Engine) :
       assert(!square.type.blocked)
       square._creature = creature
     }
+
+    activateOthers(creature)
+  }
+
+  private fun activateOthers(creature: CreatureState)
+  {
+    val square = getSquareState(creature.coordinate)
+    // Activate all in each visible room
+    square.visible.asSequence().map { rooms[it].walkable }.flatten()
+        .mapNotNull { getSquare(it).creature }
+        .filterIsInstance<MinionState>()
+        .filter { it != creature }
+        .filter { it.allegiance.isHostileTo(creature.allegiance) }
+        .forEach { it.wakeFromContact(engine.clock) }
+    // If we're on a door or hallway, check neighbors away
+    if (square.type == SquareType.DOOR || square.type == SquareType.CORRIDOR)
+    {
+      // TODO: If we want more than immediate neighbors, going to have to rethink this
+      square.coordinate.eightWayNeighbors()
+          .mapNotNull { getSquare(it).creature }
+          .filterIsInstance<MinionState>()
+          .filter { it.allegiance.isHostileTo(creature.allegiance) }
+          .forEach { it.wakeFromContact(engine.clock) }
+    }
   }
 
   fun despawn(creature: CreatureState)
@@ -202,9 +226,9 @@ class LevelState(val floor: Int, previous: Level?, private val engine: Engine) :
     squares[to.x][to.y]._creature = creature
     squares[creature.coordinate.x][creature.coordinate.y]._creature = null
     creature.move(to)
-  }
 
-  // TODO: Probably should be in world
+    activateOthers(creature)
+  }
 
   override fun getSquare(x: Int, y: Int): Square = squares[x][y]
   override fun getSquare(coordinate: Coordinate) = getSquare(coordinate.x, coordinate.y)
