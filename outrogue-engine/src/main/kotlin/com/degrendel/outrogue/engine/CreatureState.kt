@@ -13,7 +13,6 @@ import com.degrendel.outrogue.common.world.creatures.Creature
 import com.degrendel.outrogue.common.world.creatures.CreatureType
 import com.degrendel.outrogue.common.world.creatures.Rogue
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.random.Random
 
 sealed class CreatureState(final override val entity: Entity, initial: Coordinate, initialCooldown: Long) : Creature
 {
