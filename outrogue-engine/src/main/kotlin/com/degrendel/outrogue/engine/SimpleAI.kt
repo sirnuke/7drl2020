@@ -27,20 +27,28 @@ object SimpleAI
       }
     }
     L.debug("Minion {} has sources {}", minion, sources)
+    // TODO: Going to need some sort of helper to compute what enemies are available to range attack
 
-    // TODO: A few issues here.  Probably need a navigation map that computes based on ignore creatures, but selects
-    //       the best next move taking them into account.
-    //       Though if we are right next to a hostile, attack rather than move.
-    //       Right now it simply navigates towards the rogue/conjurer, which is okay
+    val directions = ai.navigationMap.compute(sources)
+        .getBestMoves(minion.coordinate) { _, _, _ -> true }
+        .map { (eightWay, coordinate) -> Pair(eightWay, engine.world.getSquare(coordinate)) }
 
-    val direction = ai.navigationMap.compute(sources).getBestMove(minion.coordinate).also {
-      L.info("computed direction {}", it)
-    } ?: return Sleep(minion)
-    val candidate = engine.contextualAction(minion, direction)
-    return if (candidate == null || candidate is ProdCreature)
-      Sleep(minion)
-    else
-      candidate
+    // Case #1: enemies near by, attack!
+    directions.firstOrNull { (_, square) ->
+      square.creature?.allegiance?.isHostileTo(minion.allegiance) ?: false
+    }?.let {
+      return MeleeAttack(minion, it.second.creature!!)
+    }
+
+    // Case #2: empty tiles, pick one at random
+    directions.firstOrNull { (_, square) ->
+      square.creature == null
+    }?.let {
+      return Move(minion, it.first)
+    }
+
+    // Case #3: do nothing, prodding might be nice, but would have to contextualize who prodded (a prod from
+    return Sleep(minion)
   }
 
   private fun executeProd(engine: OutrogueEngine, minion: MinionState): Action
