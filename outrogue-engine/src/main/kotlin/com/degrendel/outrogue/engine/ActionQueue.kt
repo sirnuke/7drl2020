@@ -17,7 +17,7 @@ class ActionQueue(private val engine: EngineState) : EntityListener
     private val L by logger()
   }
 
-  private val queue = PriorityQueue<CreatureState>(10, Comparator<CreatureState> { c1, c2 ->
+  private val queue = PriorityQueue(10, Comparator<CreatureState> { c1, c2 ->
     assert(c1 != c2)
     assert(c1.id != c2.id)
     if (c1.clock == c2.clock)
