@@ -47,46 +47,35 @@ class NavigationMapImpl(private val random: Random, private val world: World,
       .filter { filterSquares(world.getSquare(it)) }
       .filter { _data[it.x][it.y] == Int.MAX_VALUE && it !in skip }
 
-  override fun getBestMove(coordinate: Coordinate): EightWay?
+  override fun getBestMoves(coordinate: Coordinate, filter: (candidate: Square, cost: Int, baseCost: Int) -> Boolean): List<Pair<EightWay, Coordinate>>
   {
-    // TODO: This is hilariously disgusting
-    var lowest = mutableListOf<EightWay>()
-    var cost = Int.MAX_VALUE
-    var hasStraight = false
-    EightWay.values().forEach {
-      // For direction:
-      val new = coordinate.move(it)
-      // Not valid? Skip
-      if (!new.isValid()) return@forEach
-      val newCost = data[new.x][new.y]
-      // Unreachable or higher cost than current min cost? skip
-      if (newCost == Int.MAX_VALUE || newCost > cost)
-        return@forEach
-      // Can't move due to monster? Skip
-      else if (!world.canMoveCheckingCreatures(coordinate, it))
-        return@forEach
-      // Equal to current min cost? Add to list
-      else if (newCost == cost)
-      {
-        // But if it's a straight direction, remember this
-        if (!it.diagonal) hasStraight = true
-        lowest.add(it)
-      }
-      // Otherwise, must be a new min cost
-      else
-      {
-        cost = newCost
-        lowest = mutableListOf<EightWay>(it)
-        hasStraight = !it.diagonal
-      }
-    }
+    val result = mutableListOf<Pair<EightWay, Coordinate>>()
+    var bestCost = Int.MAX_VALUE
+    val baseCost = data[coordinate.x][coordinate.y]
+    EightWay.values().map { Pair(it, coordinate.move(it)) }
+        .filter { (_, candidate) -> candidate.isValid() && coordinate.canInteract(world, candidate) }
+        .filter { (_, candidate) ->
+          filter(world.getSquare(candidate), data[candidate.x][candidate.y], baseCost)
+        }
+        .forEach { entry ->
+          val cost = data[entry.second.x][entry.second.y]
+          if (cost > bestCost) return@forEach
+          if (cost < bestCost)
+          {
+            bestCost = cost
+            result.clear()
+          }
+          result += entry
+        }
+    // TODO: This might be an error - log it?
+    return if (bestCost == Int.MAX_VALUE)
+      listOf()
+    else
+      result.shuffled(random)
+  }
 
-    // And when returning, favor straight directions if the same cost
-    return when
-    {
-      lowest.isEmpty() -> null
-      hasStraight -> lowest.shuffled(random).first { !it.diagonal }
-      else -> lowest.shuffled(random).first()
-    }
+  override fun getBestMove(coordinate: Coordinate, filter: (candidate: Square, cost: Int, baseCost: Int) -> Boolean): Pair<EightWay, Coordinate>?
+  {
+    return getBestMoves(coordinate, filter).firstOrNull()
   }
 }
