@@ -182,4 +182,6 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
   {
     // TODO: Do we need to do anything here?
   }
+
+  fun drawDebug(x: Int, y: Int, value: Int) = world.setDebugTile(x, y, value)
 }

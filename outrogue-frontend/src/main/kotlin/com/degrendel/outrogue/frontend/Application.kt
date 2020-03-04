@@ -15,6 +15,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.system.exitProcess
 
+// TODO: Thinking inGame should implement frontend and be responsible for creating the engine
 class Application(lock: ReentrantLock, condition: Condition, val profile: LaunchProfile) : Frontend
 {
   companion object
@@ -84,6 +85,11 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
   override fun drawNavigationMap(map: NavigationMap)
   {
     inGameView.drawNavigationMap(map)
+  }
+
+  override fun drawDebug(x: Int, y: Int, value: Int)
+  {
+    inGameView.drawDebug(x, y, value)
   }
 
   override suspend fun refreshMap() = inGameView.refreshMap()

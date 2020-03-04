@@ -182,6 +182,11 @@ class WorldFragment(val app: Application, screen: Screen)
     }
   }
 
+  fun setDebugTile(x: Int, y: Int, value: Int)
+  {
+    debugNavigationMapLayer[x, y] = TileLibrary.getDebugNavigationMapTile(value)
+  }
+
   fun toggleDrawingDebugMap()
   {
     debugDrawing = !debugDrawing

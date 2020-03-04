@@ -8,4 +8,5 @@ interface Frontend
   suspend fun getPlayerInput(): Action
 
   fun drawNavigationMap(map: NavigationMap)
+  fun drawDebug(x: Int, y: Int, value: Int)
 }
