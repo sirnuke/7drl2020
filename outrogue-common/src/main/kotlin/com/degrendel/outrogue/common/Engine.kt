@@ -1,5 +1,6 @@
 package com.degrendel.outrogue.common
 
+import com.badlogic.ashley.core.Family
 import com.degrendel.outrogue.common.agent.Action
 import com.degrendel.outrogue.common.agent.Agent
 import com.degrendel.outrogue.common.world.EightWay
@@ -20,6 +21,10 @@ interface Engine
 
   val rogueAgent: Agent
 
+  val rogueTeam: Family
+  val creaturesVisibleToRogue: Family
+  val creaturesKnownToRogue: Family
+  val squaresVisibleToRogue: Family
 
   /**
    * Finalizes the initial state of the ECS.

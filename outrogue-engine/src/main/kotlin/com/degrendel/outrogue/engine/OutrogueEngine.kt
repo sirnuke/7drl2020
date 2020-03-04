@@ -1,8 +1,10 @@
 package com.degrendel.outrogue.engine
 
+import com.badlogic.ashley.core.Family
 import com.degrendel.outrogue.agent.RogueAgent
 import com.degrendel.outrogue.common.*
 import com.degrendel.outrogue.common.agent.*
+import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.common.world.creatures.Allegiance
@@ -25,6 +27,11 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
   }
 
   override val seed = overrideSeed ?: Random.nextLong()
+
+  override val rogueTeam: Family = Family.all(CreatureComponent::class.java, RogueAllegianceComponent::class.java).get()
+  override val creaturesVisibleToRogue: Family = Family.all(CreatureComponent::class.java, VisibleToRogueComponent::class.java).get()
+  override val creaturesKnownToRogue: Family = Family.all(CreatureComponent::class.java, KnownToRogueComponent::class.java).get()
+  override val squaresVisibleToRogue: Family = Family.all(SquareComponent::class.java, VisibleToRogueComponent::class.java).get()
 
   private var _clock = 0L
   override val clock get() = _clock

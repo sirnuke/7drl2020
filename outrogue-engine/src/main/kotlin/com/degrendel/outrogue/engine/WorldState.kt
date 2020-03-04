@@ -25,11 +25,6 @@ class WorldState(val engine: OutrogueEngine) : World
     levels = floorRange.map { previous = LevelState(it, previous, engine); previous!! }
   }
 
-  val rogueTeam: Family = Family.all(CreatureComponent::class.java, RogueAllegianceComponent::class.java).get()
-
-  val creaturesVisibleToRogue: Family = Family.all(CreatureComponent::class.java, VisibleToRogueComponent::class.java).get()
-  val squaresVisibleToRogue: Family = Family.all(SquareComponent::class.java, VisibleToRogueComponent::class.java).get()
-
   private val _conjurer: ConjurerState
   private var _rogue: RogueState
 
@@ -99,7 +94,7 @@ class WorldState(val engine: OutrogueEngine) : World
     val visible = mutableSetOf<Coordinate>()
     // Also record what rooms are visible from the tiles of RogueFriends
     val rooms = mutableSetOf<Pair<Int, Int>>()
-    engine.ecs.getEntitiesFor(rogueTeam).forEach {
+    engine.ecs.getEntitiesFor(engine.rogueTeam).forEach {
       it.getCreature().coordinate.let { coordinate ->
         rooms.addAll(getSquare(coordinate).visible.map { id -> Pair(coordinate.floor, id) })
         visible.add(coordinate)
@@ -112,12 +107,12 @@ class WorldState(val engine: OutrogueEngine) : World
     }
     // Iterate through all visible, if not in the set remove visible component
     // (Convert asSequence.asIterable to duplicate the array since it messes with the iterators otherwise :/
-    engine.ecs.getEntitiesFor(squaresVisibleToRogue).asSequence().asIterable().forEach {
+    engine.ecs.getEntitiesFor(engine.squaresVisibleToRogue).asSequence().asIterable().forEach {
       if (it.getCoordinate() !in visible)
         (it.getSquare() as SquareState).setRogueVisible(false)
     }
     // For each currently visible thing, if not in set<Coordinate> remove visible component
-    engine.ecs.getEntitiesFor(creaturesVisibleToRogue).asSequence().asIterable().forEach {
+    engine.ecs.getEntitiesFor(engine.creaturesVisibleToRogue).asSequence().asIterable().forEach {
       // TODO: Replace this with a helper
       if (it.getCoordinate() !in visible)
         it.remove(VisibleToRogueComponent::class.java)

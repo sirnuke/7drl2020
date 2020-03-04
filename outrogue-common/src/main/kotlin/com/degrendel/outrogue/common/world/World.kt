@@ -1,5 +1,6 @@
 package com.degrendel.outrogue.common.world
 
+import com.badlogic.ashley.core.Family
 import com.degrendel.outrogue.common.world.creatures.Creature
 import com.degrendel.outrogue.common.world.creatures.Rogue
 
