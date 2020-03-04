@@ -97,9 +97,7 @@ class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initi
 
   override val prodded = false
 
-  private val exploreMap = NavigationMapImpl(engine.random, world) {
-    !it.type.blocked && (!it.visibleToRogue || it.creature == null)
-  }
+  private val exploreMap = NavigationMapImpl(engine.random, world)
 
   init
   {
@@ -117,8 +115,8 @@ class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initi
     Square.each { x, y ->
       level.getSquare(x, y).let { if (!it.type.blocked && !it.knownToRogue) sources[it.coordinate] = 0 }
     }
-    exploreMap.compute(sources, setOf())
-    return exploreMap.getBestMove(coordinate)
+    return exploreMap.compute(sources)
+        .getBestMove(coordinate) { square, _, _ -> square.creature == null }?.first
   }
 }
 
