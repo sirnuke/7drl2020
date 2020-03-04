@@ -26,9 +26,16 @@ class RogueAgent(val engine: Engine) : Agent
   companion object
   {
     private val L = LoggerFactory.getLogger(RogueAgent::class.java) as Logger
-    // NOTE: getResource wants preceding slash but Drools - in its infinite wisdom - doesn't >:[
-    const val JAVA_PATH = "/com/degrendel/outrogue/agent/rules"
-    const val DROOLS_PATH = "com/degrendel/outrogue/agent/rules"
+    const val DROOLS_PATH = "/com/degrendel/outrogue/agent/rules"
+
+    // TODO: It would be nice to replace this with a walkDir, but not clear how to do this super reliably.  Original
+    //       approach was clunky but worked fine in normal builds, but broke in shadowJar release.  Since this is a
+    //       known list and fairly small and stable, just hardcode them and be done with it (for now).
+    val ruleFiles = arrayOf(
+        "explore.drl",
+        "rogue.drl",
+        "sleep.drl"
+    )
   }
 
   private val session: KieSession
@@ -40,9 +47,13 @@ class RogueAgent(val engine: Engine) : Agent
     // Ick.  Thanks drools.
     val services = KieServices.Factory.get()
     val filesystem = services.newKieFileSystem()
-    File(RogueAgent::class.java.getResource(JAVA_PATH).path).list()!!.forEach {
-      L.info("Source Drools rulefile drools/{}", it)
-      filesystem.write(services.resources.newClassPathResource("$DROOLS_PATH/$it"))
+    ruleFiles.forEach {
+      val jarPath = "$DROOLS_PATH/$it"
+      val droolsPath = "src/main/resources$DROOLS_PATH/$it"
+      L.info("Sourcing Drools rule file from {} into {}", jarPath, droolsPath)
+      val stream = RogueAgent::class.java.getResourceAsStream(jarPath)
+      filesystem.write(droolsPath, services.resources.newInputStreamResource(stream))
+      stream.close()
     }
     val module = services.newKieBuilder(filesystem).buildAll().kieModule
     val container = services.newKieContainer(module.releaseId)

@@ -32,4 +32,7 @@ dependencies {
 tasks.withType<ShadowJar> {
   baseName = "outrogue"
   classifier = ""
+  mergeServiceFiles {
+    include("META-INF/kie.conf")
+  }
 }
