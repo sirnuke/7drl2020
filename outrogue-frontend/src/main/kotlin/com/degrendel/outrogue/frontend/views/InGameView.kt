@@ -1,11 +1,15 @@
 package com.degrendel.outrogue.frontend.views
 
+import com.degrendel.outrogue.common.Frontend
+import com.degrendel.outrogue.common.LogMessage
 import com.degrendel.outrogue.common.NavigationMap
 import com.degrendel.outrogue.common.agent.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.EightWay
+import com.degrendel.outrogue.engine.OutrogueEngine
 import com.degrendel.outrogue.frontend.Application
+import com.degrendel.outrogue.frontend.LaunchProfile
 import com.degrendel.outrogue.frontend.events.*
 import com.degrendel.outrogue.frontend.views.fragments.WorldFragment
 import kotlinx.coroutines.Job
@@ -13,18 +17,21 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
 import org.hexworks.cobalt.events.api.simpleSubscribeTo
 import org.hexworks.zircon.api.ColorThemes
+import org.hexworks.zircon.api.grid.TileGrid
 import org.hexworks.zircon.api.uievent.*
 import org.hexworks.zircon.api.view.base.BaseView
 import org.hexworks.zircon.internal.Zircon
 
-class InGameView(val app: Application) : BaseView(app.tileGrid)
+class InGameView(tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tileGrid), Frontend
 {
   companion object
   {
     private val L by logger()
   }
 
-  private val world = WorldFragment(app, screen)
+  val engine = OutrogueEngine(this, profile.randomSeed)
+
+  private val world = WorldFragment(engine, profile, screen)
   private var job: Job? = null
 
   // While this initial channel is not listened to (new one is created before the game loop starts), create it anyway
@@ -33,6 +40,12 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
 
   init
   {
+    if (profile.rogueAgentDebugging)
+      engine.rogueAgent.enableDebugging()
+
+    if (profile.rogueAgentLogging)
+      engine.rogueAgent.enableLogging()
+
     screen.theme = ColorThemes.adriftInDreams()
     // TODO: These won't fire if something else is docked, right?
     screen.handleKeyboardEvents(KeyboardEventType.KEY_PRESSED) { event: KeyboardEvent, _: UIEventPhase ->
@@ -117,8 +130,13 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
         }
         KeyCode.BACK_QUOTE ->
         {
-          world.toggleDrawingDebugMap()
-          Processed
+          if (profile.zirconDebugMode)
+          {
+            world.toggleDrawingDebugMap()
+            Processed
+          }
+          else
+            Pass
         }
         else ->
         {
@@ -132,9 +150,11 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
       L.trace("Event player input {}", it.input)
       playerActions.offer(it.input)
     }
+
+    engine.bootstrapECS()
   }
 
-  fun refreshMap()
+  override suspend fun refreshMap()
   {
     world.refreshMap()
   }
@@ -145,7 +165,12 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
     world.refreshMap()
     // Recreate the channel, since closing it
     playerActions = Channel(capacity = P.views.world.maxQueuedActions)
-    job = app.engine.runGame()
+    job = engine.runGame()
+  }
+
+  override fun onUndock()
+  {
+    // TODO: Do we need to do anything here? Shutdown the engine? Dispose drools?
   }
 
   // TODO: Not clear what should be calling this, but this is how stopping the loop should work
@@ -156,11 +181,11 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
     job = null
   }
 
-  suspend fun getPlayerInput(): Action
+  override suspend fun getPlayerInput(): Action
   {
     // TODO: Do we have to check whether we've been cancelled? I think .receive() should do it for us
     // TODO: We probably need to catch the closed exception, but where and what do we do next?
-    val player = app.engine.world.conjurer
+    val player = engine.world.conjurer
     var action: Action?
     do
     {
@@ -168,20 +193,20 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
       {
         is UpstairsPress -> GoUpStaircase(player)
         is DownstarsPress -> GoDownStaircase(player)
-        is EightWayPress -> app.engine.contextualAction(app.engine.world.conjurer, input.eightWay)
+        is EightWayPress -> engine.contextualAction(player, input.eightWay)
         is SleepPress -> Sleep(player)
       }
     }
-    while (action == null || !app.engine.isValidAction(action))
+    while (action == null || !engine.isValidAction(action))
     return action
   }
 
-  fun drawNavigationMap(map: NavigationMap) = world.setNavigationMap(map)
+  override fun drawNavigationMap(map: NavigationMap) = world.setNavigationMap(map)
 
-  override fun onUndock()
+  override fun drawDebug(x: Int, y: Int, value: Int) = world.setDebugTile(x, y, value)
+
+  override fun addLogMessages(messages: List<LogMessage>)
   {
-    // TODO: Do we need to do anything here?
+    TODO("not implemented")
   }
-
-  fun drawDebug(x: Int, y: Int, value: Int) = world.setDebugTile(x, y, value)
 }

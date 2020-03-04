@@ -16,7 +16,7 @@ import kotlin.concurrent.withLock
 import kotlin.system.exitProcess
 
 // TODO: Thinking inGame should implement frontend and be responsible for creating the engine
-class Application(lock: ReentrantLock, condition: Condition, val profile: LaunchProfile) : Frontend
+class Application(lock: ReentrantLock, condition: Condition, val profile: LaunchProfile)
 {
   companion object
   {
@@ -25,15 +25,9 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
 
   val tileGrid: TileGrid
   val inGameView: InGameView
-  val engine = OutrogueEngine(this, profile.randomSeed)
 
   init
   {
-    if (profile.rogueAgentDebugging)
-      engine.rogueAgent.enableDebugging()
-
-    if (profile.rogueAgentLogging)
-      engine.rogueAgent.enableLogging()
 
     val debugConfig = if (profile.debugDrawGrid)
       DebugConfig(displayGrid = true, displayCoordinates = true, displayFps = true)
@@ -66,7 +60,7 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
 
     tileGrid.onShutdown { lock.withLock { condition.signal() } }
 
-    inGameView = InGameView(this)
+    inGameView = InGameView(tileGrid, profile)
 
     if (profile.zirconDebugMode)
     {
@@ -77,23 +71,8 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
       }
     }
 
-    engine.bootstrapECS()
-
     tileGrid.dock(inGameView)
   }
-
-  override fun drawNavigationMap(map: NavigationMap)
-  {
-    inGameView.drawNavigationMap(map)
-  }
-
-  override fun drawDebug(x: Int, y: Int, value: Int)
-  {
-    inGameView.drawDebug(x, y, value)
-  }
-
-  override suspend fun refreshMap() = inGameView.refreshMap()
-  override suspend fun getPlayerInput() = inGameView.getPlayerInput()
 }
 
 data class LaunchProfile(val fullscreen: Boolean,

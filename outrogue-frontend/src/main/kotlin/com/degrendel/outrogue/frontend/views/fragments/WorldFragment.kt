@@ -3,6 +3,7 @@ package com.degrendel.outrogue.frontend.views.fragments
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntityListener
 import com.badlogic.ashley.core.Family
+import com.degrendel.outrogue.common.Engine
 import com.degrendel.outrogue.common.NavigationMap
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.logger
@@ -10,6 +11,7 @@ import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.Level
 import com.degrendel.outrogue.common.world.Square
 import com.degrendel.outrogue.frontend.Application
+import com.degrendel.outrogue.frontend.LaunchProfile
 import com.degrendel.outrogue.frontend.MouseButtons
 import com.degrendel.outrogue.frontend.TileLibrary
 import com.degrendel.outrogue.frontend.components.DrawnAtComponent
@@ -29,7 +31,7 @@ import org.hexworks.zircon.api.uievent.Pass
  *
  * Not technically a fragment since it's a series of layers, but whatever.
  */
-class WorldFragment(val app: Application, screen: Screen)
+class WorldFragment(private val engine: Engine, profile: LaunchProfile, screen: Screen)
 {
   companion object
   {
@@ -59,7 +61,7 @@ class WorldFragment(val app: Application, screen: Screen)
 
   init
   {
-    app.engine.ecs.addEntityListener(visibleSquares, object : EntityListener
+    engine.ecs.addEntityListener(visibleSquares, object : EntityListener
     {
       override fun entityAdded(entity: Entity)
       {
@@ -73,7 +75,7 @@ class WorldFragment(val app: Application, screen: Screen)
       {
       }
     })
-    app.engine.ecs.addEntityListener(toDrawCreatures, object : EntityListener
+    engine.ecs.addEntityListener(toDrawCreatures, object : EntityListener
     {
       override fun entityAdded(entity: Entity)
       {
@@ -88,7 +90,7 @@ class WorldFragment(val app: Application, screen: Screen)
       }
     })
 
-    app.engine.ecs.addEntityListener(toEraseCreatures, object : EntityListener
+    engine.ecs.addEntityListener(toEraseCreatures, object : EntityListener
     {
       override fun entityAdded(entity: Entity)
       {
@@ -106,7 +108,7 @@ class WorldFragment(val app: Application, screen: Screen)
     // NOTE: These bois assume the entity still have the square component
     // Probably a safe assumption BUT do they retain their square components after being removed from the ECS?
     // TODO: Do the removes always fire before adds?  Might have to track where actually drawn
-    app.engine.ecs.addEntityListener(rogueKnownSquares, object : EntityListener
+    engine.ecs.addEntityListener(rogueKnownSquares, object : EntityListener
     {
       override fun entityAdded(entity: Entity)
       {
@@ -119,7 +121,7 @@ class WorldFragment(val app: Application, screen: Screen)
       }
     })
 
-    app.engine.ecs.addEntityListener(rogueVisibleSquares, object : EntityListener
+    engine.ecs.addEntityListener(rogueVisibleSquares, object : EntityListener
     {
       override fun entityAdded(entity: Entity)
       {
@@ -132,7 +134,7 @@ class WorldFragment(val app: Application, screen: Screen)
       }
     })
 
-    if (app.profile.zirconDebugMode)
+    if (profile.zirconDebugMode)
     {
       screen.handleMouseEvents(MouseEventType.MOUSE_CLICKED) { event, _ ->
         if (event.button == MouseButtons.MIDDLE.id)
@@ -153,7 +155,7 @@ class WorldFragment(val app: Application, screen: Screen)
     val updatedCreatures = mutableSetOf<Position>()
 
     // TODO: Might be faster to copy/erase the entities from a set using a listener
-    app.engine.ecs.getEntitiesFor(toUpdateCreatures).forEach {
+    engine.ecs.getEntitiesFor(toUpdateCreatures).forEach {
       L.trace("Updating drawn creature {}", it.getCreature())
       val position = it.getDrawnAt()
       val coordinate = it.getCoordinate()
