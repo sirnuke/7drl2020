@@ -149,6 +149,8 @@ class LevelState(val floor: Int, previous: Level?, private val engine: Engine) :
 
   private fun populateMonsters(world: World)
   {
+    // TODO: Budget isn't the right approach.  Using a (normal?) distribution, compute the number of monsters per level
+    //       Depending on the target level of each monster, weight it and pick
     var monsterBudget = P.map.features.monsterSpawnStart + P.map.features.monsterSpawnScale.pow(floor)
     L.debug("Floor {} has monster budget {}", floor, monsterBudget)
     val monsters = P.creatures.filterValues { it.earliestLevel <= floor }
