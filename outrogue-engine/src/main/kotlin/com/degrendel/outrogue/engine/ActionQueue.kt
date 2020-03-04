@@ -40,6 +40,7 @@ class ActionQueue(private val engine: OutrogueEngine) : EntityListener
 
   override fun entityRemoved(entity: Entity)
   {
+    L.info("Removing entity {} / {} from the action queue", entity, entity.getCreature())
     queue.remove(entity.getCreature() as CreatureState)
   }
 
@@ -52,7 +53,7 @@ class ActionQueue(private val engine: OutrogueEngine) : EntityListener
     {
       is PlayerController -> engine.frontend.getPlayerInput()
       is AgentController -> engine.rogueAgent.requestAction()
-      is SimpleController -> executeSimpleAI(engine, creature, controller)
+      is SimpleController -> SimpleAI.executeSimpleAI(engine, creature as MinionState, controller)
     }
     L.info("Creature {} will perform {}", creature, action)
     engine.updateClock(engine.computeCost(action), creature)

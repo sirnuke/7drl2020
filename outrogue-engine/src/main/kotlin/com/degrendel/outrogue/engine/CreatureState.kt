@@ -20,6 +20,7 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
 {
   companion object
   {
+    private val L by logger()
     // Probably won't ever be creating creatures in two different threads, but just in case.
     private val nextId = AtomicInteger()
   }
@@ -78,6 +79,7 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
 
   protected fun setActive(active: Boolean, clock: Long)
   {
+    L.trace("Creature {} going active? {} clock? {}", this, active, clock)
     _active = active
     _clock = clock
     if (active)
@@ -156,7 +158,7 @@ class MinionState(entity: Entity, initial: Coordinate, private var _allegiance: 
 
   fun prod(clock: Long)
   {
-    L.trace("Prodded {} at {}", this, clock)
+    L.debug("Prodded {} at {}", this, clock)
     _prodded = true
     if (activeStatus == ActiveStatus.ASLEEP)
     {
@@ -165,9 +167,20 @@ class MinionState(entity: Entity, initial: Coordinate, private var _allegiance: 
     }
   }
 
+  fun unprod()
+  {
+    L.debug("Prod on {} complete", this)
+    _prodded = false
+    if (activeStatus == ActiveStatus.PRODDED)
+    {
+      _activeStatus == ActiveStatus.ASLEEP
+      setActive(false, clock)
+    }
+  }
+
   fun wakeFromContact(clock: Long)
   {
-    L.trace("Set {} active due to contact at {}", this, clock)
+    L.debug("Set {} active due to contact at {}", this, clock)
     if (!active)
       setActive(true, clock)
     _activeStatus = ActiveStatus.CONTACT
