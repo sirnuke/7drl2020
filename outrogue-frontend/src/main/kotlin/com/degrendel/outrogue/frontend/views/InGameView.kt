@@ -16,6 +16,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
 import org.hexworks.cobalt.events.api.simpleSubscribeTo
 import org.hexworks.zircon.api.ColorThemes
+import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.grid.TileGrid
 import org.hexworks.zircon.api.uievent.*
 import org.hexworks.zircon.api.view.base.BaseView
@@ -31,6 +32,15 @@ class InGameView(tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tile
   val engine = EngineState(this, profile.randomSeed)
 
   private val world = WorldFragment(engine, profile, screen)
+  private val logArea = Components.logArea()
+      .withSize(P.views.world.log.width, P.views.world.log.height)
+      .withPosition(P.views.world.log.x, P.views.world.log.y)
+      .build()
+  private val sidebar = Components.panel()
+      .withSize(P.views.world.sidebar.width, P.views.world.sidebar.height)
+      .withPosition(P.views.world.sidebar.x, P.views.world.sidebar.y)
+      .build()
+
   private var job: Job? = null
 
   // While this initial channel is not listened to (new one is created before the game loop starts), create it anyway
@@ -44,6 +54,9 @@ class InGameView(tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tile
 
     if (profile.rogueAgentLogging)
       engine.rogueAgent.enableLogging()
+
+    screen.addComponent(logArea)
+    screen.addComponent(sidebar)
 
     screen.theme = ColorThemes.adriftInDreams()
     // TODO: These won't fire if something else is docked, right?
@@ -161,6 +174,7 @@ class InGameView(tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tile
   override fun onDock()
   {
     L.info("Docking InGameView")
+
     world.refreshMap()
     // Recreate the channel, since closing it
     playerActions = Channel(capacity = P.views.world.maxQueuedActions)

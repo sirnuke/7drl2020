@@ -31,10 +31,12 @@ data class Features(val maxPlacementAttempts: Int, // When to give up on attempt
                     val monsterSpawnScale: Double // How much should this multiply per level?
 )
 
+data class ComponentDimensions(val x: Int, val y: Int, val width: Int, val height: Int)
+
 data class Rooms(val minSize: Int, val maxNumber: Int)
-data class Views(val world: World)
-data class World(val mapX: Int, val mapY: Int, val maxQueuedActions: Int)
+data class World(val mapX: Int, val mapY: Int, val maxQueuedActions: Int, val sidebar: ComponentDimensions, val log: ComponentDimensions)
 data class Costs(val sleep: Long, val move: Long, val staircase: Long, val prod: Long, val melee: Long)
+data class Views(val world: World)
 data class Conjurer(val hp: Int)
 data class Rogue(val hp: Int)
 data class Creature(

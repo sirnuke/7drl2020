@@ -29,7 +29,19 @@
     "world": {
       "map-x": 0,
       "map-y": 0,
-      "max-queued-actions": 5
+      "max-queued-actions": 5,
+      "sidebar": {
+        "width": 16,
+        "height": 45,
+        "x": 64,
+        "y": 0
+      },
+      "log": {
+        "width": 64,
+        "height": 13,
+        "x": 0,
+        "y": 32
+      }
     }
   },
   "costs": {
