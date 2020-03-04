@@ -38,6 +38,15 @@ then
     modify($goal) { evaluated = true, applicable = false }
 end
 
+rule "Reject explore goal (temp) when there's nothing to explore"
+when
+    $goal : ExploreGoal()
+    not ExploreOption()
+then
+    L.debug("Temp rejecting navigation due to lack of options")
+    modify($goal) { evaluated = true, applicable = false }
+end
+
 // TODO: Check for higher priority goals
 // TODO: Not on staircase? Navigate towards it
 // TODO: On staircase? Go down
