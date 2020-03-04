@@ -6,4 +6,6 @@ interface Frontend
 {
   suspend fun refreshMap()
   suspend fun getPlayerInput(): Action
+
+  fun drawNavigationMap(map: NavigationMap)
 }

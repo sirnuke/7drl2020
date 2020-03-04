@@ -1,10 +1,7 @@
 package com.degrendel.outrogue.frontend
 
-import com.degrendel.outrogue.common.BUILD_DATE
-import com.degrendel.outrogue.common.Frontend
-import com.degrendel.outrogue.common.VERSION_STRING
+import com.degrendel.outrogue.common.*
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
-import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.engine.OutrogueEngine
 import com.degrendel.outrogue.frontend.views.InGameView
 import org.hexworks.zircon.api.CP437TilesetResources
@@ -82,6 +79,11 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
     engine.bootstrapECS()
 
     tileGrid.dock(inGameView)
+  }
+
+  override fun drawNavigationMap(map: NavigationMap)
+  {
+    inGameView.drawNavigationMap(map)
   }
 
   override suspend fun refreshMap() = inGameView.refreshMap()

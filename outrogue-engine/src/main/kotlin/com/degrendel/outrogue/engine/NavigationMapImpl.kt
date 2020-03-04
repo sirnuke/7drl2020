@@ -17,7 +17,7 @@ class NavigationMapImpl(private val random: Random, private val world: World,
   }
 
   private val _data: MutableList<MutableList<Int>> = xRange.map { yRange.map { Int.MAX_VALUE }.toMutableList() }.toMutableList()
-  val data: List<List<Int>> get() = _data
+  override val data: List<List<Int>> get() = _data
 
   override fun compute(sources: Map<Coordinate, Int>, skip: Set<Coordinate>, terminate: Set<Coordinate>): NavigationMap
   {

@@ -3,6 +3,7 @@ package com.degrendel.outrogue.frontend.views.fragments
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntityListener
 import com.badlogic.ashley.core.Family
+import com.degrendel.outrogue.common.NavigationMap
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
@@ -37,8 +38,11 @@ class WorldFragment(val app: Application, screen: Screen)
 
   private val baseLayer = LayerData().also { screen.addLayer(it.layer) }
   private val creatureLayer = LayerData().also { screen.addLayer(it.layer) }
+  private val debugNavigationMapLayer = LayerData().also { screen.addLayer(it.layer) }
   private val knownSquaresLayer = LayerData().also { screen.addLayer(it.layer) }
   private val visibleSquaresLayer = LayerData().also { screen.addLayer(it.layer) }
+
+  private var debugDrawing = false
 
   private val visibleSquares = Family.all(SquareComponent::class.java, OnVisibleLevelComponent::class.java).get()
 
@@ -171,6 +175,22 @@ class WorldFragment(val app: Application, screen: Screen)
     visibleSquaresLayer.draw()
   }
 
+  fun setNavigationMap(map: NavigationMap)
+  {
+    Square.each { x, y ->
+      debugNavigationMapLayer[x, y] = TileLibrary.getDebugNavigationMapTile(map.data[x][y])
+    }
+  }
+
+  fun toggleDrawingDebugMap()
+  {
+    debugDrawing = !debugDrawing
+    if (debugDrawing)
+      debugNavigationMapLayer.draw()
+    else
+      debugNavigationMapLayer.clearScreen()
+  }
+
   class LayerData
   {
     val layer: Layer = Layer.newBuilder().withOffset(offset).withSize(size).build()
@@ -198,6 +218,11 @@ class WorldFragment(val app: Application, screen: Screen)
     fun erase(position: Position)
     {
       _tiles[position] = Tile.empty()
+    }
+
+    fun clearScreen()
+    {
+      layer.clear()
     }
 
     companion object

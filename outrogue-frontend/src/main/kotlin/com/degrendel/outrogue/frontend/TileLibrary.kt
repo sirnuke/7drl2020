@@ -24,6 +24,8 @@ object TileLibrary
   val knownOverlayTile = Tile.defaultTile().withBackgroundColor(TileColor.create(red = 110, green = 110, blue = 110, alpha = 128))
   val visibleOverlayTile = Tile.defaultTile().withBackgroundColor(TileColor.create(red = 110, green = 110, blue = 110, alpha = 64))
 
+  private val debugNavigationMapTiles = mutableMapOf<Char, Tile>()
+
   init
   {
     wallTiles[WallOrientation.NORTH_SOUTH] = Tile.defaultTile().withCharacter(0x2551.toChar())
@@ -37,6 +39,20 @@ object TileLibrary
     wallTiles[WallOrientation.SOUTH_WEST_NORTH] = Tile.defaultTile().withCharacter(0x2563.toChar())
     wallTiles[WallOrientation.WEST_NORTH_EAST] = Tile.defaultTile().withCharacter(0x2569.toChar())
     wallTiles[WallOrientation.ALL] = Tile.defaultTile().withCharacter(0x256C.toChar())
+
+    (0..9).forEach {
+      println("Char is '${it.toString()[0]}'")
+      debugNavigationMapTiles[it.toString()[0]] = Tile.defaultTile().withCharacter(it.toString()[0])
+    }
+    debugNavigationMapTiles['+'] = Tile.defaultTile().withCharacter('+')
+  }
+
+  fun getDebugNavigationMapTile(cost: Int): Tile
+  {
+    return if (cost > 9)
+      debugNavigationMapTiles.getValue('+')
+    else
+      debugNavigationMapTiles.getValue(cost.toString()[0])
   }
 
   fun getSquareTile(square: Square): Tile

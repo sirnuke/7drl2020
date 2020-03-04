@@ -1,5 +1,6 @@
 package com.degrendel.outrogue.frontend.views
 
+import com.degrendel.outrogue.common.NavigationMap
 import com.degrendel.outrogue.common.agent.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
@@ -114,6 +115,11 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
           else
             Pass
         }
+        KeyCode.BACK_QUOTE ->
+        {
+          world.toggleDrawingDebugMap()
+          Processed
+        }
         else ->
         {
           L.trace("Ignoring {}", event.code)
@@ -169,6 +175,8 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
     while (action == null || !app.engine.isValidAction(action))
     return action
   }
+
+  fun drawNavigationMap(map: NavigationMap) = world.setNavigationMap(map)
 
   override fun onUndock()
   {
