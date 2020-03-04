@@ -1,7 +1,6 @@
 package com.degrendel.outrogue.common
 
 import com.degrendel.outrogue.common.agent.Action
-import com.degrendel.outrogue.common.world.creatures.Creature
 
 interface Frontend
 {
@@ -14,8 +13,3 @@ interface Frontend
   fun addLogMessages(messages: List<LogMessage>)
 }
 
-sealed class LogMessage
-{
-  abstract val message: String
-}
-data class CreatureLogMessage(val sender: Creature, override val message: String): LogMessage()
