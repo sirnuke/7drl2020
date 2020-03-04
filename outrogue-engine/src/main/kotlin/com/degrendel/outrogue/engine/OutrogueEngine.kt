@@ -8,6 +8,7 @@ import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.common.world.creatures.Allegiance
 import com.degrendel.outrogue.common.world.SquareType
 import com.degrendel.outrogue.common.world.World
+import com.degrendel.outrogue.common.world.creatures.Creature
 import com.github.czyzby.noise4j.map.generator.util.Generators
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -181,20 +182,20 @@ class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
     is ProdCreature -> (action.target as MinionState).prod(clock)
   }
 
-  override fun contextualAction(eightWay: EightWay): Action?
+  override fun contextualAction(creature: Creature, eightWay: EightWay): Action?
   {
     // Can't move even when ignoring creatures? bad direction/into wall/etc
-    if (!world.canMoveIgnoringCreatures(world.conjurer.coordinate, eightWay)) return null
-    val coordinate = world.conjurer.coordinate.move(eightWay)
+    if (!world.canMoveIgnoringCreatures(creature.coordinate, eightWay)) return null
+    val coordinate = creature.coordinate.move(eightWay)
     val target = world.getSquare(coordinate)
     // Nothing at the target? Move to action
     if (target.creature == null)
-      return Move(world.conjurer, eightWay)
-    val creature = target.creature!!
+      return Move(creature, eightWay)
+    val other = target.creature!!
     // Team Rogue in the way?  Attack!
-    if (creature.allegiance == Allegiance.ROGUE)
-      return MeleeAttack(world.conjurer, creature)
+    if (other.allegiance == Allegiance.ROGUE)
+      return MeleeAttack(creature, other)
     // Else, prod the blocking creature
-    return ProdCreature(world.conjurer, creature)
+    return ProdCreature(creature, other)
   }
 }

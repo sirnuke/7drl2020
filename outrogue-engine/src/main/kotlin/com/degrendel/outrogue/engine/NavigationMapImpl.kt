@@ -19,7 +19,7 @@ class NavigationMapImpl(private val random: Random, private val world: World,
   private val _data: MutableList<MutableList<Int>> = xRange.map { yRange.map { Int.MAX_VALUE }.toMutableList() }.toMutableList()
   val data: List<List<Int>> get() = _data
 
-  override fun compute(sources: Map<Coordinate, Int>, skip: Set<Coordinate>, terminate: Set<Coordinate>)
+  override fun compute(sources: Map<Coordinate, Int>, skip: Set<Coordinate>, terminate: Set<Coordinate>): NavigationMap
   {
     L.trace("Computing navigation map for sources {}, skip {}, terminate {}", sources, skip, terminate)
     Square.each { x, y -> _data[x][y] = Int.MAX_VALUE }
@@ -30,13 +30,14 @@ class NavigationMapImpl(private val random: Random, private val world: World,
     {
       // We functional now (kinda)
       // TODO: This assumes there is no diagonal cost.  If that changes, this will probably need to be a float
-      val checking = toCheck.removeFirst().also { if (it in terminate) return }
+      val checking = toCheck.removeFirst().also { if (it in terminate) return this }
       val cost = _data[checking.x][checking.y] + 1
       getNeighbors(checking, skip).forEach {
         _data[it.x][it.y] = cost
         toCheck.addLast(it)
       }
     }
+    return this
   }
 
   private fun getNeighbors(coordinate: Coordinate, skip: Set<Coordinate>) = EightWay.values()

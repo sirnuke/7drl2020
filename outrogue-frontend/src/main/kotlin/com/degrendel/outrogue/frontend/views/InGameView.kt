@@ -162,7 +162,7 @@ class InGameView(val app: Application) : BaseView(app.tileGrid)
       {
         is UpstairsPress -> GoUpStaircase(player)
         is DownstarsPress -> GoDownStaircase(player)
-        is EightWayPress -> app.engine.contextualAction(input.eightWay)
+        is EightWayPress -> app.engine.contextualAction(app.engine.world.conjurer, input.eightWay)
         is SleepPress -> Sleep(player)
       }
     }

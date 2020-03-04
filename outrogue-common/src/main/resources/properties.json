@@ -51,7 +51,9 @@
       "cost": 2.0,
       "earliest-level": 0,
       "allegiance": "CONJURER",
-      "behaviors": []
+      "behaviors": {
+        "MOVE_TO_ROGUE": 0
+      }
     }
   }
 }

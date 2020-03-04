@@ -37,9 +37,15 @@ data class World(val mapX: Int, val mapY: Int, val maxQueuedActions: Int)
 data class Costs(val sleep: Long, val move: Long, val staircase: Long, val prod: Long, val melee: Long)
 data class Conjurer(val hp: Int)
 data class Rogue(val hp: Int)
-data class Creature(val hp: Int, // The base HP of this creature
-                    val cost: Double, // The cost of this creature, when randomly spawning it
-                    val earliestLevel: Int, // The earliest level this creature can appear
-                    val allegiance: Allegiance, // The default allegiance of this creature
-                    val behaviors: List<Behavior> // List of behaviors to use in its AI
+data class Creature(
+    // The base HP of this creature
+    val hp: Int,
+    // The cost of this creature, when randomly spawning it
+    val cost: Double,
+    // The earliest level this creature can appear
+    val earliestLevel: Int,
+    // The default allegiance of this creature
+    val allegiance: Allegiance,
+    // List of behaviors, and their weights, to use in its AI
+    val behaviors: kotlin.collections.Map<Behavior, Int>
 )

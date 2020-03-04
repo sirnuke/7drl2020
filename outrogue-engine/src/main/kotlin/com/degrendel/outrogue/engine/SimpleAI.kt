@@ -1,10 +1,8 @@
 package com.degrendel.outrogue.engine
 
-import com.degrendel.outrogue.common.agent.Action
-import com.degrendel.outrogue.common.agent.Move
-import com.degrendel.outrogue.common.agent.SimpleController
-import com.degrendel.outrogue.common.agent.Sleep
+import com.degrendel.outrogue.common.agent.*
 import com.degrendel.outrogue.common.logger
+import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.EightWay
 
 object SimpleAI
@@ -20,8 +18,29 @@ object SimpleAI
       minion.unprod()
       return executeProd(engine, minion)
     }
-    // TODO: Iterate through behaviors, compute list of targets and avoids, generate navigation map
-    return Sleep(minion)
+    val sources = mutableMapOf<Coordinate, Int>()
+    ai.behaviors.forEach { (behavior, weight) ->
+      when (behavior)
+      {
+        Behavior.MOVE_TO_CONJURER -> sources[engine.world.conjurer.coordinate] = weight
+        Behavior.MOVE_TO_ROGUE -> sources[engine.world.rogue.coordinate] = weight
+      }
+    }
+    L.debug("Minion {} has sources {}", minion, sources)
+
+    // TODO: A few issues here.  Probably need a navigation map that computes based on ignore creatures, but selects
+    //       the best next move taking them into account.
+    //       Though if we are right next to a hostile, attack rather than move.
+    //       Right now it simply navigates towards the rogue/conjurer, which is okay
+
+    val direction = ai.navigationMap.compute(sources).getBestMove(minion.coordinate).also {
+      L.info("computed direction {}", it)
+    } ?: return Sleep(minion)
+    val candidate = engine.contextualAction(minion, direction)
+    return if (candidate == null || candidate is ProdCreature)
+      Sleep(minion)
+    else
+      candidate
   }
 
   private fun executeProd(engine: OutrogueEngine, minion: MinionState): Action
