@@ -1,10 +1,7 @@
 package com.degrendel.outrogue.frontend.views
 
-import com.degrendel.outrogue.common.Frontend
-import com.degrendel.outrogue.common.LogMessage
-import com.degrendel.outrogue.common.NavigationMap
+import com.degrendel.outrogue.common.*
 import com.degrendel.outrogue.common.agent.*
-import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.engine.EngineState
@@ -14,6 +11,7 @@ import com.degrendel.outrogue.frontend.views.fragments.WorldFragment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
+import org.hexworks.cobalt.core.internal.toAtom
 import org.hexworks.cobalt.events.api.simpleSubscribeTo
 import org.hexworks.zircon.api.ColorThemes
 import org.hexworks.zircon.api.Components
@@ -22,7 +20,7 @@ import org.hexworks.zircon.api.uievent.*
 import org.hexworks.zircon.api.view.base.BaseView
 import org.hexworks.zircon.internal.Zircon
 
-class InGameView(tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tileGrid), Frontend
+class InGameView(private val tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tileGrid), Frontend
 {
   companion object
   {
@@ -163,6 +161,12 @@ class InGameView(tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tile
       playerActions.offer(it.input)
     }
 
+    Zircon.eventBus.simpleSubscribeTo<NewLogMessage> {
+      L.trace("New log message {}", it.message)
+      logArea.addParagraph(it.message)
+    }
+
+
     engine.bootstrapECS()
   }
 
@@ -220,6 +224,17 @@ class InGameView(tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tile
 
   override fun addLogMessages(messages: List<LogMessage>)
   {
-    TODO("not implemented")
+    L.info("Add {} log messages", messages.size)
+    messages.mapNotNull {
+      when (it)
+      {
+        is AscendStaircaseMessage -> "${it.creature.type.humanName} ascends a staircase to floor ${it.creature.coordinate.floor + 1}"
+        is DescendsStaircaseMessage -> "${it.creature.type.humanName} descends a staircase to floor ${it.creature.coordinate.floor + 1}"
+        is MeleeMissMessage -> "${it.attacker.type.humanName} misses ${it.target.type.humanName} with their TODO" // TODO: Add the weapon
+      }
+    }.forEach {
+      // TODO: This breaks because it causes the event listener to trigger on this thread rather than the Zircon one :/
+      // Zircon.eventBus.publish(NewLogMessage(it, this))
+    }
   }
 }

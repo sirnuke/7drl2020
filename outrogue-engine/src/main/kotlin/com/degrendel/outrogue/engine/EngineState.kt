@@ -169,7 +169,10 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
     }
   }
 
-  private suspend fun executeNextAction() = applyAction(actionQueue.execute())
+  private suspend fun executeNextAction()
+  {
+    applyAction(actionQueue.execute()).let { frontend.addLogMessages(it) }
+  }
 
   fun updateClock(cooldown: Long, creature: CreatureState)
   {
@@ -179,14 +182,45 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
     L.debug("Applied cooldown {} to {}, clock is now {}", cooldown, creature, _clock)
   }
 
-  private fun applyAction(action: Action) = when (action)
+  private fun applyAction(action: Action): List<LogMessage>
   {
-    is Sleep -> L.debug("Creature {} sleeps", action.creature)
-    is Move -> _world.getLevelState(action.creature).move(action.creature as CreatureState, action.direction)
-    is GoDownStaircase -> _world.navigateStaircase(action.creature as CreatureState, descending = true)
-    is GoUpStaircase -> _world.navigateStaircase(action.creature as CreatureState, descending = false)
-    is MeleeAttack -> _world.performMeleeAttack(action.creature as CreatureState, action.target as CreatureState)
-    is ProdCreature -> (action.target as MinionState).prod(clock)
+    return when (action)
+    {
+      is Sleep ->
+      {
+        L.debug("Creature {} sleeps", action.creature)
+        listOf()
+      }
+      is Move ->
+      {
+        _world.getLevelState(action.creature).move(action.creature as CreatureState, action.direction)
+        listOf()
+      }
+      is GoDownStaircase ->
+      {
+        _world.navigateStaircase(action.creature as CreatureState, descending = true)
+        listOf(DescendsStaircaseMessage(action.creature))
+      }
+      is GoUpStaircase ->
+      {
+        _world.navigateStaircase(action.creature as CreatureState, descending = false)
+        listOf(AscendStaircaseMessage(action.creature))
+      }
+      is MeleeAttack ->
+      {
+        _world.performMeleeAttack(action.creature as CreatureState, action.target as CreatureState).let {
+          if (it == 0)
+            listOf(MeleeMissMessage(action.creature, action.target))
+          else
+            TODO("Message for attack connected!")
+        }
+      }
+      is ProdCreature ->
+      {
+        (action.target as MinionState).prod(clock)
+        listOf()
+      }
+    }
   }
 
   override fun contextualAction(creature: Creature, eightWay: EightWay): Action?
