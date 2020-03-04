@@ -142,10 +142,12 @@ class WorldState(val engine: EngineState) : World
         && from.canInteract(this, to))
   }
 
-  fun performMeleeAttack(attacker: CreatureState, defender: CreatureState)
+  // TODO: Want a sealed class that returns the status; weapon missed vs weapon did damage
+  fun performMeleeAttack(attacker: CreatureState, defender: CreatureState): Int
   {
     // TODO: Get weapons (or fists) definitions, +/- based on junk, compute whether he hits.  Probably want to return a
     //       string update of some sort?  Probably message enum
     L.warn("TODO: {} attacks {}!", attacker, defender)
+    return 0
   }
 }
