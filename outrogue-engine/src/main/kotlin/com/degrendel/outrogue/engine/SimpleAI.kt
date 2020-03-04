@@ -9,7 +9,7 @@ object SimpleAI
 {
   private val L by logger()
 
-  fun executeSimpleAI(engine: OutrogueEngine, minion: MinionState, ai: SimpleController): Action
+  fun executeSimpleAI(engine: EngineState, minion: MinionState, ai: SimpleController): Action
   {
     L.debug("Executing simple AI {} on minion {}", ai, minion)
     // Responding to a prod always comes first
@@ -51,7 +51,7 @@ object SimpleAI
     return Sleep(minion)
   }
 
-  private fun executeProd(engine: OutrogueEngine, minion: MinionState): Action
+  private fun executeProd(engine: EngineState, minion: MinionState): Action
   {
     L.info("Minion {} is executing prod", minion)
     val level = engine.world.getLevel(minion.coordinate)

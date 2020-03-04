@@ -1,7 +1,6 @@
 package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
-import com.badlogic.ashley.core.Family
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.world.*
@@ -9,7 +8,7 @@ import com.degrendel.outrogue.common.world.Level.Companion.floorRange
 import com.degrendel.outrogue.common.world.creatures.Creature
 import com.degrendel.outrogue.common.world.creatures.Rogue
 
-class WorldState(val engine: OutrogueEngine) : World
+class WorldState(val engine: EngineState) : World
 {
   companion object
   {

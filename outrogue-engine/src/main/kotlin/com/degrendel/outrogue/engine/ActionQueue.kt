@@ -10,7 +10,7 @@ import com.degrendel.outrogue.common.components.CreatureComponent
 import com.degrendel.outrogue.common.components.getCreature
 import java.util.*
 
-class ActionQueue(private val engine: OutrogueEngine) : EntityListener
+class ActionQueue(private val engine: EngineState) : EntityListener
 {
   companion object
   {

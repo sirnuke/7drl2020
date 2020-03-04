@@ -14,7 +14,6 @@ import com.degrendel.outrogue.common.world.Square
 import com.degrendel.outrogue.common.world.World
 import com.degrendel.outrogue.common.world.creatures.*
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.abs
 
 sealed class CreatureState(final override val entity: Entity, initial: Coordinate, override val maxHp: Int) : Creature
 {
@@ -89,7 +88,7 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   }
 }
 
-class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initial: Coordinate, initialClock: Long) : CreatureState(entity, initial, P.rogue.hp), Rogue
+class RogueState(val engine: EngineState, world: World, entity: Entity, initial: Coordinate, initialClock: Long) : CreatureState(entity, initial, P.rogue.hp), Rogue
 {
   override val allegiance = Allegiance.ROGUE
   override val type = CreatureType.ROGUE

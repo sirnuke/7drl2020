@@ -8,9 +8,7 @@ import com.degrendel.outrogue.common.NavigationMap
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
-import com.degrendel.outrogue.common.world.Level
 import com.degrendel.outrogue.common.world.Square
-import com.degrendel.outrogue.frontend.Application
 import com.degrendel.outrogue.frontend.LaunchProfile
 import com.degrendel.outrogue.frontend.MouseButtons
 import com.degrendel.outrogue.frontend.TileLibrary
@@ -40,7 +38,7 @@ class WorldFragment(private val engine: Engine, profile: LaunchProfile, screen: 
 
   private val baseLayer = LayerData().also { screen.addLayer(it.layer) }
   private val creatureLayer = LayerData().also { screen.addLayer(it.layer) }
-  private val debugNavigationMapLayer = LayerData().also { screen.addLayer(it.layer) }
+  private val debugLayer = LayerData().also { screen.addLayer(it.layer) }
   private val knownSquaresLayer = LayerData().also { screen.addLayer(it.layer) }
   private val visibleSquaresLayer = LayerData().also { screen.addLayer(it.layer) }
 
@@ -177,25 +175,25 @@ class WorldFragment(private val engine: Engine, profile: LaunchProfile, screen: 
     visibleSquaresLayer.draw()
   }
 
-  fun setNavigationMap(map: NavigationMap)
+  fun setDebugNavigationMap(map: NavigationMap)
   {
     Square.each { x, y ->
-      debugNavigationMapLayer[x, y] = TileLibrary.getDebugNavigationMapTile(map.data[x][y])
+      debugLayer[x, y] = TileLibrary.getDebugTile(map.data[x][y])
     }
   }
 
   fun setDebugTile(x: Int, y: Int, value: Int)
   {
-    debugNavigationMapLayer[x, y] = TileLibrary.getDebugNavigationMapTile(value)
+    debugLayer[x, y] = TileLibrary.getDebugTile(value)
   }
 
   fun toggleDrawingDebugMap()
   {
     debugDrawing = !debugDrawing
     if (debugDrawing)
-      debugNavigationMapLayer.draw()
+      debugLayer.draw()
     else
-      debugNavigationMapLayer.clearScreen()
+      debugLayer.clearScreen()
   }
 
   class LayerData

@@ -2,7 +2,6 @@ package com.degrendel.outrogue.frontend
 
 import com.degrendel.outrogue.common.*
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
-import com.degrendel.outrogue.engine.OutrogueEngine
 import com.degrendel.outrogue.frontend.views.InGameView
 import org.hexworks.zircon.api.CP437TilesetResources
 import org.hexworks.zircon.api.SwingApplications

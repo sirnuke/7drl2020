@@ -7,8 +7,7 @@ import com.degrendel.outrogue.common.agent.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.EightWay
-import com.degrendel.outrogue.engine.OutrogueEngine
-import com.degrendel.outrogue.frontend.Application
+import com.degrendel.outrogue.engine.EngineState
 import com.degrendel.outrogue.frontend.LaunchProfile
 import com.degrendel.outrogue.frontend.events.*
 import com.degrendel.outrogue.frontend.views.fragments.WorldFragment
@@ -29,7 +28,7 @@ class InGameView(tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tile
     private val L by logger()
   }
 
-  val engine = OutrogueEngine(this, profile.randomSeed)
+  val engine = EngineState(this, profile.randomSeed)
 
   private val world = WorldFragment(engine, profile, screen)
   private var job: Job? = null
@@ -201,7 +200,7 @@ class InGameView(tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tile
     return action
   }
 
-  override fun drawNavigationMap(map: NavigationMap) = world.setNavigationMap(map)
+  override fun drawNavigationMap(map: NavigationMap) = world.setDebugNavigationMap(map)
 
   override fun drawDebug(x: Int, y: Int, value: Int) = world.setDebugTile(x, y, value)
 

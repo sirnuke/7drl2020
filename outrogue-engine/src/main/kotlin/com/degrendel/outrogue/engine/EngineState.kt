@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
-class OutrogueEngine(val frontend: Frontend, overrideSeed: Long?) : Engine
+class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
 {
   companion object
   {
