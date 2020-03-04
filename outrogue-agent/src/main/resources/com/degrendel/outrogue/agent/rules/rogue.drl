@@ -4,6 +4,7 @@ package com.degrendel.outrogue.agent.rules
 
 import com.degrendel.outrogue.agent.goals.*
 import com.degrendel.outrogue.agent.goals.actions.*
+import com.degrendel.outrogue.agent.inputs.*
 import com.degrendel.outrogue.agent.RogueAgent
 import org.slf4j.Logger
 
@@ -30,6 +31,14 @@ when
     $goal : Goal()
 then
     L.debug("New goal: {}", $goal)
+end
+
+rule "Monitor new entity"
+salience 80
+when
+    $creature : CreatureInput()
+then
+    L.debug("New creature: {}", $creature)
 end
 
 rule "Select explore action goal"

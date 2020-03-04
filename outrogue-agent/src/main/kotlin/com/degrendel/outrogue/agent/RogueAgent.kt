@@ -9,10 +9,15 @@ import org.kie.api.KieServices
 import org.kie.api.runtime.KieSession
 import java.io.File
 import ch.qos.logback.classic.Logger
+import com.badlogic.ashley.core.Entity
+import com.badlogic.ashley.core.EntityListener
 import com.degrendel.outrogue.agent.goals.DecideAction
 import com.degrendel.outrogue.agent.inputs.AutoClean
+import com.degrendel.outrogue.agent.inputs.CreatureInput
 import com.degrendel.outrogue.agent.inputs.ExploreOption
+import com.degrendel.outrogue.agent.inputs.toInput
 import com.degrendel.outrogue.common.agent.Sleep
+import com.degrendel.outrogue.common.components.getCreature
 import org.kie.api.runtime.rule.FactHandle
 import org.slf4j.LoggerFactory
 
@@ -27,6 +32,8 @@ class RogueAgent(val engine: Engine) : Agent
   }
 
   private val session: KieSession
+
+  private val creatureInputs = mutableMapOf<Int, FactHandle>()
 
   init
   {
@@ -43,6 +50,21 @@ class RogueAgent(val engine: Engine) : Agent
 
     session.setGlobal("agent", this)
     session.setGlobal("L", L)
+
+    engine.ecs.addEntityListener(engine.creaturesKnownToRogue, object : EntityListener
+    {
+      override fun entityAdded(entity: Entity)
+      {
+        val creature = entity.getCreature().toInput(engine.world)
+        assert(creature.id !in creatureInputs)
+        creatureInputs[creature.id] = session.insert(creature)
+      }
+
+      override fun entityRemoved(entity: Entity)
+      {
+        session.delete(creatureInputs.getValue(entity.getCreature().id))
+      }
+    })
   }
 
   override fun enableDebugging()
@@ -61,6 +83,10 @@ class RogueAgent(val engine: Engine) : Agent
     val rogue = engine.world.rogue
     session.setGlobal("creature", rogue)
     session.setGlobal("level", engine.world.getLevel(rogue.coordinate.floor))
+
+    engine.ecs.getEntitiesFor(engine.creaturesKnownToRogue)
+        .map { it.getCreature().toInput(engine.world) }
+        .forEach { session.update(creatureInputs.getValue(it.id), it) }
 
     rogue.computeExploreDirection()?.let { session.insert(ExploreOption(it)) }
 
