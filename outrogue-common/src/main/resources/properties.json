@@ -36,6 +36,9 @@
     "prod": 80,
     "melee": 120
   },
+  "conjurer": {
+    "hp": 10
+  },
   "creatures":
   {
     "KESTREL" : {

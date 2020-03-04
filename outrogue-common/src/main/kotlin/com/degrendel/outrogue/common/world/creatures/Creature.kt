@@ -24,6 +24,10 @@ interface Creature
   val active: Boolean
   // Whether this creature has been prodded to move out of the way
   val prodded: Boolean
+  // The number of hit points this creature currently has
+  val hp: Int
+  // And its max number of hit points
+  val maxHp: Int
 }
 
 enum class CreatureType(val humanName: String)

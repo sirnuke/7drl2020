@@ -7,6 +7,7 @@ import com.degrendel.outrogue.common.agent.PlayerController
 import com.degrendel.outrogue.common.agent.SimpleController
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.logger
+import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.common.world.Square
@@ -15,7 +16,7 @@ import com.degrendel.outrogue.common.world.creatures.*
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.abs
 
-sealed class CreatureState(final override val entity: Entity, initial: Coordinate) : Creature
+sealed class CreatureState(final override val entity: Entity, initial: Coordinate, override val maxHp: Int) : Creature
 {
   companion object
   {
@@ -34,6 +35,9 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   private var _active = false
 
   override val active get() = _active
+
+  private var _hp = maxHp
+  override val hp get() = _hp
 
   init
   {
@@ -83,7 +87,7 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   }
 }
 
-class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initial: Coordinate, initialClock: Long) : CreatureState(entity, initial), Rogue
+class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initial: Coordinate, initialClock: Long, hp: Int) : CreatureState(entity, initial, hp), Rogue
 {
   override val allegiance = Allegiance.ROGUE
   override val type = CreatureType.ROGUE
@@ -116,7 +120,7 @@ class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initi
   }
 }
 
-class ConjurerState(entity: Entity, initial: Coordinate) : CreatureState(entity, initial)
+class ConjurerState(entity: Entity, initial: Coordinate) : CreatureState(entity, initial, P.conjurer.hp)
 {
   override val allegiance = Allegiance.CONJURER
   override val type = CreatureType.CONJURER
@@ -131,8 +135,8 @@ class ConjurerState(entity: Entity, initial: Coordinate) : CreatureState(entity,
 }
 
 class MinionState(entity: Entity, initial: Coordinate, private var _allegiance: Allegiance, override val type: CreatureType,
-                  initialController: SimpleController)
-  : CreatureState(entity, initial)
+                  initialController: SimpleController, hp: Int)
+  : CreatureState(entity, initial, hp)
 {
   companion object
   {
