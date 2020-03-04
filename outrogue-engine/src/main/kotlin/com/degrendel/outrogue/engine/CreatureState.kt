@@ -87,7 +87,7 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   }
 }
 
-class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initial: Coordinate, initialClock: Long, hp: Int) : CreatureState(entity, initial, hp), Rogue
+class RogueState(val engine: OutrogueEngine, world: World, entity: Entity, initial: Coordinate, initialClock: Long) : CreatureState(entity, initial, P.rogue.hp), Rogue
 {
   override val allegiance = Allegiance.ROGUE
   override val type = CreatureType.ROGUE

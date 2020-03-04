@@ -17,7 +17,10 @@
     },
     "features": {
       "max-placement-attempts": 1000,
-      "extra-staircases": [0.2, 0.05],
+      "extra-staircases": [
+        0.2,
+        0.05
+      ],
       "monster-spawn-start": 10.0,
       "monster-spawn-scale": 2.0
     }
@@ -39,9 +42,11 @@
   "conjurer": {
     "hp": 10
   },
-  "creatures":
-  {
-    "KESTREL" : {
+  "rogue": {
+    "hp": 100
+  },
+  "creatures": {
+    "KESTREL": {
       "hp": 10,
       "cost": 2.0,
       "earliest-level": 0,

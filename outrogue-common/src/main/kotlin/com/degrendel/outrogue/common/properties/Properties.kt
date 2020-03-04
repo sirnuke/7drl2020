@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
-data class Properties(val window: Window, val map: Map, val views: Views, val costs: Costs, val conjurer: Conjurer,val creatures: kotlin.collections.Map<CreatureType, Creature>)
+data class Properties(val window: Window, val map: Map, val views: Views, val costs: Costs, val conjurer: Conjurer, val rogue: Rogue, val creatures: kotlin.collections.Map<CreatureType, Creature>)
 {
   companion object
   {
@@ -36,6 +36,7 @@ data class Views(val world: World)
 data class World(val mapX: Int, val mapY: Int, val maxQueuedActions: Int)
 data class Costs(val sleep: Long, val move: Long, val staircase: Long, val prod: Long, val melee: Long)
 data class Conjurer(val hp: Int)
+data class Rogue(val hp: Int)
 data class Creature(val hp: Int, // The base HP of this creature
                     val cost: Double, // The cost of this creature, when randomly spawning it
                     val earliestLevel: Int, // The earliest level this creature can appear
