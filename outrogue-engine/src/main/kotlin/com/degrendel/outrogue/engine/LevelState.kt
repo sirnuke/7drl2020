@@ -159,7 +159,11 @@ class LevelState(val floor: Int, previous: Level?, private val engine: Engine) :
     {
       val toSpawn = monsters.keys.random(random)
       val definition = monsters.getValue(toSpawn)
-      val controller = SimpleController(definition.behaviors, (0..0), NavigationMapImpl(random, world))
+      // NOTE: Perform navigation without taking into account blocking entities.  When actually selecting the next move,
+      // take entities into account (done elsewhere).  This might cause traffic jams and whatnot, but whatever, minions
+      // are stupid.  Conjurer (player) and Rogue (Drools agent) should be a bit smarter, which is desirable anyway
+      val navigation = NavigationMapImpl(random, world) { !it.type.blocked }
+      val controller = SimpleController(definition.behaviors, (0..0), navigation)
       val spawned = create(1, 0, {
         getSquareState(it).let { option: SquareState -> option.creature == null && !option.type.staircase }
       }) {
