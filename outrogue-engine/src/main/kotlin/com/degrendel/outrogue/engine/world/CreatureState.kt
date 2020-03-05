@@ -34,8 +34,10 @@ sealed class CreatureState(final override val entity: Entity,
 
   abstract val noWeapon: WeaponState
   abstract val noArmor: ArmorState
-  abstract override val weapon: Weapon
-  abstract override val armor: Armor
+  protected abstract var weaponState: WeaponState
+  protected abstract var armorState: ArmorState
+  final override val weapon: Weapon get() = weaponState
+  final override val armor: Armor get() = armorState
 
   // TODO: Implement this based on strength (categories?)
   override val toHit: Int
@@ -119,6 +121,18 @@ sealed class CreatureState(final override val entity: Entity,
     else
       DamageResult.SUSTAINED
   }
+
+  fun putOnArmor(armor: ArmorState)
+  {
+    assert(armor.currentlyWhere.let { it is InInventory && it.creature == this})
+    armorState = armor
+  }
+
+  fun wieldWeapon(weapon: WeaponState)
+  {
+    assert(weapon.currentlyWhere.let { it is InInventory && it.creature == this})
+    weaponState = weapon
+  }
 }
 
 class RogueState(private val engine: Engine, world: World, entity: Entity, initial: Coordinate, initialClock: Long)
@@ -133,11 +147,8 @@ class RogueState(private val engine: Engine, world: World, entity: Entity, initi
   override val noWeapon = WeaponState(WeaponType.FISTS, P.rogue.toHit,
       P.rogue.melee.toInstance(engine.random), InInventory(this), weight = 0)
 
-  private var _weapon: Weapon = noWeapon
-  override val weapon: Weapon get() = _weapon
-
-  private var _armor: ArmorState = noArmor
-  override val armor: Armor get() = _armor
+  override var armorState: ArmorState = noArmor
+  override var weaponState: WeaponState = noWeapon
 
   override val prodded = false
 
@@ -177,11 +188,8 @@ class ConjurerState(private val engine: Engine, entity: Entity, initial: Coordin
   override val noWeapon = WeaponState(WeaponType.FISTS, P.rogue.toHit,
       P.conjurer.melee.toInstance(engine.random), InInventory(this), weight = 0)
 
-  private var _armor = noArmor
-  override val armor: Armor get() = _armor
-
-  private var _weapon = noWeapon
-  override val weapon: Weapon get() = _weapon
+  override var armorState: ArmorState = noArmor
+  override var weaponState: WeaponState = noWeapon
 
   init
   {
@@ -219,9 +227,8 @@ class MinionState(private val engine: Engine, world: World, entity: Entity, init
         InInventory(this), weight = 0)
   }
 
-  // TODO: These assume minions can't equip random things - not (yet) true
-  override val weapon: Weapon get() = noWeapon
-  override val armor: Armor get() = noArmor
+  override var armorState: ArmorState = noArmor
+  override var weaponState: WeaponState = noWeapon
 
   private var _activeStatus = ActiveStatus.ASLEEP
   val activeStatus get() = _activeStatus
