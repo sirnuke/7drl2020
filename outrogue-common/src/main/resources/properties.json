@@ -3,7 +3,7 @@
     "width": 120,
     "height": 75,
     "title": "OUTROGUE",
-    "font": "CP47_12x12",
+    "font": "CP47_12X12",
     "fps-limit": 120,
     "display-version": true,
     "display-build-date": true
@@ -53,10 +53,24 @@
     "melee": 120
   },
   "conjurer": {
-    "hp": 10
+    "hp": 10,
+    "strength": 6,
+    "ac": 0,
+    "to-hit": 2,
+    "melee": {
+      "rolls": 1,
+      "sides": 2
+    }
   },
   "rogue": {
-    "hp": 100
+    "hp": 100,
+    "strength": 16,
+    "ac": 0,
+    "to-hit": 2,
+    "melee": {
+      "rolls": 1,
+      "sides": 2
+    }
   },
   "creatures": {
     "KESTREL": {
@@ -64,6 +78,16 @@
       "cost": 2.0,
       "earliest-level": 0,
       "allegiance": "CONJURER",
+      "armor-name": "Hide",
+      "weapon-name": "claws",
+      "damage": {
+        "sides": 4,
+        "rolls": 1
+      },
+      "target-weight": {
+        "from": 0,
+        "to": 0
+      },
       "behaviors": {
         "MOVE_TO_ROGUE": 0
       }

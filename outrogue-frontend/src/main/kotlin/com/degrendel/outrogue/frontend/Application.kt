@@ -47,9 +47,9 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
 
     val font = when(P.window.font)
     {
-      Font.CP47_10x10 -> CP437TilesetResources.rexPaint10x10()
-      Font.CP47_12x12 -> CP437TilesetResources.rexPaint12x12()
-      Font.CP47_16x16 -> CP437TilesetResources.rexPaint16x16()
+      Font.CP47_10X10 -> CP437TilesetResources.rexPaint10x10()
+      Font.CP47_12X12 -> CP437TilesetResources.rexPaint12x12()
+      Font.CP47_16X16 -> CP437TilesetResources.rexPaint16x16()
     }
 
     var appConfig = AppConfig.newBuilder()
