@@ -1,13 +1,14 @@
 package com.degrendel.outrogue.frontend
 
 import com.degrendel.outrogue.common.*
-import com.degrendel.outrogue.common.properties.Font
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.frontend.views.InGameView
 import org.hexworks.zircon.api.CP437TilesetResources
 import org.hexworks.zircon.api.SwingApplications
 import org.hexworks.zircon.api.application.AppConfig
+import org.hexworks.zircon.api.application.Application
 import org.hexworks.zircon.api.application.DebugConfig
+import org.hexworks.zircon.api.extensions.toScreen
 import org.hexworks.zircon.api.grid.TileGrid
 import org.hexworks.zircon.api.uievent.*
 import java.util.concurrent.locks.Condition
@@ -25,6 +26,7 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
 
   val tileGrid: TileGrid
   val inGameView: InGameView
+  val application: Application
 
   init
   {
@@ -45,11 +47,13 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
         title += "built on $BUILD_DATE "
     }
 
-    val font = when(P.window.font)
+    //val font = TrueTypeFontResources.ibmBios(16)
+    val font = when(P.window.fontSize)
     {
-      Font.CP47_10X10 -> CP437TilesetResources.rexPaint10x10()
-      Font.CP47_12X12 -> CP437TilesetResources.rexPaint12x12()
-      Font.CP47_16X16 -> CP437TilesetResources.rexPaint16x16()
+      10 -> CP437TilesetResources.rexPaint10x10()
+      12 -> CP437TilesetResources.rexPaint12x12()
+      16 -> CP437TilesetResources.rexPaint16x16()
+      else -> throw IllegalArgumentException("Unhandled font size ${P.window.fontSize}")
     }
 
     var appConfig = AppConfig.newBuilder()
@@ -63,11 +67,13 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
     if (profile.fullscreen)
       appConfig = appConfig.fullScreen()
 
-    tileGrid = SwingApplications.startTileGrid(appConfig.build())
+    application = SwingApplications.startApplication(appConfig.build())
+
+    tileGrid = application.tileGrid
 
     tileGrid.onShutdown { lock.withLock { condition.signal() } }
 
-    inGameView = InGameView(tileGrid, profile)
+    inGameView = InGameView(application, tileGrid, profile)
 
     if (profile.zirconDebugMode)
     {

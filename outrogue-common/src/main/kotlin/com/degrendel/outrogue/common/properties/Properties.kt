@@ -24,15 +24,7 @@ data class Properties(val window: Window, val map: Map, val views: Views, val co
   }
 }
 
-enum class Font
-{
-  CP47_16X16,
-  CP47_12X12,
-  CP47_10X10,
-  ;
-}
-
-data class Window(val width: Int, val height: Int, val title: String, val fpsLimit: Int, val font: Font, val displayVersion: Boolean, val displayBuildDate: Boolean)
+data class Window(val width: Int, val height: Int, val title: String, val fpsLimit: Int, val fontSize: Int, val displayVersion: Boolean, val displayBuildDate: Boolean)
 data class Map(val width: Int, val height: Int, val floors: Int, val rooms: Rooms, val features: Features)
 data class Features(val maxPlacementAttempts: Int, // When to give up on attempting to randomly place something (might be an assert error, might skip)
                     val extraStaircases: List<Double>, // How many extra staircases to spawn?  Each one is a probability [0,1), lower is less likely

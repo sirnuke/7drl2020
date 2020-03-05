@@ -11,18 +11,20 @@ import com.degrendel.outrogue.frontend.views.fragments.WorldFragment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
-import org.hexworks.cobalt.core.internal.toAtom
+import org.hexworks.cobalt.events.api.Subscription
 import org.hexworks.cobalt.events.api.simpleSubscribeTo
-import org.hexworks.zircon.api.CP437TilesetResources
 import org.hexworks.zircon.api.ColorThemes
 import org.hexworks.zircon.api.ComponentDecorations.box
 import org.hexworks.zircon.api.Components
+import org.hexworks.zircon.api.TrueTypeFontResources
+import org.hexworks.zircon.api.application.Application
 import org.hexworks.zircon.api.grid.TileGrid
 import org.hexworks.zircon.api.uievent.*
 import org.hexworks.zircon.api.view.base.BaseView
 import org.hexworks.zircon.internal.Zircon
+import java.util.concurrent.LinkedBlockingQueue
 
-class InGameView(private val tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tileGrid), Frontend
+class InGameView(private val application: Application, private val tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tileGrid), Frontend
 {
   companion object
   {
@@ -36,6 +38,7 @@ class InGameView(private val tileGrid: TileGrid, val profile: LaunchProfile) : B
       .withSize(P.views.world.log.width, P.views.world.log.height)
       .withPosition(P.views.world.log.x, P.views.world.log.y)
       .withDecorations(box(title = "Log"))
+      .withTileset(TrueTypeFontResources.ibmBios(P.window.fontSize))
       .build()
   private val sidebar = Components.panel()
       .withSize(P.views.world.sidebar.width, P.views.world.sidebar.height)
@@ -44,6 +47,10 @@ class InGameView(private val tileGrid: TileGrid, val profile: LaunchProfile) : B
       .build()
 
   private var job: Job? = null
+
+  private lateinit var logUpdateSubscription: Subscription
+
+  private val logMessages = LinkedBlockingQueue<LogMessage>()
 
   // While this initial channel is not listened to (new one is created before the game loop starts), create it anyway
   // so any inputs that happen to come in before onDock completes don't trigger a lateinit error
@@ -181,10 +188,26 @@ class InGameView(private val tileGrid: TileGrid, val profile: LaunchProfile) : B
     // Recreate the channel, since closing it
     playerActions = Channel(capacity = P.views.world.maxQueuedActions)
     job = engine.runGame()
+
+    logUpdateSubscription = application.beforeRender {
+      ArrayList<LogMessage>().also { logMessages.drainTo(it) }.mapNotNull {
+        when (it)
+        {
+          is AscendStaircaseMessage -> "${it.creature.type.humanName} ascends a staircase to floor ${it.creature.coordinate.floor + 1}"
+          is DescendsStaircaseMessage -> "${it.creature.type.humanName} descends a staircase to floor ${it.creature.coordinate.floor + 1}"
+          is MeleeMissMessage -> "${it.attacker.type.humanName} misses ${it.target.type.humanName} with their ${it.attacker.weapon.weaponType.humanName}"
+          is MeleeDamageMessage -> "${it.attacker.type.humanName} hits ${it.target.type.humanName} with their ${it.attacker.weapon.weaponType.humanName} for ${it.damage} damage"
+          is MeleeDefeatedMessage -> TODO()
+        }
+      }.forEach {
+        logArea.addParagraph(it, withNewLine = false)
+      }
+    }
   }
 
   override fun onUndock()
   {
+    logUpdateSubscription.dispose()
     // TODO: Do we need to do anything here? Shutdown the engine? Dispose drools?
   }
 
@@ -224,15 +247,6 @@ class InGameView(private val tileGrid: TileGrid, val profile: LaunchProfile) : B
   {
     L.info("Add {} log messages", messages.size)
     // TODO: color/stylize messages
-    messages.mapNotNull {
-      when (it)
-      {
-        is AscendStaircaseMessage -> "${it.creature.type.humanName} ascends a staircase to floor ${it.creature.coordinate.floor + 1}"
-        is DescendsStaircaseMessage -> "${it.creature.type.humanName} descends a staircase to floor ${it.creature.coordinate.floor + 1}"
-        is MeleeMissMessage -> "${it.attacker.type.humanName} misses ${it.target.type.humanName} with their ${it.attacker.weapon.weaponType.humanName}"
-        is MeleeDamageMessage -> "${it.attacker.type.humanName} hits ${it.target.type.humanName} with their ${it.attacker.weapon.weaponType.humanName} for ${it.damage} damage"
-        is MeleeDefeatedMessage -> TODO()
-      }
-    }.forEach { logArea.addParagraph(it, withNewLine = false) }
+    logMessages.addAll(messages)
   }
 }
