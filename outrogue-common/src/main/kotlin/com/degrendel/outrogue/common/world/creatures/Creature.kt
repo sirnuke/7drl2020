@@ -33,6 +33,8 @@ interface Creature
   val maxHp: Int
   // Current strength
   val strength: Int
+  // Base to-hit for this creature
+  val toHit: Int
   // Max strength
   val maxStrength: Int
   // Currently equipped weapon

@@ -37,6 +37,10 @@ sealed class CreatureState(final override val entity: Entity,
   abstract override val weapon: Weapon
   abstract override val armor: Armor
 
+  // TODO: Implement this based on strength (categories?)
+  override val toHit: Int
+    get() = 0
+
   val inventoryState = InventoryState()
   override val inventory: Inventory get() = inventoryState
 
