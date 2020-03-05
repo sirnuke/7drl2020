@@ -33,7 +33,7 @@ class WorldState(val engine: EngineState) : World
       level.getRandomRooms(2).let { rooms ->
         assert(rooms.size == 2)
         // TODO: Filter to avoid staircases
-        _conjurer = ConjurerState(Entity(), rooms[0].getRandomSquare { true }!!)
+        _conjurer = ConjurerState(engine, Entity(), rooms[0].getRandomSquare { true }!!)
             .also { level.spawn(it) }
         _rogue = RogueState(engine, this, Entity(), rooms[1].getRandomSquare { true }!!, 0L)
             .also { level.spawn(it) }

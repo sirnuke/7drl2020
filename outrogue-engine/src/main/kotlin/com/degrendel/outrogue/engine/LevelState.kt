@@ -167,7 +167,7 @@ class LevelState(val floor: Int, previous: Level?, private val engine: Engine) :
       val spawned = create(1, 0, {
         getSquareState(it).let { option: SquareState -> option.creature == null && !option.type.staircase }
       }) {
-        spawn(MinionState(Entity(), it, definition.allegiance, toSpawn, controller, definition.hp))
+        spawn(MinionState(engine, world, Entity(), it, toSpawn))
       }
       if (spawned == 0)
       {

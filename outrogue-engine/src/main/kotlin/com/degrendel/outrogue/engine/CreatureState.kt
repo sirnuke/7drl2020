@@ -1,43 +1,61 @@
 package com.degrendel.outrogue.engine
 
 import com.badlogic.ashley.core.Entity
+import com.degrendel.outrogue.common.Engine
 import com.degrendel.outrogue.common.agent.AgentController
 import com.degrendel.outrogue.common.agent.Controller
 import com.degrendel.outrogue.common.agent.PlayerController
 import com.degrendel.outrogue.common.agent.SimpleController
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.logger
+import com.degrendel.outrogue.common.properties.CreatureDefinition
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
-import com.degrendel.outrogue.common.world.Coordinate
-import com.degrendel.outrogue.common.world.EightWay
-import com.degrendel.outrogue.common.world.Square
-import com.degrendel.outrogue.common.world.World
+import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.creatures.*
+import com.degrendel.outrogue.common.world.items.*
+import com.degrendel.outrogue.engine.items.ArmorState
+import com.degrendel.outrogue.engine.items.WeaponState
 import java.util.concurrent.atomic.AtomicInteger
 
-sealed class CreatureState(final override val entity: Entity, initial: Coordinate, override val maxHp: Int) : Creature
+sealed class CreatureState(final override val entity: Entity,
+                           initial: Coordinate,
+                           final override val maxHp: Int,
+                           final override val maxStrength: Int)
+  : Creature
 {
   companion object
   {
     private val L by logger()
+
     // Probably won't ever be creating creatures in two different threads, but just in case.
     private val nextId = AtomicInteger()
   }
+
+  abstract val noWeapon: WeaponState
+  abstract val noArmor: ArmorState
+  abstract override val weapon: Weapon
+  abstract override val armor: Armor
+
+  val inventoryState = InventoryState()
+  override val inventory: Inventory get() = inventoryState
 
   private var _coordinate: Coordinate = initial
   override val coordinate get() = _coordinate
 
   private var _clock = 0L
-  override val clock get() = _clock
+  final override val clock get() = _clock
 
-  override val id = nextId.getAndIncrement()
+  final override val id = nextId.getAndIncrement()
 
   private var _active = false
 
-  override val active get() = _active
+  final override val active get() = _active
 
   private var _hp = maxHp
-  override val hp get() = _hp
+  final override val hp get() = _hp
+
+  private var _strength = maxStrength
+  final override val strength get() = _strength
 
   init
   {
@@ -88,14 +106,27 @@ sealed class CreatureState(final override val entity: Entity, initial: Coordinat
   }
 }
 
-class RogueState(val engine: EngineState, world: World, entity: Entity, initial: Coordinate, initialClock: Long) : CreatureState(entity, initial, P.rogue.hp), Rogue
+class RogueState(private val engine: Engine, world: World, entity: Entity, initial: Coordinate, initialClock: Long)
+  : CreatureState(entity, initial, maxHp = P.rogue.hp, maxStrength = P.rogue.strength), Rogue
 {
+
   override val allegiance = Allegiance.ROGUE
   override val type = CreatureType.ROGUE
   override val controller = AgentController
 
+  override val noArmor = ArmorState(ArmorType.NO_ARMOR, P.rogue.ac, InInventory(this), weight = 0)
+  override val noWeapon = WeaponState(WeaponType.FISTS, P.rogue.toHit,
+      P.rogue.melee.toInstance(engine.random), InInventory(this), weight = 0)
+
+  private var _weapon: Weapon = noWeapon
+  override val weapon: Weapon get() = _weapon
+
+  private var _armor: ArmorState = noArmor
+  override val armor: Armor get() = _armor
+
   override val prodded = false
 
+  // NOTE: Why is world passed in? Because engine.world isn't necessarily initialized, but need engine for other things
   private val exploreMap = NavigationMapImpl(engine.random, world)
 
   init
@@ -119,12 +150,23 @@ class RogueState(val engine: EngineState, world: World, entity: Entity, initial:
   }
 }
 
-class ConjurerState(entity: Entity, initial: Coordinate) : CreatureState(entity, initial, P.conjurer.hp)
+class ConjurerState(private val engine: Engine, entity: Entity, initial: Coordinate)
+  : CreatureState(entity, initial, maxHp = P.conjurer.hp, maxStrength = P.conjurer.strength)
 {
   override val allegiance = Allegiance.CONJURER
   override val type = CreatureType.CONJURER
   override val controller = PlayerController
   override val prodded = false
+
+  override val noArmor = ArmorState(ArmorType.NO_ARMOR, P.conjurer.ac, InInventory(this), weight = 0)
+  override val noWeapon = WeaponState(WeaponType.FISTS, P.rogue.toHit,
+      P.conjurer.melee.toInstance(engine.random), InInventory(this), weight = 0)
+
+  private var _armor = noArmor
+  override val armor: Armor get() = _armor
+
+  private var _weapon = noWeapon
+  override val weapon: Weapon get() = _weapon
 
   init
   {
@@ -133,17 +175,38 @@ class ConjurerState(entity: Entity, initial: Coordinate) : CreatureState(entity,
   }
 }
 
-class MinionState(entity: Entity, initial: Coordinate, private var _allegiance: Allegiance, override val type: CreatureType,
-                  initialController: SimpleController, hp: Int)
-  : CreatureState(entity, initial, hp)
+class MinionState(private val engine: Engine, world: World, entity: Entity, initial: Coordinate,
+                  override val type: CreatureType)
+  : CreatureState(entity, initial, maxHp = P.creatures.getValue(type).hp,
+    maxStrength = P.creatures.getValue(type).strength)
 {
   companion object
   {
     private val L by logger()
   }
 
-  private var _controller = initialController
+  private var _controller: SimpleController
+
+  private var _allegiance: Allegiance
   override val allegiance get() = _allegiance
+  override val noArmor: ArmorState
+  override val noWeapon: WeaponState
+
+  init
+  {
+    val definition = P.creatures.getValue(type)
+    _allegiance = definition.allegiance
+    _controller = SimpleController(definition.behaviors,
+        definition.targetWeight.toInstance(), NavigationMapImpl(engine.random, world))
+
+    noArmor = ArmorState(ArmorType.NO_ARMOR, definition.ac, InInventory(this), weight = 0)
+    noWeapon = WeaponState(WeaponType.FISTS, definition.toHit, definition.damage.toInstance(engine.random),
+        InInventory(this), weight = 0)
+  }
+
+  // TODO: These assume minions can't equip random things - not (yet) true
+  override val weapon: Weapon get() = noWeapon
+  override val armor: Armor get() = noArmor
 
   private var _activeStatus = ActiveStatus.ASLEEP
   val activeStatus get() = _activeStatus
