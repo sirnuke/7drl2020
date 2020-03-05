@@ -229,7 +229,9 @@ class InGameView(private val tileGrid: TileGrid, val profile: LaunchProfile) : B
       {
         is AscendStaircaseMessage -> "${it.creature.type.humanName} ascends a staircase to floor ${it.creature.coordinate.floor + 1}"
         is DescendsStaircaseMessage -> "${it.creature.type.humanName} descends a staircase to floor ${it.creature.coordinate.floor + 1}"
-        is MeleeMissMessage -> "${it.attacker.type.humanName} misses ${it.target.type.humanName} with their TODO" // TODO: Add the weapon
+        is MeleeMissMessage -> "${it.attacker.type.humanName} misses ${it.target.type.humanName} with their ${it.attacker.weapon.weaponType.humanName}"
+        is MeleeDamageMessage -> "${it.attacker.type.humanName} hits ${it.target.type.humanName} with their ${it.attacker.weapon.weaponType.humanName} for ${it.damage} damage"
+        is MeleeDefeatedMessage -> TODO()
       }
     }.forEach { logArea.addParagraph(it, withNewLine = false) }
   }
