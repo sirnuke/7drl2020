@@ -13,7 +13,9 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
 import org.hexworks.cobalt.core.internal.toAtom
 import org.hexworks.cobalt.events.api.simpleSubscribeTo
+import org.hexworks.zircon.api.CP437TilesetResources
 import org.hexworks.zircon.api.ColorThemes
+import org.hexworks.zircon.api.ComponentDecorations.box
 import org.hexworks.zircon.api.Components
 import org.hexworks.zircon.api.grid.TileGrid
 import org.hexworks.zircon.api.uievent.*
@@ -33,10 +35,12 @@ class InGameView(private val tileGrid: TileGrid, val profile: LaunchProfile) : B
   private val logArea = Components.logArea()
       .withSize(P.views.world.log.width, P.views.world.log.height)
       .withPosition(P.views.world.log.x, P.views.world.log.y)
+      .withDecorations(box(title = "Log"))
       .build()
   private val sidebar = Components.panel()
       .withSize(P.views.world.sidebar.width, P.views.world.sidebar.height)
       .withPosition(P.views.world.sidebar.x, P.views.world.sidebar.y)
+      .withDecorations(box(title = "Actions"))
       .build()
 
   private var job: Job? = null
@@ -161,12 +165,6 @@ class InGameView(private val tileGrid: TileGrid, val profile: LaunchProfile) : B
       playerActions.offer(it.input)
     }
 
-    Zircon.eventBus.simpleSubscribeTo<NewLogMessage> {
-      L.trace("New log message {}", it.message)
-      logArea.addParagraph(it.message)
-    }
-
-
     engine.bootstrapECS()
   }
 
@@ -225,6 +223,7 @@ class InGameView(private val tileGrid: TileGrid, val profile: LaunchProfile) : B
   override fun addLogMessages(messages: List<LogMessage>)
   {
     L.info("Add {} log messages", messages.size)
+    // TODO: color/stylize messages
     messages.mapNotNull {
       when (it)
       {
@@ -232,9 +231,6 @@ class InGameView(private val tileGrid: TileGrid, val profile: LaunchProfile) : B
         is DescendsStaircaseMessage -> "${it.creature.type.humanName} descends a staircase to floor ${it.creature.coordinate.floor + 1}"
         is MeleeMissMessage -> "${it.attacker.type.humanName} misses ${it.target.type.humanName} with their TODO" // TODO: Add the weapon
       }
-    }.forEach {
-      // TODO: This breaks because it causes the event listener to trigger on this thread rather than the Zircon one :/
-      // Zircon.eventBus.publish(NewLogMessage(it, this))
-    }
+    }.forEach { logArea.addParagraph(it, withNewLine = false) }
   }
 }

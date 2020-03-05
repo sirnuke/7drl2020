@@ -16,7 +16,7 @@ repositories {
 }
 
 buildscript {
-  extra.set("zirconVersion", "2020.1.0-RELEASE")
+  extra.set("zirconVersion", "2020.1.1-PREVIEW")
 }
 
 dependencies {
