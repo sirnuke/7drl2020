@@ -8,6 +8,7 @@ interface Armor: Item
 
 enum class ArmorType(val humanName: String)
 {
+  NO_ARMOR("No Armor"),
   LEATHER_ARMOR("Leather Armor"),
   ;
 }

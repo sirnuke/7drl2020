@@ -3,6 +3,9 @@ package com.degrendel.outrogue.common.world.creatures
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.agent.Controller
 import com.degrendel.outrogue.common.world.Coordinate
+import com.degrendel.outrogue.common.world.Inventory
+import com.degrendel.outrogue.common.world.items.Armor
+import com.degrendel.outrogue.common.world.items.Weapon
 
 interface Creature
 {
@@ -28,6 +31,16 @@ interface Creature
   val hp: Int
   // And its max number of hit points
   val maxHp: Int
+  // Current strength
+  val strength: Int
+  // Max strength
+  val maxStrength: Int
+  // Currently equipped weapon
+  val weapon: Weapon
+  // Currently equipped armor
+  val armor: Armor
+  // Inventory
+  val inventory: Inventory
 }
 
 enum class CreatureType(val humanName: String)
