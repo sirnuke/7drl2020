@@ -109,6 +109,16 @@ sealed class CreatureState(final override val entity: Entity,
     else
       entity.remove(ActiveComponent::class.java)
   }
+
+  fun applyDamage(damage: Int): DamageResult
+  {
+    L.trace("Apply damage {} to {}", damage, this)
+    _hp -= damage
+    return if (_hp <= 0)
+      DamageResult.DEFEATED
+    else
+      DamageResult.SUSTAINED
+  }
 }
 
 class RogueState(private val engine: Engine, world: World, entity: Entity, initial: Coordinate, initialClock: Long)
@@ -255,4 +265,11 @@ class MinionState(private val engine: Engine, world: World, entity: Entity, init
   {
     updateComponents()
   }
+}
+
+enum class DamageResult
+{
+  SUSTAINED,
+  DEFEATED,
+  ;
 }
