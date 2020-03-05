@@ -1,8 +1,9 @@
 {
   "window": {
-    "width": 80,
-    "height": 45,
+    "width": 120,
+    "height": 75,
     "title": "OUTROGUE",
+    "font": "CP47_12x12",
     "fps-limit": 120,
     "display-version": true,
     "display-build-date": true

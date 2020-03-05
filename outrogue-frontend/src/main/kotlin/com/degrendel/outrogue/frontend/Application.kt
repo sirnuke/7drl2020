@@ -1,6 +1,7 @@
 package com.degrendel.outrogue.frontend
 
 import com.degrendel.outrogue.common.*
+import com.degrendel.outrogue.common.properties.Font
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.frontend.views.InGameView
 import org.hexworks.zircon.api.CP437TilesetResources
@@ -44,9 +45,16 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
         title += "built on $BUILD_DATE "
     }
 
+    val font = when(P.window.font)
+    {
+      Font.CP47_10x10 -> CP437TilesetResources.rexPaint10x10()
+      Font.CP47_12x12 -> CP437TilesetResources.rexPaint12x12()
+      Font.CP47_16x16 -> CP437TilesetResources.rexPaint16x16()
+    }
+
     var appConfig = AppConfig.newBuilder()
         .withSize(P.window.width, P.window.height)
-        .withDefaultTileset(CP437TilesetResources.rexPaint16x16())
+        .withDefaultTileset(font)
         .withDebugConfig(debugConfig)
         .withDebugMode(profile.zirconDebugMode)
         .withFpsLimit(P.window.fpsLimit)
