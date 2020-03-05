@@ -1,4 +1,4 @@
-package com.degrendel.outrogue.engine
+package com.degrendel.outrogue.engine.world
 
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.components.*
@@ -7,6 +7,7 @@ import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.Level.Companion.floorRange
 import com.degrendel.outrogue.common.world.creatures.Creature
 import com.degrendel.outrogue.common.world.creatures.Rogue
+import com.degrendel.outrogue.engine.EngineState
 
 class WorldState(val engine: EngineState) : World
 {

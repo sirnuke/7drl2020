@@ -8,6 +8,8 @@ import com.degrendel.outrogue.common.agent.*
 import com.degrendel.outrogue.common.components.ActiveComponent
 import com.degrendel.outrogue.common.components.CreatureComponent
 import com.degrendel.outrogue.common.components.getCreature
+import com.degrendel.outrogue.engine.world.CreatureState
+import com.degrendel.outrogue.engine.world.MinionState
 import java.util.*
 
 class ActionQueue(private val engine: EngineState) : EntityListener

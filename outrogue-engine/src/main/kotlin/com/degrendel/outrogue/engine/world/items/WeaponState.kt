@@ -1,4 +1,4 @@
-package com.degrendel.outrogue.engine.items
+package com.degrendel.outrogue.engine.world.items
 
 import com.degrendel.outrogue.common.world.Dice
 import com.degrendel.outrogue.common.world.items.ItemLocation

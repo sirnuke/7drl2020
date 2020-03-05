@@ -1,4 +1,4 @@
-package com.degrendel.outrogue.engine.items
+package com.degrendel.outrogue.engine.world.items
 
 import com.degrendel.outrogue.common.world.items.Armor
 import com.degrendel.outrogue.common.world.items.ArmorType

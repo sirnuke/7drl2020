@@ -1,10 +1,9 @@
-package com.degrendel.outrogue.engine
+package com.degrendel.outrogue.engine.world
 
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.creatures.Creature
-import kotlin.math.abs
 
 class SquareState(override val coordinate: Coordinate, var _type: SquareType, override val room: Int?, var _creature: CreatureState? = null, var _staircase: Int? = null) : Square
 {

@@ -1,4 +1,4 @@
-package com.degrendel.outrogue.engine
+package com.degrendel.outrogue.engine.world
 
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.Engine
@@ -8,13 +8,14 @@ import com.degrendel.outrogue.common.agent.PlayerController
 import com.degrendel.outrogue.common.agent.SimpleController
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.logger
-import com.degrendel.outrogue.common.properties.CreatureDefinition
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.creatures.*
 import com.degrendel.outrogue.common.world.items.*
-import com.degrendel.outrogue.engine.items.ArmorState
-import com.degrendel.outrogue.engine.items.WeaponState
+import com.degrendel.outrogue.engine.InventoryState
+import com.degrendel.outrogue.engine.NavigationMapImpl
+import com.degrendel.outrogue.engine.world.items.ArmorState
+import com.degrendel.outrogue.engine.world.items.WeaponState
 import java.util.concurrent.atomic.AtomicInteger
 
 sealed class CreatureState(final override val entity: Entity,

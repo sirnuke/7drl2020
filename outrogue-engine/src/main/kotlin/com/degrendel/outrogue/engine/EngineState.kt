@@ -11,6 +11,9 @@ import com.degrendel.outrogue.common.world.creatures.Allegiance
 import com.degrendel.outrogue.common.world.SquareType
 import com.degrendel.outrogue.common.world.World
 import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.engine.world.CreatureState
+import com.degrendel.outrogue.engine.world.MinionState
+import com.degrendel.outrogue.engine.world.WorldState
 import com.github.czyzby.noise4j.map.generator.util.Generators
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job

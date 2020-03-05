@@ -4,6 +4,7 @@ import com.degrendel.outrogue.common.agent.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.EightWay
+import com.degrendel.outrogue.engine.world.MinionState
 
 object SimpleAI
 {
