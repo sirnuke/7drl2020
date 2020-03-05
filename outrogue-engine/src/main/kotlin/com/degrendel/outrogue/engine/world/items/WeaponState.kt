@@ -18,6 +18,9 @@ class WeaponState(override val weaponType: WeaponType, private val baseToHit: In
   override val bonusToHit get() = _bonusToHit
 
   override val toHit get() = bonusToHit + baseToHit
+
   override val stackable get() = false
   override val where get() = currentlyWhere
+
+  override fun getDamage() = baseDamage.roll() + bonusDamage
 }

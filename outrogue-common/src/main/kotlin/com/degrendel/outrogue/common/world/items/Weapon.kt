@@ -6,6 +6,11 @@ interface Weapon : Item
   val bonusToHit: Int
   val bonusDamage: Int
   val toHit: Int
+
+  /**
+   * Roll for the damage applied by this weapon when hitting.
+   */
+  fun getDamage(): Int
 }
 
 enum class WeaponType(val humanName: String)
