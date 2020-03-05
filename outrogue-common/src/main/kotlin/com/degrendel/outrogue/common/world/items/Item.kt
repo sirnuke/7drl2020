@@ -9,6 +9,8 @@ interface Item
   val where: ItemLocation
   val stackable: Boolean
   val weight: Int
+
+  fun canStackWith(other: Item): Boolean
 }
 
 enum class ItemType(val humanName: String)
