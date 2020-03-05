@@ -6,10 +6,8 @@ import com.degrendel.outrogue.common.*
 import com.degrendel.outrogue.common.agent.*
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
-import com.degrendel.outrogue.common.world.EightWay
+import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.creatures.Allegiance
-import com.degrendel.outrogue.common.world.SquareType
-import com.degrendel.outrogue.common.world.World
 import com.degrendel.outrogue.common.world.creatures.Creature
 import com.degrendel.outrogue.engine.world.CreatureState
 import com.degrendel.outrogue.engine.world.MinionState
@@ -211,11 +209,11 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
       }
       is MeleeAttack ->
       {
-        _world.performMeleeAttack(action.creature as CreatureState, action.target as CreatureState).let {
-          if (it == 0)
-            listOf(MeleeMissMessage(action.creature, action.target))
-          else
-            TODO("Message for attack connected!")
+        when (val result = _world.performMeleeAttack(action.creature as CreatureState, action.target as CreatureState))
+        {
+          is MeleeMissedResult -> listOf(MeleeMissMessage(action.creature, action.target))
+          is MeleeLandedResult -> listOf(MeleeDamageMessage(action.creature, action.target, result.damage))
+          is MeleeDefeatedResult -> listOf(MeleeDefeatedMessage(action.creature, action.target))
         }
       }
       is ProdCreature ->

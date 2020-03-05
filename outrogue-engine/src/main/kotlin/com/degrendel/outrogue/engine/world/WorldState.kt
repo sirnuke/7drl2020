@@ -14,6 +14,7 @@ class WorldState(val engine: EngineState) : World
   companion object
   {
     private val L by logger()
+    const val ATTACK_ROLL = 20
   }
 
   private val levels: List<LevelState>
@@ -143,12 +144,22 @@ class WorldState(val engine: EngineState) : World
         && from.canInteract(this, to))
   }
 
-  // TODO: Want a sealed class that returns the status; weapon missed vs weapon did damage
-  fun performMeleeAttack(attacker: CreatureState, defender: CreatureState): Int
+  fun performMeleeAttack(attacker: CreatureState, target: CreatureState): AttackResult
   {
-    // TODO: Get weapons (or fists) definitions, +/- based on junk, compute whether he hits.  Probably want to return a
-    //       string update of some sort?  Probably message enum
-    L.warn("TODO: {} attacks {}!", attacker, defender)
-    return 0
+    // TODO: Eventually want to model dodge versus penetration; right now combined
+    val chance = engine.random.nextInt(ATTACK_ROLL) + 1
+    val need = ATTACK_ROLL + target.armor.ac - attacker.weapon.toHit - attacker.toHit
+    // TODO: Should this be >= or >?
+    return if (chance >= need)
+    {
+      val damage = attacker.weapon.getDamage()
+      return when (target.applyDamage(damage))
+      {
+        DamageResult.SUSTAINED -> MeleeLandedResult(attacker, target, damage)
+        DamageResult.DEFEATED -> MeleeDefeatedResult(attacker, target)
+      }
+    }
+    else
+      MeleeMissedResult(attacker, target)
   }
 }
