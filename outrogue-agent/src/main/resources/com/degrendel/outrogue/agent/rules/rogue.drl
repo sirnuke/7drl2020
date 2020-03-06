@@ -26,7 +26,7 @@ then
 end
 
 rule "Monitor new goal"
-salience 90
+salience 100
 when
     $goal : Goal()
 then
@@ -34,11 +34,19 @@ then
 end
 
 rule "Monitor new entity"
-salience 80
+salience 100
 when
     $creature : CreatureInput()
 then
     L.debug("New creature: {}", $creature)
+end
+
+rule "Monitor new neighbor"
+salience 100
+when
+    $neighbor : Neighbor()
+then
+    L.debug("New neighbor: {}", $neighbor)
 end
 
 rule "Select explore action goal"
