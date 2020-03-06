@@ -23,3 +23,11 @@ then
     L.debug("Inserting sleep goal")
     insertLogical(new SleepGoal())
 end
+
+rule "Create sleep action and mark goal as evaluated"
+when
+    $goal : SleepGoal(action == null)
+then
+    L.debug("Creating sleep action, marking goal as evaluated")
+    modify($goal) { action = new Sleep(creature), evaluated = true, applicable = true }
+end

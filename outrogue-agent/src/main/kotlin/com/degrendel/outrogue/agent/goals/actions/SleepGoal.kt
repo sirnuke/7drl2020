@@ -6,8 +6,8 @@ import com.degrendel.outrogue.common.agent.Action
 class SleepGoal : ActionGoal
 {
   override var accomplished = false
-  override var evaluated = true
+  override var evaluated = false
   override var selected = false
-  override var applicable = true
+  override var applicable = false
   override var action: Action? = null
 }
