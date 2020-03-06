@@ -11,10 +11,7 @@ import ch.qos.logback.classic.Logger
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntityListener
 import com.degrendel.outrogue.agent.goals.DecideAction
-import com.degrendel.outrogue.agent.inputs.AutoClean
-import com.degrendel.outrogue.agent.inputs.ExploreOption
-import com.degrendel.outrogue.agent.inputs.Neighbor
-import com.degrendel.outrogue.agent.inputs.toInput
+import com.degrendel.outrogue.agent.inputs.*
 import com.degrendel.outrogue.common.agent.Sleep
 import com.degrendel.outrogue.common.components.getCreature
 import com.degrendel.outrogue.common.world.EightWay
@@ -106,7 +103,14 @@ class RogueAgent(val engine: Engine) : Agent
         .forEach { session.insert(it) }
 
     rogue.computeExploreDirection()
+        .filter { (_, data) ->
+          val square = engine.world.getSquare(data.first)
+          square.creature?.allegiance?.isCordialWith(rogue.allegiance) ?: true
+        }
         .map { (direction, data) -> ExploreOption(direction, data.second) }
+        .also { option ->
+          option.minBy { it.cost }?.also { best -> session.insert(ExploreLowest(best.cost)) }
+        }
         .forEach { session.insert(it) }
 
     val rootGoal = DecideAction()
