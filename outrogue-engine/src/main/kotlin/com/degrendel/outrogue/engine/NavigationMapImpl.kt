@@ -47,32 +47,30 @@ class NavigationMapImpl(private val random: Random, private val world: World,
       .filter { filterSquares(world.getSquare(it)) }
       .filter { _data[it.x][it.y] == Int.MAX_VALUE && it !in skip }
 
-  override fun getBestMoves(coordinate: Coordinate, filter: (candidate: Square, cost: Int, baseCost: Int) -> Boolean): List<Pair<EightWay, Coordinate>>
+  override fun getAllMoves(coordinate: Coordinate, filter: (candidate: Square, cost: Int, baseCost: Int) -> Boolean): Map<EightWay, Pair<Coordinate, Int>>
   {
-    val result = mutableListOf<Pair<EightWay, Coordinate>>()
-    var bestCost = Int.MAX_VALUE
     val baseCost = data[coordinate.x][coordinate.y]
-    EightWay.values().map { Pair(it, coordinate.move(it)) }
+    return EightWay.values().map { Pair(it, coordinate.move(it)) }
         .filter { (_, candidate) -> candidate.isValid() && coordinate.canInteract(world, candidate) }
         .filter { (_, candidate) ->
           filter(world.getSquare(candidate), data[candidate.x][candidate.y], baseCost)
         }
-        .forEach { entry ->
-          val cost = data[entry.second.x][entry.second.y]
-          if (cost > bestCost) return@forEach
-          if (cost < bestCost)
-          {
-            bestCost = cost
-            result.clear()
-          }
-          result += entry
-        }
-    // TODO: This might be an error - log it?
-    return if (bestCost == Int.MAX_VALUE)
-      listOf()
-    else
-      result.shuffled(random)
+        .map { (direction, coordinate) -> Pair(direction, Pair(coordinate, data[coordinate.x][coordinate.y])) }
+        .toMap()
   }
+
+  override fun getBestMoves(coordinate: Coordinate, filter: (candidate: Square, cost: Int, baseCost: Int) -> Boolean): List<Pair<EightWay, Coordinate>> =
+    getAllMoves(coordinate, filter).let { candidates ->
+      var bestCost = Int.MAX_VALUE
+      candidates.map { (_, data) -> data.second }.forEach { if (it < bestCost) bestCost = it }
+      // TODO: This might be an error - log it?
+      if (bestCost == Int.MAX_VALUE)
+        listOf()
+      else
+        candidates.filter { (_, data) -> data.second == bestCost }
+            .map { (eightWay, data) -> Pair(eightWay, data.first) }
+            .shuffled(random)
+    }
 
   override fun getBestMove(coordinate: Coordinate, filter: (candidate: Square, cost: Int, baseCost: Int) -> Boolean): Pair<EightWay, Coordinate>?
   {

@@ -10,4 +10,5 @@ interface NavigationMap
   fun compute(sources: Map<Coordinate, Int>, skip: Set<Coordinate> = setOf(), terminate: Set<Coordinate> = setOf()): NavigationMap
   fun getBestMove(coordinate: Coordinate, filter: (candidate: Square, cost: Int, baseCost: Int) -> Boolean): Pair<EightWay, Coordinate>?
   fun getBestMoves(coordinate: Coordinate, filter: (candidate: Square, cost: Int, baseCost: Int) -> Boolean): List<Pair<EightWay, Coordinate>>
+  fun getAllMoves(coordinate: Coordinate, filter: (candidate: Square, cost: Int, baseCost: Int) -> Boolean): Map<EightWay, Pair<Coordinate, Int>>
 }

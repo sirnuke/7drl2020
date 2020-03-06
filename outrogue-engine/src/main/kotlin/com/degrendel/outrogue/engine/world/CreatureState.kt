@@ -169,7 +169,7 @@ class RogueState(private val engine: Engine, world: World, entity: Entity, initi
     entity.add(KnownToRogueComponent).add(VisibleToRogueComponent)
   }
 
-  override fun computeExploreDirection(): EightWay?
+  override fun computeExploreDirection(): Map<EightWay, Pair<Coordinate, Int>>
   {
     // TODO: If other entities get the ability to explore, reuse this map?
     // TODO: TBH, I suspect a simple breadth first search will be sufficient
@@ -178,8 +178,7 @@ class RogueState(private val engine: Engine, world: World, entity: Entity, initi
     Square.each { x, y ->
       level.getSquare(x, y).let { if (!it.type.blocked && !it.knownToRogue) sources[it.coordinate] = 0 }
     }
-    return exploreMap.compute(sources)
-        .getBestMove(coordinate) { square, _, _ -> square.creature == null }?.first
+    return exploreMap.compute(sources).getAllMoves(coordinate) { _, _, _ -> true }
   }
 }
 
