@@ -45,8 +45,12 @@ data class IntRange(val from: Int, val to: Int)
 }
 
 data class Rooms(val minSize: Int, val maxNumber: Int)
-data class World(val mapX: Int, val mapY: Int, val maxQueuedActions: Int, val sidebar: ComponentDimensions, val log: ComponentDimensions)
-data class Costs(val sleep: Long, val move: Long, val staircase: Long, val swap: Long, val melee: Long)
+data class World(val mapX: Int, val mapY: Int, val maxQueuedActions: Int, val sidebar: ComponentDimensions,
+                 val log: ComponentDimensions)
+
+data class Costs(val sleep: Long, val move: Long, val staircase: Long, val swap: Long, val melee: Long,
+                 val equip: Long, val transfer: Long, val read: Long, val drink: Long)
+
 data class Views(val world: World)
 data class CoreCreature(val hp: Int, val strength: Int, val ac: Int, val toHit: Int, val melee: Dice)
 data class CreatureDefinition(

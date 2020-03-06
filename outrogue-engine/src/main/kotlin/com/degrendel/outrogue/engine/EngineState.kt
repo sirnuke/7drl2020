@@ -81,6 +81,11 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
       is GoDownStaircase, is GoUpStaircase -> P.costs.staircase
       is MeleeAttack -> P.costs.melee
       is SwapWith -> P.costs.swap
+      is DropItem -> P.costs.transfer
+      is PickupItem -> P.costs.transfer
+      is EquipItem -> P.costs.equip
+      is DrinkPotion -> P.costs.drink
+      is ReadScroll -> P.costs.read
     }
   }
 
@@ -162,6 +167,11 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
         else
           action.creature.allegiance.canPickFightWith(action.target.allegiance)
       }
+      is PickupItem -> TODO()
+      is DropItem -> TODO()
+      is EquipItem -> TODO()
+      is DrinkPotion -> TODO()
+      is ReadScroll -> TODO()
     }
   }
 
@@ -222,6 +232,11 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
           }
         }.also { _world.swapCreatures(action.creature as CreatureState, action.target as CreatureState) }
       }
+      is PickupItem -> TODO()
+      is DropItem -> TODO()
+      is EquipItem -> TODO()
+      is DrinkPotion -> TODO()
+      is ReadScroll -> TODO()
     }
   }
 

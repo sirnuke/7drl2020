@@ -50,7 +50,11 @@
     "move": 120,
     "staircase": 200,
     "swap": 200,
-    "melee": 120
+    "melee": 120,
+    "equip": 200,
+    "transfer": 200,
+    "read": 100,
+    "drink": 100
   },
   "conjurer": {
     "hp": 10,
