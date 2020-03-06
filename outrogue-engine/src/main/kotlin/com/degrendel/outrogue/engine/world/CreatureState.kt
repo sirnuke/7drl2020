@@ -1,6 +1,7 @@
 package com.degrendel.outrogue.engine.world
 
 import com.badlogic.ashley.core.Entity
+import com.degrendel.outrogue.common.ECS
 import com.degrendel.outrogue.common.Engine
 import com.degrendel.outrogue.common.agent.AgentController
 import com.degrendel.outrogue.common.agent.Controller
@@ -69,6 +70,14 @@ sealed class CreatureState(final override val entity: Entity,
     entity.add(CreatureComponent(this))
   }
 
+  fun addToECS(ecs: ECS)
+  {
+    ecs.addEntity(entity)
+    ecs.addEntity(noArmor.entity)
+    ecs.addEntity(noWeapon.entity)
+    inventoryState.addToECS(ecs)
+  }
+
   fun addCooldown(amount: Long)
   {
     _clock += amount
@@ -124,13 +133,13 @@ sealed class CreatureState(final override val entity: Entity,
 
   fun putOnArmor(armor: ArmorState)
   {
-    assert(armor.currentlyWhere.let { it is InInventory && it.creature == this })
+    assert(armor.where.let { it is InInventory && it.creature == this })
     armorState = armor
   }
 
   fun wieldWeapon(weapon: WeaponState)
   {
-    assert(weapon.currentlyWhere.let { it is InInventory && it.creature == this })
+    assert(weapon.where.let { it is InInventory && it.creature == this })
     weaponState = weapon
   }
 }
@@ -143,9 +152,9 @@ class RogueState(private val engine: Engine, world: World, entity: Entity, initi
   override val type = CreatureType.ROGUE
   override val controller = AgentController
 
-  override val noArmor = ArmorState(ArmorType.NO_ARMOR, P.rogue.ac, InInventory(this), weight = 0)
-  override val noWeapon = WeaponState(WeaponType.FISTS, P.rogue.toHit,
-      P.rogue.melee.toInstance(engine.random), InInventory(this), weight = 0)
+  override val noArmor = ArmorState(Entity(), ArmorType.NO_ARMOR, P.rogue.ac, InInventory(this), weight = 0)
+  override val noWeapon = WeaponState(Entity(), WeaponType.FISTS, InInventory(this), P.rogue.toHit,
+      P.rogue.melee.toInstance(engine.random), weight = 0)
 
   override var armorState: ArmorState = noArmor
   override var weaponState: WeaponState = noWeapon
@@ -181,9 +190,9 @@ class ConjurerState(private val engine: Engine, entity: Entity, initial: Coordin
   override val type = CreatureType.CONJURER
   override val controller = PlayerController
 
-  override val noArmor = ArmorState(ArmorType.NO_ARMOR, P.conjurer.ac, InInventory(this), weight = 0)
-  override val noWeapon = WeaponState(WeaponType.FISTS, P.rogue.toHit,
-      P.conjurer.melee.toInstance(engine.random), InInventory(this), weight = 0)
+  override val noArmor = ArmorState(Entity(), ArmorType.NO_ARMOR, P.conjurer.ac, InInventory(this), weight = 0)
+  override val noWeapon = WeaponState(Entity(), WeaponType.FISTS, InInventory(this), P.rogue.toHit,
+      P.conjurer.melee.toInstance(engine.random), weight = 0)
 
   override var armorState: ArmorState = noArmor
   override var weaponState: WeaponState = noWeapon
@@ -219,9 +228,9 @@ class MinionState(private val engine: Engine, world: World, entity: Entity, init
     _controller = SimpleController(definition.behaviors,
         definition.targetWeight.toInstance(), NavigationMapImpl(engine.random, world))
 
-    noArmor = ArmorState(ArmorType.NO_ARMOR, definition.ac, InInventory(this), weight = 0)
-    noWeapon = WeaponState(WeaponType.FISTS, definition.toHit, definition.damage.toInstance(engine.random),
-        InInventory(this), weight = 0)
+    noArmor = ArmorState(Entity(), ArmorType.NO_ARMOR, definition.ac, InInventory(this), weight = 0)
+    noWeapon = WeaponState(Entity(), WeaponType.FISTS, InInventory(this), definition.toHit,
+        definition.damage.toInstance(engine.random), weight = 0)
   }
 
   override var armorState: ArmorState = noArmor
