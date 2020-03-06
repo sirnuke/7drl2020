@@ -1,9 +1,14 @@
 package com.degrendel.outrogue.engine.world
 
 import com.badlogic.ashley.core.Entity
+import com.degrendel.outrogue.common.ECS
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.common.world.items.Item
+import com.degrendel.outrogue.common.world.items.OnGround
+import com.degrendel.outrogue.engine.InventoryState
+import com.degrendel.outrogue.engine.world.items.ItemState
 
 class SquareState(override val coordinate: Coordinate, var _type: SquareType, override val room: Int?, var _creature: CreatureState? = null, var _staircase: Int? = null) : Square
 {
@@ -18,6 +23,8 @@ class SquareState(override val coordinate: Coordinate, var _type: SquareType, ov
 
   override val creature: Creature? get() = _creature
 
+  private val _items = InventoryState()
+  override val items: Inventory get() = _items
 
   private var _visibleToRogue = false
   override val visibleToRogue get() = _visibleToRogue
@@ -27,6 +34,22 @@ class SquareState(override val coordinate: Coordinate, var _type: SquareType, ov
   var _wallOrientation = WallOrientation.NONE
 
   override val wallOrientation get() = _wallOrientation
+
+  fun addToECS(ecs: ECS)
+  {
+    ecs.addEntity(entity)
+    _items.addToECS(ecs)
+  }
+
+  fun dropItem(item: ItemState, quantity: Int = 1)
+  {
+    _items.insert(item, quantity)
+  }
+
+  fun pickupItem(item: ItemState, quantity: Int = 1)
+  {
+    _items.remove(item, quantity)
+  }
 
   fun setOnVisibleLevel(visible: Boolean)
   {
