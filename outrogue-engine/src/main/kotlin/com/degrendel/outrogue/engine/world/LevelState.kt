@@ -300,12 +300,13 @@ class LevelState(val floor: Int, previous: Level?, private val engine: Engine) :
    */
   fun bootstrapECS(ecs: ECS, visibleFloor: Int)
   {
-    setOnVisibleLevel(floor == visibleFloor)
+    val onVisibleFloor = floor == visibleFloor
+    setOnVisibleLevel(onVisibleFloor)
     rooms.forEach { ecs.addEntity(it.entity) }
     each { x, y ->
       squares[x][y].let {
-        ecs.addEntity(it.entity)
-        it.creature?.let { creature -> ecs.addEntity(creature.entity) }
+        it.addToECS(ecs)
+        it._creature?.let { creature -> creature.addToECS(ecs) }
       }
     }
   }
