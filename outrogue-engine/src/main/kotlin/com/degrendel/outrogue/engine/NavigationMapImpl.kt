@@ -61,10 +61,9 @@ class NavigationMapImpl(private val random: Random, private val world: World,
 
   override fun getBestMoves(coordinate: Coordinate, filter: (candidate: Square, cost: Int, baseCost: Int) -> Boolean): List<Pair<EightWay, Coordinate>> =
     getAllMoves(coordinate, filter).let { candidates ->
-      var bestCost = Int.MAX_VALUE
-      candidates.map { (_, data) -> data.second }.forEach { if (it < bestCost) bestCost = it }
-      // TODO: This might be an error - log it?
-      if (bestCost == Int.MAX_VALUE)
+      val bestCost = candidates.minBy { (_, data) -> data.second }?.value?.second
+      // TODO: This indicates there is no minimum, which might be an error - log it?
+      if (bestCost == null)
         listOf()
       else
         candidates.filter { (_, data) -> data.second == bestCost }
