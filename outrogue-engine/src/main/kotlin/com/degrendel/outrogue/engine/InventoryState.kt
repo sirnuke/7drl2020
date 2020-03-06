@@ -1,8 +1,8 @@
 package com.degrendel.outrogue.engine
 
+import com.degrendel.outrogue.common.ECS
 import com.degrendel.outrogue.common.world.Inventory
 import com.degrendel.outrogue.common.world.InventorySlot
-import com.degrendel.outrogue.common.world.items.InInventory
 import com.degrendel.outrogue.common.world.items.Item
 import com.degrendel.outrogue.engine.world.items.ItemState
 
@@ -16,19 +16,49 @@ class InventoryState : Inventory
     return data[slot]
   }
 
-  fun insert(item: ItemState)
+  fun addToECS(ecs: ECS)
   {
-    assert(item.where is InInventory)
-    _weight += item.weight
+    data.forEach { ecs.addEntity(it.item.entity) }
+  }
+
+  fun insert(item: ItemState, quantity: Int = 1)
+  {
+    _weight += (item.weight * quantity)
     data.firstOrNull { it.canStackWith(item) }?.let {
-      (it as InventoryStackState).items.add(item)
+      (it as InventoryStackState).increase(quantity)
       return
     }
     val slot = if (item.stackable)
-      InventoryStackState(mutableListOf(item))
+      InventoryStackState(item, quantity)
     else
       InventorySingleState(item)
     data.add(slot)
+  }
+
+  fun remove(item: ItemState, quantity: Int = 1)
+  {
+    assert(quantity > 0)
+    assert(quantity == 1 || item.stackable)
+    _weight -= item.weight * quantity
+    assert(_weight >= 0)
+    return when (val slot = data.first { it == item || it.canStackWith(item) })
+    {
+      is InventorySingleState ->
+      {
+        assert(quantity == 1)
+        data.remove(slot)
+        Unit
+      }
+      is InventoryStackState ->
+      {
+        assert(quantity <= slot.count)
+        if (quantity == slot.count)
+          data.remove(slot)
+        else
+          slot.decrease(quantity)
+        Unit
+      }
+    }
   }
 
   override val slots = data.size
@@ -40,10 +70,22 @@ sealed class InventorySlotState : InventorySlot
   abstract fun canStackWith(other: Item): Boolean
 }
 
-data class InventoryStackState(val items: MutableList<ItemState>) : InventorySlotState()
+data class InventoryStackState(val itemState: ItemState, private var _count: Int) : InventorySlotState()
 {
-  override val item: Item get() = items.first()
-  override val count get() = items.size
+  override val item: Item get() = itemState
+  override val count get() = _count
+
+  fun increase(quantity: Int)
+  {
+    assert(quantity > 0)
+    _count += quantity
+  }
+
+  fun decrease(quantity: Int)
+  {
+    assert(quantity < count)
+    _count -= quantity
+  }
 
   override fun canStackWith(other: Item) = item.canStackWith(item)
 }
