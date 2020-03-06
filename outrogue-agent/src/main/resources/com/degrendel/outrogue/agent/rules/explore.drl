@@ -22,22 +22,6 @@ global Level level
 
 dialect "mvel"
 
-rule "Monitor new explore option"
-salience 100
-when
-    $option : ExploreOption()
-then
-    L.debug("New explore option: {}", $option)
-end
-
-rule "Monitor best explore option"
-salience 100
-when
-    $best : ExploreLowest()
-then
-    L.debug("Best explore: {}", $best)
-end
-
 rule "Create explore goal"
 salience 50
 when

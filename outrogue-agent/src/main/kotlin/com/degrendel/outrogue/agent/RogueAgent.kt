@@ -31,7 +31,9 @@ class RogueAgent(val engine: Engine) : Agent
     val ruleFiles = arrayOf(
         "explore.drl",
         "rogue.drl",
-        "sleep.drl"
+        "sleep.drl",
+        "monitor.drl",
+        "attack.drl"
     )
   }
 

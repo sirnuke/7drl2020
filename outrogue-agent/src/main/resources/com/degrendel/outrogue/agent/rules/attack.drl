@@ -1,0 +1,38 @@
+// Rules related to attacking
+
+package com.degrendel.outrogue.agent.rules
+
+import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.common.world.Level
+import com.degrendel.outrogue.common.agent.Move
+import com.degrendel.outrogue.common.agent.MeleeAttack
+import com.degrendel.outrogue.agent.goals.*
+import com.degrendel.outrogue.agent.goals.actions.AttackGoal
+import com.degrendel.outrogue.agent.RogueAgent
+import org.slf4j.Logger
+
+global Logger L
+global RogueAgent agent
+global Creature creature
+global Level level
+
+dialect "mvel"
+
+rule "Create attack goal"
+salience 50
+when
+    DecideAction()
+then
+    L.debug("Inserting attack evaluation goal")
+    insertLogical(new AttackGoal())
+end
+
+rule "Attack" when
+    $goal : AttackGoal(evaluated == false)
+then end
+
+rule "Temp reject" extends "Attack" when
+then
+    modify ($goal) { evaluated = true, applicable = false }
+end
+

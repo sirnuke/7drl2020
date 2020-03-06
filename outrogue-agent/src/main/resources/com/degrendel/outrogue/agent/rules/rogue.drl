@@ -4,56 +4,29 @@ package com.degrendel.outrogue.agent.rules
 
 import com.degrendel.outrogue.agent.goals.*
 import com.degrendel.outrogue.agent.goals.actions.*
-import com.degrendel.outrogue.agent.inputs.*
 import com.degrendel.outrogue.agent.RogueAgent
 import org.slf4j.Logger
-
-// Salience:
-// 100 propose
-// 50  apply
 
 global Logger L
 global RogueAgent agent
 
 dialect "mvel"
 
-rule "Monitor new decision request"
-salience 100
-when
+rule "Action goals have evaluated" when
     DecideAction()
-then
-    L.debug("Decide action requested")
-end
-
-rule "Monitor new goal"
-salience 100
-when
-    $goal : Goal()
-then
-    L.debug("New goal: {}", $goal)
-end
-
-rule "Monitor new entity"
-salience 100
-when
-    $creature : CreatureInput()
-then
-    L.debug("New creature: {}", $creature)
-end
-
-rule "Monitor new neighbor"
-salience 100
-when
-    $neighbor : Neighbor()
-then
-    L.debug("New neighbor: {}", $neighbor)
-end
-
-rule "Select explore action goal"
-salience 12
-when
     not ActionGoal(selected == true)
     not ActionGoal(evaluated == false)
+then end
+
+rule "Select attack action goal" extends "Action goals have evaluated" salience 14 when
+    $goal : AttackGoal(applicable == true, $action : action)
+then
+    L.debug("Selecting attack goal: {}", $goal)
+    modify($goal) { selected = true, accomplished = true }
+    insert($action)
+end
+
+rule "Select explore action goal" extends "Action goals have evaluated" salience 12 when
     $goal : ExploreGoal(applicable == true, $action : action)
 then
     L.debug("Selecting explore goal: {}", $goal)
@@ -61,11 +34,7 @@ then
     insert($action)
 end
 
-rule "Select sleep action goal"
-salience 10
-when
-    not ActionGoal(selected == true)
-    not ActionGoal(evaluated == false)
+rule "Select sleep action goal" extends "Action goals have evaluated" salience 10 when
     $goal : SleepGoal(applicable == true, $action : action)
 then
     L.debug("Selecting sleep action goal: {}", $goal)

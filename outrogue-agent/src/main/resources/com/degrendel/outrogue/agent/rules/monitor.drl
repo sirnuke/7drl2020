@@ -1,0 +1,64 @@
+
+package com.degrendel.outrogue.agent.rules
+
+import com.degrendel.outrogue.agent.inputs.*
+import com.degrendel.outrogue.agent.goals.*
+import com.degrendel.outrogue.agent.goals.actions.*
+
+import org.slf4j.Logger
+
+global Logger L
+
+rule "Monitor new explore option"
+salience 100
+when
+    $option : ExploreOption()
+then
+    L.trace("New explore option: {}", $option)
+end
+
+rule "Monitor best explore option"
+salience 100
+when
+    $best : ExploreLowest()
+then
+    L.trace("Best explore: {}", $best)
+end
+
+rule "Monitor new decision request"
+salience 100
+when
+    DecideAction()
+then
+    L.debug("Decide action requested")
+end
+
+rule "Monitor new goal"
+salience 100
+when
+    $goal : Goal()
+then
+    L.debug("New goal: {}", $goal)
+end
+
+rule "Monitor action goal evaluated" salience 100 when
+    $goal : ActionGoal(evaluated == true)
+then
+    L.debug("Action goal evaluated: {}", $goal)
+end
+
+rule "Monitor new entity"
+salience 100
+when
+    $creature : CreatureInput()
+then
+    L.trace("New creature: {}", $creature)
+end
+
+rule "Monitor new neighbor"
+salience 100
+when
+    $neighbor : Neighbor()
+then
+    L.trace("New neighbor: {}", $neighbor)
+end
