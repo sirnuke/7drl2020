@@ -12,6 +12,7 @@ class ExploreGoal : ActionGoal
   override var selected: Boolean = false
   override var action: Action? = null
 
+  var goToNextLevel: Boolean = false
   var bestOption: ExploreOption? = null
 
   override fun toString(): String

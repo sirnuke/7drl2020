@@ -2,6 +2,7 @@
 
 package com.degrendel.outrogue.agent.rules
 
+import com.degrendel.outrogue.common.world.SquareType
 import com.degrendel.outrogue.common.world.creatures.Creature
 import com.degrendel.outrogue.common.world.Level
 import com.degrendel.outrogue.common.agent.Move
@@ -9,6 +10,8 @@ import com.degrendel.outrogue.common.agent.GoDownStaircase
 import com.degrendel.outrogue.agent.goals.*
 import com.degrendel.outrogue.agent.goals.actions.ExploreGoal
 import com.degrendel.outrogue.agent.inputs.ExploreOption
+import com.degrendel.outrogue.agent.inputs.ExploreLowest
+import com.degrendel.outrogue.agent.inputs.Neighbor
 import com.degrendel.outrogue.agent.RogueAgent
 import org.slf4j.Logger
 
@@ -18,6 +21,22 @@ global Creature creature
 global Level level
 
 dialect "mvel"
+
+rule "Monitor new explore option"
+salience 100
+when
+    $option : ExploreOption()
+then
+    L.debug("New explore option: {}", $option)
+end
+
+rule "Monitor best explore option"
+salience 100
+when
+    $best : ExploreLowest()
+then
+    L.debug("Best explore: {}", $best)
+end
 
 rule "Create explore goal"
 salience 50
@@ -34,20 +53,89 @@ when
     not ExploreOption()
     eval(level.isLast == true)
 then
-    L.debug("Rejecting explore due to lack of option")
+    L.debug("Rejecting explore since we're at the end of the dungeon")
     modify($goal) { evaluated = true, applicable = false }
 end
 
-rule "Reject explore goal (temp) when there's nothing to explore"
+rule "Mark as next level"
 when
     $goal : ExploreGoal()
     not ExploreOption()
+    eval(level.isLast == false)
 then
-    L.debug("Temp rejecting navigation due to lack of options")
+    L.debug("No more exploration options but more levels, marking as going downwards")
+    modify($goal) { goToNextLevel = true }
+end
+
+// TODO: Would be nice to mark directions as leading towards door or not, probably requires two navigation maps.
+// Compute overall search and compute towards unknown door searches.  If the cost delta is reasonable, prefer going
+// towards doors.  This should probably be done on demand.
+rule "Select best exploration that leads to a room"
+salience 4
+when
+    $goal : ExploreGoal(bestOption == null)
+    ExploreLowest($lowest : cost)
+    $option : ExploreOption(cost == $lowest, $direction : direction)
+    Neighbor(direction == $direction, square.type == SquareType.DOOR)
+then
+    L.debug("Selecting exploration direction that is a door")
+    modify($goal) { bestOption = $option }
+end
+
+// TODO: Add rule that inserts results of door search
+
+rule "Select lowest cost that is non-diagonal"
+salience 2
+when
+    $goal : ExploreGoal(bestOption == null)
+    ExploreLowest($lowest : cost)
+    $option : ExploreOption(cost == $lowest, $direction : direction)
+    eval($direction.diagonal == false)
+then
+    L.debug("Selecting exploration direction that is not a diagonal")
+    modify($goal) { bestOption = $option }
+end
+
+rule "Select lowest cost regardless"
+salience 1
+when
+    $goal : ExploreGoal(bestOption == null)
+    ExploreLowest($lowest : cost)
+    $option : ExploreOption(cost == $lowest, $direction : direction)
+then
+    L.debug("Selecting exploration direction based on solely cost")
+    modify($goal) { bestOption = $option }
+end
+
+rule "Converting best option to action"
+when
+    $goal : ExploreGoal($option : bestOption != null, action == null)
+then
+    L.debug("Converting goal best option into action")
+    modify($goal) { action = new Move(creature, $option.direction) }
+end
+
+// Rule: if tinker is applicable and going down a floor, mark as not applicable (let tinker execute)
+// Rule: if no tinker and going down floor, insert staircase options
+
+rule "Marking goal as evaluated due to action"
+when
+    $goal : ExploreGoal($option : bestOption, action != null, evaluated == false)
+then
+    L.debug("Marking goal as evaluated and applicable due to action")
+    modify($goal) { evaluated = true, applicable = true }
+end
+
+rule "Marking goal as not applicable due to lack of action"
+salience -1
+when
+    $goal : ExploreGoal($option : bestOption, action == null, evaluated == false)
+then
+    L.debug("Marking goal as not applicable due to lack of action")
     modify($goal) { evaluated = true, applicable = false }
 end
 
-// TODO: Check for higher priority goals
+
 // TODO: Not on staircase? Navigate towards it
 // TODO: On staircase? Go down
 //rule "Nothing left on this level, dive deeper to continue exploring the dungeon"
@@ -61,12 +149,3 @@ end
 //    L.debug("Diving deeper due to lack of exploration left on this level")
 //    modify ($goal) { evaluated = true, applicable = true, action =  }
 //end
-
-rule "Select explore goal when there's something to explore and nothing higher priority"
-when
-    $goal : ExploreGoal()
-    ExploreOption($direction : direction)
-then
-    L.debug("Proposing explore {} due to explore option", $direction)
-    modify ($goal) { evaluated = true, applicable = true, action = new Move(creature, $direction) }
-end
