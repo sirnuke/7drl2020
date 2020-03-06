@@ -8,6 +8,8 @@ import com.degrendel.outrogue.common.agent.Move
 import com.degrendel.outrogue.common.agent.MeleeAttack
 import com.degrendel.outrogue.agent.goals.*
 import com.degrendel.outrogue.agent.goals.actions.AttackGoal
+import com.degrendel.outrogue.agent.inputs.Neighbor
+import com.degrendel.outrogue.agent.inputs.CreatureInput
 import com.degrendel.outrogue.agent.RogueAgent
 import org.slf4j.Logger
 
@@ -31,8 +33,23 @@ rule "Attack" when
     $goal : AttackGoal(evaluated == false)
 then end
 
-rule "Temp reject" extends "Attack" when
+rule "Select neighbor hostile" extends "Attack" when
+    Neighbor($creature : creature != null, $direction : direction)
+    CreatureInput(creature == $creature, hostile == true)
+then
+    modify ($goal) { action = new MeleeAttack(creature, $creature) }
+end
+
+// TODO: Need rules for moving towards door (going to need some help in Kotlin)
+// TODO: Need rules for firing ranged weapons
+// TODO: Need rules for abilities, wands, relevant items, etc
+rule "Reject attack goal" extends "Attack" salience -1 when
 then
     modify ($goal) { evaluated = true, applicable = false }
 end
 
+rule "Mark as evaluated due to action" extends "Attack" when
+    eval($goal.action != null)
+then
+    modify ($goal) { evaluated = true, applicable = true }
+end

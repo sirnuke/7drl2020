@@ -2,8 +2,6 @@ package com.degrendel.outrogue.agent.goals.actions
 
 import com.degrendel.outrogue.agent.goals.ActionGoal
 import com.degrendel.outrogue.common.agent.Action
-import com.degrendel.outrogue.common.world.EightWay
-import com.degrendel.outrogue.common.world.creatures.Creature
 
 class AttackGoal : ActionGoal
 {
@@ -12,9 +10,6 @@ class AttackGoal : ActionGoal
   override var applicable: Boolean = false
   override var selected: Boolean = false
   override var accomplished: Boolean = false
-
-  var target: Creature? = null
-  var move: EightWay? = null
 
   override fun toString(): String
   {
