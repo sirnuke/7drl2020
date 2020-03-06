@@ -9,10 +9,7 @@ import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.creatures.Allegiance
 import com.degrendel.outrogue.common.world.creatures.Conjurer
-import com.degrendel.outrogue.common.world.creatures.Creature
-import com.degrendel.outrogue.engine.world.ConjurerState
 import com.degrendel.outrogue.engine.world.CreatureState
-import com.degrendel.outrogue.engine.world.MinionState
 import com.degrendel.outrogue.engine.world.WorldState
 import com.github.czyzby.noise4j.map.generator.util.Generators
 import kotlinx.coroutines.GlobalScope
@@ -50,7 +47,6 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
   override val world: World get() = _world
 
   private val actionQueue = ActionQueue(this)
-
 
   init
   {

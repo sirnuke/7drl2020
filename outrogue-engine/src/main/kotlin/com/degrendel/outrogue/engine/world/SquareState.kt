@@ -5,8 +5,6 @@ import com.degrendel.outrogue.common.ECS
 import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.creatures.Creature
-import com.degrendel.outrogue.common.world.items.Item
-import com.degrendel.outrogue.common.world.items.OnGround
 import com.degrendel.outrogue.engine.InventoryState
 import com.degrendel.outrogue.engine.world.items.ItemState
 

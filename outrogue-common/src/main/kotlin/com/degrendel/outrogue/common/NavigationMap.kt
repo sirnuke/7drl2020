@@ -2,7 +2,6 @@ package com.degrendel.outrogue.common
 
 import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.EightWay
-import com.degrendel.outrogue.common.world.Level
 import com.degrendel.outrogue.common.world.Square
 
 interface NavigationMap

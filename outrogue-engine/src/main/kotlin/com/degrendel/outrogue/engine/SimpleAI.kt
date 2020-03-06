@@ -42,26 +42,8 @@ object SimpleAI
       return Move(minion, it.first)
     }
 
-    // Case #3: do nothing, prodding might be nice, but would have to contextualize who prodded (a prod from
+    // Case #3: do nothing, hope the traffic jam clears up
     return Sleep(minion)
-  }
-
-  private fun executeProd(engine: EngineState, minion: MinionState): Action
-  {
-    L.info("Minion {} is executing prod", minion)
-    val level = engine.world.getLevel(minion.coordinate)
-    val options = EightWay.values().filter {
-      val dir = minion.coordinate.move(it)
-      if (!dir.isValid()) return@filter false
-      val square = level.getSquare(dir)
-      !square.type.blocked && square.creature == null
-    }
-    // TODO: There's room for some heuristics here - move away from doors, away from prodder.
-    val selected = options.shuffled(engine.random).firstOrNull()
-    return if (selected == null)
-      Sleep(minion)
-    else
-      Move(minion, selected)
   }
 }
 

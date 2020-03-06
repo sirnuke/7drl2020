@@ -24,7 +24,7 @@ enum class ItemType(val humanName: String)
   ;
 }
 
-abstract class ItemLocation
+sealed class ItemLocation
 data class InInventory(val creature: Creature): ItemLocation()
 data class OnGround(val coordinate: Coordinate): ItemLocation()
 

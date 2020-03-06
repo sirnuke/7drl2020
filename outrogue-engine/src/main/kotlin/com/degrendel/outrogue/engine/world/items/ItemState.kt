@@ -18,7 +18,6 @@ abstract class ItemState(final override val entity: Entity, final override val t
       {
         is OnGround -> it.coordinate
         is InInventory -> it.creature.coordinate
-        else -> throw IllegalStateException("Unexpected item location $it")
       }
     }
     entity.add(ItemComponent(this)).add(CoordinateComponent(coordinate))

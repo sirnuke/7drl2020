@@ -7,13 +7,11 @@ import com.degrendel.outrogue.common.agent.Agent
 import org.drools.core.event.DebugRuleRuntimeEventListener
 import org.kie.api.KieServices
 import org.kie.api.runtime.KieSession
-import java.io.File
 import ch.qos.logback.classic.Logger
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntityListener
 import com.degrendel.outrogue.agent.goals.DecideAction
 import com.degrendel.outrogue.agent.inputs.AutoClean
-import com.degrendel.outrogue.agent.inputs.CreatureInput
 import com.degrendel.outrogue.agent.inputs.ExploreOption
 import com.degrendel.outrogue.agent.inputs.toInput
 import com.degrendel.outrogue.common.agent.Sleep

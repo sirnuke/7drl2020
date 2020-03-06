@@ -6,7 +6,6 @@ import com.degrendel.outrogue.common.agent.Agent
 import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.common.world.World
 import com.degrendel.outrogue.common.world.creatures.Conjurer
-import com.degrendel.outrogue.common.world.creatures.Creature
 import kotlinx.coroutines.Job
 import kotlin.random.Random
 

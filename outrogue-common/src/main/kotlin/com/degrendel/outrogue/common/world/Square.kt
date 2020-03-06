@@ -3,7 +3,6 @@ package com.degrendel.outrogue.common.world
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.properties.Properties
 import com.degrendel.outrogue.common.world.creatures.Creature
-import com.degrendel.outrogue.common.world.items.Item
 
 interface Square
 {
@@ -69,12 +68,6 @@ enum class EightWay(val x: Int, val y: Int, val diagonal: Boolean)
   WEST(-1, 0, false),
   NORTH_WEST(-1, -1, true),
   ;
-
-  val diagonalChecks: List<Pair<Int, Int>> = if (!diagonal)
-    listOf()
-  else
-    listOf(Pair(0, y), Pair(x, 0))
-
 }
 
 enum class WallOrientation

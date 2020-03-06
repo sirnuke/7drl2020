@@ -6,7 +6,6 @@ import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.Inventory
 import com.degrendel.outrogue.common.world.items.Armor
 import com.degrendel.outrogue.common.world.items.Weapon
-import kotlin.reflect.jvm.internal.impl.descriptors.deserialization.PlatformDependentDeclarationFilter
 
 interface Creature
 {
@@ -94,11 +93,4 @@ enum class Allegiance
     CONJURER -> other != CONJURER
     NEUTRAL -> true
   }
-}
-
-enum class ActiveStatus
-{
-  CONTACT,
-  PRODDED,
-  ASLEEP
 }

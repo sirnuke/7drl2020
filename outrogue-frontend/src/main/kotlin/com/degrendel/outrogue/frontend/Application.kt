@@ -8,7 +8,6 @@ import org.hexworks.zircon.api.SwingApplications
 import org.hexworks.zircon.api.application.AppConfig
 import org.hexworks.zircon.api.application.Application
 import org.hexworks.zircon.api.application.DebugConfig
-import org.hexworks.zircon.api.extensions.toScreen
 import org.hexworks.zircon.api.grid.TileGrid
 import org.hexworks.zircon.api.uievent.*
 import java.util.concurrent.locks.Condition
@@ -21,7 +20,7 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
 {
   companion object
   {
-    val L by logger()
+    private val L by logger()
   }
 
   val tileGrid: TileGrid

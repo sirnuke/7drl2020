@@ -11,4 +11,3 @@ class SleepGoal : ActionGoal
   override var applicable = true
   override var action: Action? = null
 }
-
