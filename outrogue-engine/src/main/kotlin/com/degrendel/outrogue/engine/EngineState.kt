@@ -36,7 +36,10 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
   private var _clock = 0L
   override val clock get() = _clock
 
-  override val random: Random = Random(seed)
+  override val random: Random = Random(seed).also {
+    ApacheCommonsHaveTerribleAPIsGenerator.random = it
+  }
+
   override val ecs = ECS()
 
   val _rogueAgent = RogueAgent(this)
