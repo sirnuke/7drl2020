@@ -8,7 +8,9 @@ import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.creatures.Allegiance
+import com.degrendel.outrogue.common.world.creatures.Conjurer
 import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.engine.world.ConjurerState
 import com.degrendel.outrogue.engine.world.CreatureState
 import com.degrendel.outrogue.engine.world.MinionState
 import com.degrendel.outrogue.engine.world.WorldState
@@ -78,7 +80,7 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
       is Move -> P.costs.move
       is GoDownStaircase, is GoUpStaircase -> P.costs.staircase
       is MeleeAttack -> P.costs.melee
-      is ProdCreature -> P.costs.prod
+      is SwapWith -> P.costs.swap
     }
   }
 
@@ -146,26 +148,19 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
             world.getLevel(action.creature.coordinate.floor + 1).staircasesUp[square.staircase!!].creature == null
         }
       }
-      // TODO: Ick
-      is ProdCreature ->
+      is SwapWith ->
       {
-        if (action.target !is MinionState)
+        if (!action.creature.coordinate.canInteract(world, action.target.coordinate))
           false
-        else if (!action.creature.coordinate.canInteract(world, action.target.coordinate))
-          false
-        else if (action.creature.allegiance == Allegiance.ROGUE && action.target.allegiance == Allegiance.CONJURER)
-          false
-        else !(action.creature.allegiance == Allegiance.CONJURER && action.target.allegiance == Allegiance.ROGUE)
+        else
+          action.creature.allegiance.isCordialWith(action.target.allegiance)
       }
       is MeleeAttack ->
       {
         if (!action.creature.coordinate.canInteract(world, action.target.coordinate))
           false
-        else if (action.creature.allegiance == action.target.allegiance)
-          false
-        else if (action.creature.allegiance == Allegiance.NEUTRAL)
-          false
-        else action.target.allegiance != Allegiance.NEUTRAL
+        else
+          action.creature.allegiance.canPickFightWith(action.target.allegiance)
       }
     }
   }
@@ -216,28 +211,34 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
           is MeleeDefeatedResult -> listOf(MeleeDefeatedMessage(action.creature, action.target))
         }
       }
-      is ProdCreature ->
+      is SwapWith ->
       {
-        (action.target as MinionState).prod(clock)
-        listOf()
+        action.creature.coordinate.floor.compareTo(action.target.coordinate.floor).let {
+          when
+          {
+            it < 0 -> listOf(AscendStaircaseMessage(action.creature))
+            it > 0 -> listOf(DescendsStaircaseMessage(action.creature))
+            else -> listOf()
+          }
+        }.also { _world.swapCreatures(action.creature as CreatureState, action.target as CreatureState) }
       }
     }
   }
 
-  override fun contextualAction(creature: Creature, eightWay: EightWay): Action?
+  override fun contextualAction(conjurer: Conjurer, eightWay: EightWay): Action?
   {
     // Can't move even when ignoring creatures? bad direction/into wall/etc
-    if (!world.canMoveIgnoringCreatures(creature.coordinate, eightWay)) return null
-    val coordinate = creature.coordinate.move(eightWay)
+    if (!world.canMoveIgnoringCreatures(conjurer.coordinate, eightWay)) return null
+    val coordinate = conjurer.coordinate.move(eightWay)
     val target = world.getSquare(coordinate)
     // Nothing at the target? Move to action
     if (target.creature == null)
-      return Move(creature, eightWay)
+      return Move(conjurer, eightWay)
     val other = target.creature!!
     // Team Rogue in the way?  Attack!
     if (other.allegiance == Allegiance.ROGUE)
-      return MeleeAttack(creature, other)
-    // Else, prod the blocking creature
-    return ProdCreature(creature, other)
+      return MeleeAttack(conjurer, other)
+    // Else swap with the target creature
+    return SwapWith(conjurer, other)
   }
 }

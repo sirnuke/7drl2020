@@ -124,13 +124,13 @@ sealed class CreatureState(final override val entity: Entity,
 
   fun putOnArmor(armor: ArmorState)
   {
-    assert(armor.currentlyWhere.let { it is InInventory && it.creature == this})
+    assert(armor.currentlyWhere.let { it is InInventory && it.creature == this })
     armorState = armor
   }
 
   fun wieldWeapon(weapon: WeaponState)
   {
-    assert(weapon.currentlyWhere.let { it is InInventory && it.creature == this})
+    assert(weapon.currentlyWhere.let { it is InInventory && it.creature == this })
     weaponState = weapon
   }
 }
@@ -149,8 +149,6 @@ class RogueState(private val engine: Engine, world: World, entity: Entity, initi
 
   override var armorState: ArmorState = noArmor
   override var weaponState: WeaponState = noWeapon
-
-  override val prodded = false
 
   // NOTE: Why is world passed in? Because engine.world isn't necessarily initialized, but need engine for other things
   private val exploreMap = NavigationMapImpl(engine.random, world)
@@ -177,12 +175,11 @@ class RogueState(private val engine: Engine, world: World, entity: Entity, initi
 }
 
 class ConjurerState(private val engine: Engine, entity: Entity, initial: Coordinate)
-  : CreatureState(entity, initial, maxHp = P.conjurer.hp, maxStrength = P.conjurer.strength)
+  : CreatureState(entity, initial, maxHp = P.conjurer.hp, maxStrength = P.conjurer.strength), Conjurer
 {
   override val allegiance = Allegiance.CONJURER
   override val type = CreatureType.CONJURER
   override val controller = PlayerController
-  override val prodded = false
 
   override val noArmor = ArmorState(ArmorType.NO_ARMOR, P.conjurer.ac, InInventory(this), weight = 0)
   override val noWeapon = WeaponState(WeaponType.FISTS, P.rogue.toHit,
@@ -230,42 +227,15 @@ class MinionState(private val engine: Engine, world: World, entity: Entity, init
   override var armorState: ArmorState = noArmor
   override var weaponState: WeaponState = noWeapon
 
-  private var _activeStatus = ActiveStatus.ASLEEP
-  val activeStatus get() = _activeStatus
-
   override val controller: Controller get() = _controller
-
-  private var _prodded = false
-  override val prodded get() = _prodded
-
-  fun prod(clock: Long)
-  {
-    L.debug("Prodded {} at {}", this, clock)
-    _prodded = true
-    if (activeStatus == ActiveStatus.ASLEEP)
-    {
-      _activeStatus = ActiveStatus.PRODDED
-      setActive(true, clock)
-    }
-  }
-
-  fun unprod()
-  {
-    L.debug("Prod on {} complete", this)
-    _prodded = false
-    if (activeStatus == ActiveStatus.PRODDED)
-    {
-      _activeStatus == ActiveStatus.ASLEEP
-      setActive(false, clock)
-    }
-  }
 
   fun wakeFromContact(clock: Long)
   {
-    L.debug("Set {} active due to contact at {}", this, clock)
     if (!active)
+    {
+      L.debug("Set {} active due to contact at {}", this, clock)
       setActive(true, clock)
-    _activeStatus = ActiveStatus.CONTACT
+    }
   }
 
   init

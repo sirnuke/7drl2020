@@ -6,41 +6,55 @@ import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.Inventory
 import com.degrendel.outrogue.common.world.items.Armor
 import com.degrendel.outrogue.common.world.items.Weapon
+import kotlin.reflect.jvm.internal.impl.descriptors.deserialization.PlatformDependentDeclarationFilter
 
 interface Creature
 {
   // Where this creature is located in the world (mutable)
   val coordinate: Coordinate
+
   // The Ashley entity for this creature
   val entity: Entity
+
   // The allegiance (usually mutable)
   val allegiance: Allegiance
+
   // What type of creature this is
   val type: CreatureType
+
   // The unique identifier for this creature
   val id: Int
+
   // When this creature can act again (mutable)
   val clock: Long
+
   // The AI controller for this creature (largely immutable)
   val controller: Controller
+
   // Whether this creature is active and can produce actions
   val active: Boolean
-  // Whether this creature has been prodded to move out of the way
-  val prodded: Boolean
+
   // The number of hit points this creature currently has
   val hp: Int
+
   // And its max number of hit points
   val maxHp: Int
+
   // Current strength
   val strength: Int
+
   // Base to-hit for this creature
   val toHit: Int
+
   // Max strength
   val maxStrength: Int
+
   // Currently equipped weapon
   val weapon: Weapon
+
   // Currently equipped armor
   val armor: Armor
+
   // Inventory
   val inventory: Inventory
 }
@@ -65,6 +79,20 @@ enum class Allegiance
     ROGUE -> other == CONJURER
     CONJURER -> other == ROGUE
     NEUTRAL -> false
+  }
+
+  fun isCordialWith(other: Allegiance) = when (this)
+  {
+    ROGUE -> other != CONJURER
+    CONJURER -> other != ROGUE
+    NEUTRAL -> true
+  }
+
+  fun canPickFightWith(other: Allegiance) = when (this)
+  {
+    ROGUE -> other != ROGUE
+    CONJURER -> other != CONJURER
+    NEUTRAL -> true
   }
 }
 

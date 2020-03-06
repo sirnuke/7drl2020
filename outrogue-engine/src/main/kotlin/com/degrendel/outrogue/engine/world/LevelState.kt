@@ -193,6 +193,23 @@ class LevelState(val floor: Int, previous: Level?, private val engine: Engine) :
     activateOthers(creature)
   }
 
+  fun swapCreatures(first: CreatureState, second: CreatureState)
+  {
+    assert(first.coordinate.floor == floor)
+    assert(squares[first.coordinate.x][first.coordinate.y].creature == first)
+    assert(second.coordinate.floor == floor)
+    assert(squares[second.coordinate.x][second.coordinate.y].creature == second)
+
+    val saved = first.coordinate
+    squares[second.coordinate.x][second.coordinate.y]._creature = first
+    first.move(second.coordinate)
+    squares[saved.x][saved.y]._creature = second
+    second.move(saved)
+
+    activateOthers(first)
+    activateOthers(second)
+  }
+
   private fun activateOthers(creature: CreatureState)
   {
     val square = getSquareState(creature.coordinate)

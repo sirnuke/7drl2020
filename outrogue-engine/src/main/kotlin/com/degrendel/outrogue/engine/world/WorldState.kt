@@ -5,6 +5,7 @@ import com.degrendel.outrogue.common.components.*
 import com.degrendel.outrogue.common.logger
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.Level.Companion.floorRange
+import com.degrendel.outrogue.common.world.creatures.Conjurer
 import com.degrendel.outrogue.common.world.creatures.Creature
 import com.degrendel.outrogue.common.world.creatures.Rogue
 import com.degrendel.outrogue.engine.EngineState
@@ -45,7 +46,7 @@ class WorldState(val engine: EngineState) : World
     levels.forEach { it.populate(this) }
   }
 
-  override val conjurer: Creature get() = _conjurer
+  override val conjurer: Conjurer get() = _conjurer
   override val rogue: Rogue get() = _rogue
 
   override fun getLevel(floor: Int): Level = levels[floor]
@@ -84,6 +85,36 @@ class WorldState(val engine: EngineState) : World
     newLevel.spawn(creature)
     if (creature == conjurer)
       setVisibleFloor(newLevel.floor)
+  }
+
+  fun swapCreatures(first: CreatureState, second: CreatureState)
+  {
+    when (first.coordinate.floor - second.coordinate.floor)
+    {
+      0 ->
+      {
+        assert(first.coordinate.canInteract(this, second.coordinate))
+        levels[first.coordinate.floor].swapCreatures(first, second)
+      }
+      1, -1 ->
+      {
+        // TODO: Meh
+        val firstLevel = getLevelState(first)
+        val secondLevel = getLevelState(second)
+        val firstSquare = firstLevel.getSquare(first.coordinate)
+        val secondSquare = secondLevel.getSquare(second.coordinate)
+        assert(firstSquare.staircase != null)
+        assert(secondSquare.staircase != null)
+        assert(firstSquare.staircase == secondSquare.staircase)
+        firstLevel.despawn(first)
+        secondLevel.despawn(second)
+        first.move(secondSquare.coordinate)
+        second.move(firstSquare.coordinate)
+        firstLevel.spawn(second)
+        secondLevel.spawn(first)
+      }
+      else -> throw IllegalArgumentException("Creatures $first and $second are more than one floor apart!")
+    }
   }
 
   fun computeVisibleAndKnown()

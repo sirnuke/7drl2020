@@ -1,13 +1,12 @@
 package com.degrendel.outrogue.common.world
 
-import com.badlogic.ashley.core.Family
-import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.common.world.creatures.Conjurer
 import com.degrendel.outrogue.common.world.creatures.Rogue
 
 interface World
 {
   val rogue: Rogue
-  val conjurer: Creature
+  val conjurer: Conjurer
 
   fun getLevel(coordinate: Coordinate): Level
   fun getLevel(floor: Int): Level

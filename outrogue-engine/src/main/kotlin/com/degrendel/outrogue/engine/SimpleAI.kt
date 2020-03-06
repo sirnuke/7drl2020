@@ -13,12 +13,6 @@ object SimpleAI
   fun executeSimpleAI(engine: EngineState, minion: MinionState, ai: SimpleController): Action
   {
     L.debug("Executing simple AI {} on minion {}", ai, minion)
-    // Responding to a prod always comes first
-    if (minion.prodded)
-    {
-      minion.unprod()
-      return executeProd(engine, minion)
-    }
     val sources = mutableMapOf<Coordinate, Int>()
     ai.behaviors.forEach { (behavior, weight) ->
       when (behavior)

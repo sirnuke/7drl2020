@@ -49,7 +49,7 @@
     "sleep": 100,
     "move": 120,
     "staircase": 200,
-    "prod": 80,
+    "swap": 200,
     "melee": 120
   },
   "conjurer": {
