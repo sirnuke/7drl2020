@@ -10,7 +10,7 @@
   },
   "map": {
     "width": 64,
-    "height": 32,
+    "height": 48,
     "floors": 10,
     "rooms": {
       "min-size": 5,
@@ -41,17 +41,23 @@
       "map-x": 0,
       "map-y": 0,
       "max-queued-actions": 5,
-      "sidebar": {
+      "conjurer": {
         "width": 16,
-        "height": 45,
+        "height": 30,
         "x": 64,
         "y": 0
       },
+      "rogue": {
+        "width": 16,
+        "height": 30,
+        "x": 64,
+        "y": 30
+      },
       "log": {
         "width": 64,
-        "height": 13,
+        "height": 12,
         "x": 0,
-        "y": 32
+        "y": 48
       }
     }
   },

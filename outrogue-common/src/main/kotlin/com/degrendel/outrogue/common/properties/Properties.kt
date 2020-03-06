@@ -55,8 +55,8 @@ data class Distribution(val type: DistributionType, val parameters: List<Double>
 }
 
 data class Rooms(val minSize: Int, val maxNumber: Int)
-data class World(val mapX: Int, val mapY: Int, val maxQueuedActions: Int, val sidebar: ComponentDimensions,
-                 val log: ComponentDimensions)
+data class World(val mapX: Int, val mapY: Int, val maxQueuedActions: Int, val rogue: ComponentDimensions,
+                 val conjurer: ComponentDimensions, val log: ComponentDimensions)
 
 data class Costs(val sleep: Long, val move: Long, val staircase: Long, val swap: Long, val melee: Long,
                  val equip: Long, val transfer: Long, val read: Long, val drink: Long)

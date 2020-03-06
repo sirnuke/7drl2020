@@ -40,10 +40,15 @@ class InGameView(private val application: Application, private val tileGrid: Til
       .withDecorations(box(title = "Log"))
       .withTileset(TrueTypeFontResources.ibmBios(P.window.fontSize))
       .build()
-  private val sidebar = Components.panel()
-      .withSize(P.views.world.sidebar.width, P.views.world.sidebar.height)
-      .withPosition(P.views.world.sidebar.x, P.views.world.sidebar.y)
-      .withDecorations(box(title = "Actions"))
+  private val conjurer = Components.panel()
+      .withSize(P.views.world.conjurer.width, P.views.world.conjurer.height)
+      .withPosition(P.views.world.conjurer.x, P.views.world.conjurer.y)
+      .withDecorations(box(title = "You"))
+      .build()
+  private val rogue = Components.panel()
+      .withSize(P.views.world.rogue.width, P.views.world.rogue.height)
+      .withPosition(P.views.world.rogue.x, P.views.world.rogue.y)
+      .withDecorations(box(title = "Enemy"))
       .build()
 
   private var job: Job? = null
@@ -65,7 +70,8 @@ class InGameView(private val application: Application, private val tileGrid: Til
       engine.rogueAgent.enableLogging()
 
     screen.addComponent(logArea)
-    screen.addComponent(sidebar)
+    screen.addComponent(conjurer)
+    screen.addComponent(rogue)
 
     screen.theme = ColorThemes.adriftInDreams()
     // TODO: These won't fire if something else is docked, right?
