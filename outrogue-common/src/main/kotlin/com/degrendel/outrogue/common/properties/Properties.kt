@@ -1,6 +1,7 @@
 package com.degrendel.outrogue.common.properties
 
 import com.degrendel.outrogue.common.agent.Behavior
+import com.degrendel.outrogue.common.world.DistributionType
 import com.degrendel.outrogue.common.world.creatures.Allegiance
 import com.degrendel.outrogue.common.world.creatures.CreatureType
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -28,8 +29,8 @@ data class Window(val width: Int, val height: Int, val title: String, val fpsLim
 data class Map(val width: Int, val height: Int, val floors: Int, val rooms: Rooms, val features: Features)
 data class Features(val maxPlacementAttempts: Int, // When to give up on attempting to randomly place something (might be an assert error, might skip)
                     val extraStaircases: List<Double>, // How many extra staircases to spawn?  Each one is a probability [0,1), lower is less likely
-                    val monsterSpawnStart: Double, // How much 'cost' in monsters should be on the first level?
-                    val monsterSpawnScale: Double // How much should this multiply per level?
+                    val monsters: Distribution, // How many monsters should this level have?
+                    val items: Distribution // How many items should this level have?
 )
 
 data class ComponentDimensions(val x: Int, val y: Int, val width: Int, val height: Int)
@@ -42,6 +43,15 @@ data class Dice(val rolls: Int, val sides: Int)
 data class IntRange(val from: Int, val to: Int)
 {
   fun toInstance() = (from..to)
+}
+
+data class Distribution(val type: DistributionType, val parameters: List<Double>)
+{
+  init
+  {
+    if (type.parameters != parameters.size)
+      throw IllegalArgumentException("Distribution $type expects ${type.parameters} parameters, got ${parameters.size}")
+  }
 }
 
 data class Rooms(val minSize: Int, val maxNumber: Int)
