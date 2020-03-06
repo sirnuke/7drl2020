@@ -178,7 +178,8 @@ class RogueState(private val engine: Engine, world: World, entity: Entity, initi
     Square.each { x, y ->
       level.getSquare(x, y).let { if (!it.type.blocked && !it.knownToRogue) sources[it.coordinate] = 0 }
     }
-    return exploreMap.compute(sources).getAllMoves(coordinate) { _, _, _ -> true }
+    if (sources.isEmpty()) return mapOf()
+    return exploreMap.compute(sources).getAllMoves(coordinate) { square, _, _ -> !square.type.blocked }
   }
 }
 
