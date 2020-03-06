@@ -1,10 +1,12 @@
 package com.degrendel.outrogue.common.world.items
 
+import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.world.Coordinate
 import com.degrendel.outrogue.common.world.creatures.Creature
 
 interface Item
 {
+  val entity: Entity
   val type: ItemType
   val where: ItemLocation
   val stackable: Boolean

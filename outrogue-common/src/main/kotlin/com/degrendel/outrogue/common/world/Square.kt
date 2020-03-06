@@ -3,6 +3,7 @@ package com.degrendel.outrogue.common.world
 import com.badlogic.ashley.core.Entity
 import com.degrendel.outrogue.common.properties.Properties
 import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.common.world.items.Item
 
 interface Square
 {
@@ -14,6 +15,8 @@ interface Square
   val staircase: Int?
   val visible: Set<Int>
   val creature: Creature?
+
+  val items: Inventory
 
   val visibleToRogue: Boolean
   val knownToRogue: Boolean
