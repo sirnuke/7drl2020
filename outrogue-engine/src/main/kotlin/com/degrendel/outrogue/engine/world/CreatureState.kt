@@ -225,8 +225,11 @@ class MinionState(private val engine: Engine, world: World, entity: Entity, init
   {
     val definition = P.creatures.getValue(type)
     _allegiance = definition.allegiance
-    _controller = SimpleController(definition.behaviors,
-        definition.targetWeight.toInstance(), NavigationMapImpl(engine.random, world))
+    // NOTE: Perform navigation without taking into account blocking entities.  When actually selecting the next move,
+    // take entities into account (done elsewhere).  This might cause traffic jams and whatnot, but whatever, minions
+    // are stupid.  Conjurer (player) and Rogue (Drools agent) should be a bit smarter, which is desirable anyway.
+    val navigation = NavigationMapImpl(engine.random, world) { !it.type.blocked }
+    _controller = SimpleController(definition.behaviors, (0..0), navigation)
 
     noArmor = ArmorState(Entity(), ArmorType.NO_ARMOR, definition.ac, InInventory(this), weight = 0)
     noWeapon = WeaponState(Entity(), WeaponType.FISTS, InInventory(this), definition.toHit,
