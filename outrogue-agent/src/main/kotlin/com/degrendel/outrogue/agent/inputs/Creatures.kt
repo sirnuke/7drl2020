@@ -7,7 +7,7 @@ import com.degrendel.outrogue.common.world.creatures.Creature
 import com.degrendel.outrogue.common.world.creatures.CreatureType
 
 data class CreatureInput(val id: Int,
-                         val type: CreatureType,
+                         val creature: Creature,
                          val position: Coordinate,
                          val visible: Boolean,
                          val friendly: Boolean,
@@ -16,7 +16,7 @@ data class CreatureInput(val id: Int,
 fun Creature.toInput(world: World): CreatureInput
 {
   val visible = world.getSquare(coordinate).visibleToRogue
-  return CreatureInput(id = id, type = type, position = coordinate, visible = visible,
+  return CreatureInput(id = id, creature = this, position = coordinate, visible = visible,
       friendly = allegiance == Allegiance.ROGUE, hostile = allegiance == Allegiance.CONJURER)
 }
 
