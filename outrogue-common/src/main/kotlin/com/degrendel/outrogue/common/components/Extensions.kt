@@ -7,4 +7,4 @@ fun Entity.getCoordinate() = ComponentMaps.coordinate.get(this).coordinate
 fun Entity.getSquare() = ComponentMaps.square.get(this).square
 fun Entity.getRoom() = ComponentMaps.room.get(this).room
 fun Entity.getCreature() = ComponentMaps.creature.get(this).creature
-
+fun Entity.getItem() = ComponentMaps.item.get(this).item

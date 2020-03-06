@@ -3,6 +3,7 @@ package com.degrendel.outrogue.common.components
 import com.badlogic.ashley.core.Component
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.common.world.creatures.Creature
+import com.degrendel.outrogue.common.world.items.Item
 
 /** Indicates that this entity is currently visible to the Rogue. */
 object VisibleToRogueComponent : Component
@@ -27,6 +28,9 @@ data class RoomComponent(val room: Room) : Component
 
 /** Indicates this entity is a creature. */
 data class CreatureComponent(val creature: Creature) : Component
+
+/** Indicates this entity is an item. */
+data class ItemComponent(val item: Item): Component
 
 /** Indicates this creature belongs to the Rogue team. */
 object RogueAllegianceComponent : Component
