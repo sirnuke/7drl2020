@@ -100,6 +100,7 @@ class RogueAgent(val engine: Engine) : Agent
 
     EightWay.values().map { Pair(it, rogue.coordinate.move(it)) }
         .filter { it.second.isValid() }
+        .filter { (_, coordinate) -> rogue.coordinate.canInteract(engine.world, coordinate) }
         .map { (direction, coordinate) -> Pair(direction, engine.world.getSquare(coordinate)) }
         .map { (direction, square) -> Neighbor(direction, square, square.creature) }
         .forEach { session.insert(it) }
