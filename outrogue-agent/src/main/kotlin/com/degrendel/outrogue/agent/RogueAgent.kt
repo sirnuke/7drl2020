@@ -98,6 +98,11 @@ class RogueAgent(val engine: Engine) : Agent
         .forEach { session.update(creatureInputs.getValue(it.id), it) }
 
     rogue.computeExploreDirection()?.let { session.insert(ExploreOption(it)) }
+    EightWay.values().map { Pair(it, rogue.coordinate.move(it)) }
+        .filter { it.second.isValid() }
+        .map { (direction, coordinate) -> Pair(direction, engine.world.getSquare(coordinate)) }
+        .map { (direction, square) -> Neighbor(direction, square, square.creature) }
+        .forEach { session.insert(it) }
 
     val rootGoal = DecideAction()
     session.insert(rootGoal)
