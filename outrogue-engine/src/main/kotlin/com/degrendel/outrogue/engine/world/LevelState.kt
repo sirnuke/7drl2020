@@ -10,6 +10,7 @@ import com.degrendel.outrogue.common.properties.Properties.Companion.P
 import com.degrendel.outrogue.common.world.*
 import com.degrendel.outrogue.engine.NavigationMapImpl
 import com.degrendel.outrogue.engine.RoomState
+import com.degrendel.outrogue.engine.toInstance
 import com.github.czyzby.noise4j.map.Grid
 import com.github.czyzby.noise4j.map.generator.room.AbstractRoomGenerator
 import com.github.czyzby.noise4j.map.generator.room.RoomType
@@ -20,6 +21,9 @@ class LevelState(val floor: Int, previous: Level?, private val engine: Engine) :
   companion object
   {
     private val L by logger()
+
+    private val monsterDistribution = P.map.features.monsters.toInstance()
+    private val itemsDistribution = P.map.features.items.toInstance()
   }
 
   private val random = engine.random
@@ -150,21 +154,13 @@ class LevelState(val floor: Int, previous: Level?, private val engine: Engine) :
 
   private fun populateMonsters(world: World)
   {
-    // TODO: Budget isn't the right approach.  Using a (normal?) distribution, compute the number of monsters per level
-    //       Depending on the target level of each monster, weight it and pick
-    var monsterBudget = P.map.features.monsterSpawnStart + P.map.features.monsterSpawnScale.pow(floor)
-    L.debug("Floor {} has monster budget {}", floor, monsterBudget)
+    val count = monsterDistribution.sample()
+    L.debug("Floor {} spawning {} monsters", floor, count)
+    // TODO: Need to weight these based on the first floor they are allowed (i.e. peak like one floor after?)
     val monsters = P.creatures.filterValues { it.earliestLevel <= floor }
 
-    while (monsterBudget > 0)
-    {
+    (0 until count).forEach { num ->
       val toSpawn = monsters.keys.random(random)
-      val definition = monsters.getValue(toSpawn)
-      // NOTE: Perform navigation without taking into account blocking entities.  When actually selecting the next move,
-      // take entities into account (done elsewhere).  This might cause traffic jams and whatnot, but whatever, minions
-      // are stupid.  Conjurer (player) and Rogue (Drools agent) should be a bit smarter, which is desirable anyway
-      val navigation = NavigationMapImpl(random, world) { !it.type.blocked }
-      val controller = SimpleController(definition.behaviors, (0..0), navigation)
       val spawned = create(1, 0, {
         getSquareState(it).let { option: SquareState -> option.creature == null && !option.type.staircase }
       }) {
@@ -172,11 +168,9 @@ class LevelState(val floor: Int, previous: Level?, private val engine: Engine) :
       }
       if (spawned == 0)
       {
-        L.warn("Unable to spawn, terminating spawn loop with {} budget left", monsterBudget)
-        break
+        L.warn("Unable to spawn, terminating spawn loop with {} monsters left", (count - num))
+        return@forEach
       }
-      else
-        monsterBudget -= definition.cost * spawned
     }
   }
 
