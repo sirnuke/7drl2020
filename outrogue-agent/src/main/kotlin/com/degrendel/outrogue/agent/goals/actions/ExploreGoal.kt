@@ -1,6 +1,7 @@
 package com.degrendel.outrogue.agent.goals.actions
 
 import com.degrendel.outrogue.agent.goals.ActionGoal
+import com.degrendel.outrogue.agent.inputs.ExploreOption
 import com.degrendel.outrogue.common.agent.Action
 
 class ExploreGoal : ActionGoal
@@ -10,6 +11,8 @@ class ExploreGoal : ActionGoal
   override var applicable: Boolean = false
   override var selected: Boolean = false
   override var action: Action? = null
+
+  var bestOption: ExploreOption? = null
 
   override fun toString(): String
   {

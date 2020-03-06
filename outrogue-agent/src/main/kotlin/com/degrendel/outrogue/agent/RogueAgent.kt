@@ -13,9 +13,11 @@ import com.badlogic.ashley.core.EntityListener
 import com.degrendel.outrogue.agent.goals.DecideAction
 import com.degrendel.outrogue.agent.inputs.AutoClean
 import com.degrendel.outrogue.agent.inputs.ExploreOption
+import com.degrendel.outrogue.agent.inputs.Neighbor
 import com.degrendel.outrogue.agent.inputs.toInput
 import com.degrendel.outrogue.common.agent.Sleep
 import com.degrendel.outrogue.common.components.getCreature
+import com.degrendel.outrogue.common.world.EightWay
 import org.kie.api.runtime.rule.FactHandle
 import org.slf4j.LoggerFactory
 
@@ -97,11 +99,14 @@ class RogueAgent(val engine: Engine) : Agent
         .map { it.getCreature().toInput(engine.world) }
         .forEach { session.update(creatureInputs.getValue(it.id), it) }
 
-    rogue.computeExploreDirection()?.let { session.insert(ExploreOption(it)) }
     EightWay.values().map { Pair(it, rogue.coordinate.move(it)) }
         .filter { it.second.isValid() }
         .map { (direction, coordinate) -> Pair(direction, engine.world.getSquare(coordinate)) }
         .map { (direction, square) -> Neighbor(direction, square, square.creature) }
+        .forEach { session.insert(it) }
+
+    rogue.computeExploreDirection()
+        .map { (direction, data) -> ExploreOption(direction, data.second) }
         .forEach { session.insert(it) }
 
     val rootGoal = DecideAction()
