@@ -18,4 +18,9 @@ class ConjurerFragment(private val engine: Engine, private val screen: Screen)
   {
     screen.addComponent(panel)
   }
+
+  fun refresh()
+  {
+    // TODO: Stub!
+  }
 }

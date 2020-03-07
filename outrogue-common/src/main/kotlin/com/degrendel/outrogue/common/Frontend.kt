@@ -4,7 +4,7 @@ import com.degrendel.outrogue.common.agent.Action
 
 interface Frontend
 {
-  suspend fun refreshMap()
+  suspend fun refresh()
   suspend fun getPlayerInput(): Action
 
   fun drawNavigationMap(map: NavigationMap)

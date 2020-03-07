@@ -96,7 +96,7 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
     launch {
       while (true)
       {
-        frontend.refreshMap()
+        frontend.refresh()
         delay(100L)
       }
     }
@@ -105,7 +105,7 @@ class EngineState(val frontend: Frontend, overrideSeed: Long?) : Engine
     {
       _world.computeVisibleAndKnown()
       updateECS()
-      frontend.refreshMap()
+      frontend.refresh()
       executeNextAction()
       // TODO: Alternatively for performance, offer a 'peak ahead' in actionQueueSystem.  If the next action is a
       //       simple AI (i.e. should be near immediately), skip refreshing the map.  Could also have a timer that

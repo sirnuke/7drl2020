@@ -164,16 +164,20 @@ class InGameView(private val application: Application, private val tileGrid: Til
     engine.bootstrapECS()
   }
 
-  override suspend fun refreshMap()
+  override suspend fun refresh()
   {
-    world.refreshMap()
+    world.refresh()
+    conjurerPanel.refresh()
+    roguePanel.refresh()
   }
 
   override fun onDock()
   {
     L.info("Docking InGameView")
 
-    world.refreshMap()
+    world.refresh()
+    conjurerPanel.refresh()
+    roguePanel.refresh()
     // Recreate the channel, since closing it
     playerActions = Channel(capacity = P.views.world.maxQueuedActions)
     job = engine.runGame()

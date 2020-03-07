@@ -8,9 +8,19 @@ import org.hexworks.zircon.api.screen.Screen
 
 class RogueFragment(private val engine: Engine, private val screen: Screen)
 {
-  val panel = Components.panel()
+  private val panel = Components.panel()
       .withSize(P.views.world.rogue.width, P.views.world.rogue.height)
       .withPosition(P.views.world.rogue.x, P.views.world.rogue.y)
       .withDecorations(ComponentDecorations.box(title = "Enemy"))
       .build()
+
+  init
+  {
+    screen.addComponent(panel)
+  }
+
+  fun refresh()
+  {
+    // TODO: Stub!
+  }
 }

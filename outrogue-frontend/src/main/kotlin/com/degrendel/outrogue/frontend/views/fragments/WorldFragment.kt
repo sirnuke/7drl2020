@@ -142,7 +142,7 @@ class WorldFragment(private val engine: Engine, profile: LaunchProfile, screen: 
     }
   }
 
-  fun refreshMap()
+  fun refresh()
   {
     // NOTE: to add 'blocking' animations, start them as suspendCoroutines that terminate on the callback.  Return the
     // list of coroutines.  Can't really do that for moving, not at least without doing it through GDC
