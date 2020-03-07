@@ -7,6 +7,9 @@ import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.engine.EngineState
 import com.degrendel.outrogue.frontend.LaunchProfile
 import com.degrendel.outrogue.frontend.events.*
+import com.degrendel.outrogue.frontend.views.fragments.ConjurerFragment
+import com.degrendel.outrogue.frontend.views.fragments.LogFragment
+import com.degrendel.outrogue.frontend.views.fragments.RogueFragment
 import com.degrendel.outrogue.frontend.views.fragments.WorldFragment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -31,31 +34,14 @@ class InGameView(private val application: Application, private val tileGrid: Til
     private val L by logger()
   }
 
-  val engine = EngineState(this, profile.randomSeed)
+  private val engine = EngineState(this, profile.randomSeed)
 
   private val world = WorldFragment(engine, profile, screen)
-  private val logArea = Components.logArea()
-      .withSize(P.views.world.log.width, P.views.world.log.height)
-      .withPosition(P.views.world.log.x, P.views.world.log.y)
-      .withDecorations(box(title = "Log"))
-      .withTileset(TrueTypeFontResources.ibmBios(P.window.fontSize))
-      .build()
-  private val conjurer = Components.panel()
-      .withSize(P.views.world.conjurer.width, P.views.world.conjurer.height)
-      .withPosition(P.views.world.conjurer.x, P.views.world.conjurer.y)
-      .withDecorations(box(title = "You"))
-      .build()
-  private val rogue = Components.panel()
-      .withSize(P.views.world.rogue.width, P.views.world.rogue.height)
-      .withPosition(P.views.world.rogue.x, P.views.world.rogue.y)
-      .withDecorations(box(title = "Enemy"))
-      .build()
+  private val logArea = LogFragment(application, screen)
+  private val conjurerPanel = ConjurerFragment(engine, screen)
+  private val roguePanel = RogueFragment(engine, screen)
 
   private var job: Job? = null
-
-  private lateinit var logUpdateSubscription: Subscription
-
-  private val logMessages = LinkedBlockingQueue<LogMessage>()
 
   // While this initial channel is not listened to (new one is created before the game loop starts), create it anyway
   // so any inputs that happen to come in before onDock completes don't trigger a lateinit error
@@ -63,15 +49,12 @@ class InGameView(private val application: Application, private val tileGrid: Til
 
   init
   {
+    screen
     if (profile.rogueAgentDebugging)
       engine.rogueAgent.enableDebugging()
 
     if (profile.rogueAgentLogging)
       engine.rogueAgent.enableLogging()
-
-    screen.addComponent(logArea)
-    screen.addComponent(conjurer)
-    screen.addComponent(rogue)
 
     screen.theme = ColorThemes.adriftInDreams()
     // TODO: These won't fire if something else is docked, right?
@@ -194,26 +177,11 @@ class InGameView(private val application: Application, private val tileGrid: Til
     // Recreate the channel, since closing it
     playerActions = Channel(capacity = P.views.world.maxQueuedActions)
     job = engine.runGame()
-
-    logUpdateSubscription = application.beforeRender {
-      ArrayList<LogMessage>().also { logMessages.drainTo(it) }.mapNotNull {
-        when (it)
-        {
-          is AscendStaircaseMessage -> "${it.creature.type.humanName} ascends a staircase to floor ${it.creature.coordinate.floor + 1}"
-          is DescendsStaircaseMessage -> "${it.creature.type.humanName} descends a staircase to floor ${it.creature.coordinate.floor + 1}"
-          is MeleeMissMessage -> "${it.attacker.type.humanName} misses ${it.target.type.humanName} with their ${it.attacker.weapon.weaponType.humanName}"
-          is MeleeDamageMessage -> "${it.attacker.type.humanName} hits ${it.target.type.humanName} with their ${it.attacker.weapon.weaponType.humanName} for ${it.damage} damage"
-          is MeleeDefeatedMessage -> TODO()
-        }
-      }.forEach {
-        logArea.addParagraph(it, withNewLine = false)
-      }
-    }
   }
 
   override fun onUndock()
   {
-    logUpdateSubscription.dispose()
+    logArea.onUndock()
     // TODO: Do we need to do anything here? Shutdown the engine? Dispose drools?
   }
 
@@ -249,10 +217,5 @@ class InGameView(private val application: Application, private val tileGrid: Til
 
   override fun drawDebug(x: Int, y: Int, value: Int) = world.setDebugTile(x, y, value)
 
-  override fun addLogMessages(messages: List<LogMessage>)
-  {
-    L.info("Add {} log messages", messages.size)
-    // TODO: color/stylize messages
-    logMessages.addAll(messages)
-  }
+  override fun addLogMessages(messages: List<LogMessage>) = logArea.add(messages)
 }
