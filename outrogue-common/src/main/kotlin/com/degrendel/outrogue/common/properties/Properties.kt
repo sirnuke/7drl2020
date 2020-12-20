@@ -5,7 +5,7 @@ import com.degrendel.outrogue.common.world.DistributionType
 import com.degrendel.outrogue.common.world.creatures.Allegiance
 import com.degrendel.outrogue.common.world.creatures.CreatureType
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlin.random.Random
@@ -18,7 +18,7 @@ data class Properties(val window: Window, val map: Map, val views: Views, val co
 
     init
     {
-      val mapper = ObjectMapper().registerKotlinModule().also { it.propertyNamingStrategy = PropertyNamingStrategy.KEBAB_CASE }
+      val mapper = ObjectMapper().registerKotlinModule().also { it.propertyNamingStrategy = PropertyNamingStrategies.KEBAB_CASE }
 
       P = mapper.readValue(Properties::class.java.getResource("/properties.json"))
     }

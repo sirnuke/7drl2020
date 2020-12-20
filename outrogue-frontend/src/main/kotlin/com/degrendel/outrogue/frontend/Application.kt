@@ -55,16 +55,14 @@ class Application(lock: ReentrantLock, condition: Condition, val profile: Launch
       else -> throw IllegalArgumentException("Unhandled font size ${P.window.fontSize}")
     }
 
-    var appConfig = AppConfig.newBuilder()
+    val appConfig = AppConfig.newBuilder()
         .withSize(P.window.width, P.window.height)
         .withDefaultTileset(font)
         .withDebugConfig(debugConfig)
         .withDebugMode(profile.zirconDebugMode)
         .withFpsLimit(P.window.fpsLimit)
         .withTitle(title)
-
-    if (profile.fullscreen)
-      appConfig = appConfig.fullScreen()
+        .withFullScreen(profile.fullscreen)
 
     application = SwingApplications.startApplication(appConfig.build())
 

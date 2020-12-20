@@ -2,10 +2,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   base
-  kotlin("jvm") version "1.3.70" apply false
+  kotlin("jvm") version "1.4.21" apply false
   java
   `maven-publish`
-  id("net.researchgate.release") version "2.6.0"
+  id("net.researchgate.release") version "2.8.1"
 }
 
 allprojects {
@@ -19,13 +19,6 @@ allprojects {
 
 release {
   tagTemplate = "v\${version}"
-}
-
-dependencies {
-  // Make the root project archives configuration depend on every subproject
-  subprojects.forEach {
-    archives(it)
-  }
 }
 
 tasks.register("printVersion") {
@@ -79,7 +72,7 @@ subprojects {
 
   dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.slf4j:slf4j-api:1.7.26")
+    implementation("org.slf4j:slf4j-api:1.7.30")
     implementation("ch.qos.logback:logback-classic:1.2.3")
   }
 
