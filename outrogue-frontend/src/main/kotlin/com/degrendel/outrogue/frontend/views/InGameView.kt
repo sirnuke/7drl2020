@@ -7,6 +7,7 @@ import com.degrendel.outrogue.common.world.EightWay
 import com.degrendel.outrogue.engine.EngineState
 import com.degrendel.outrogue.frontend.LaunchProfile
 import com.degrendel.outrogue.frontend.events.*
+import com.degrendel.outrogue.frontend.views.dialogs.InventoryDialog
 import com.degrendel.outrogue.frontend.views.fragments.ConjurerFragment
 import com.degrendel.outrogue.frontend.views.fragments.LogFragment
 import com.degrendel.outrogue.frontend.views.fragments.RogueFragment
@@ -14,8 +15,7 @@ import com.degrendel.outrogue.frontend.views.fragments.WorldFragment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
-import org.hexworks.cobalt.events.api.Subscription
-import org.hexworks.cobalt.events.api.simpleSubscribeTo
+import org.hexworks.cobalt.events.api.*
 import org.hexworks.zircon.api.ColorThemes
 import org.hexworks.zircon.api.ComponentDecorations.box
 import org.hexworks.zircon.api.Components
@@ -26,6 +26,8 @@ import org.hexworks.zircon.api.uievent.*
 import org.hexworks.zircon.api.view.base.BaseView
 import org.hexworks.zircon.internal.Zircon
 import java.util.concurrent.LinkedBlockingQueue
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class InGameView(private val application: Application, private val tileGrid: TileGrid, val profile: LaunchProfile) : BaseView(tileGrid), Frontend
 {
@@ -41,11 +43,9 @@ class InGameView(private val application: Application, private val tileGrid: Til
   private val conjurerPanel = ConjurerFragment(engine, screen)
   private val roguePanel = RogueFragment(engine, screen)
 
-  private var job: Job? = null
+  private val inventoryDialog = InventoryDialog(engine, screen)
 
-  // While this initial channel is not listened to (new one is created before the game loop starts), create it anyway
-  // so any inputs that happen to come in before onDock completes don't trigger a lateinit error
-  private var playerActions = Channel<PlayerInputType>(capacity = P.views.world.maxQueuedActions)
+  private var job: Job? = null
 
   init
   {
@@ -148,17 +148,18 @@ class InGameView(private val application: Application, private val tileGrid: Til
           else
             Pass
         }
+        KeyCode.KEY_I ->
+        {
+          world.hide()
+          inventoryDialog.show()
+          Processed
+        }
         else ->
         {
           L.trace("Ignoring {}", event.code)
           Pass
         }
       }
-    }
-
-    Zircon.eventBus.simpleSubscribeTo<PlayerActionInput> {
-      L.trace("Event player input {}", it.input)
-      playerActions.offer(it.input)
     }
 
     engine.bootstrapECS()
@@ -178,8 +179,6 @@ class InGameView(private val application: Application, private val tileGrid: Til
     world.refresh()
     conjurerPanel.refresh()
     roguePanel.refresh()
-    // Recreate the channel, since closing it
-    playerActions = Channel(capacity = P.views.world.maxQueuedActions)
     job = engine.runGame()
   }
 
@@ -197,24 +196,24 @@ class InGameView(private val application: Application, private val tileGrid: Til
     job = null
   }
 
-  override suspend fun getPlayerInput(): Action
-  {
-    // TODO: Do we have to check whether we've been cancelled? I think .receive() should do it for us
-    // TODO: We probably need to catch the closed exception, but where and what do we do next?
+  override suspend fun getPlayerInput(): Action = suspendCoroutine { continuation ->
     val player = engine.world.conjurer
-    var action: Action?
-    do
-    {
-      action = when (val input = playerActions.receive())
+    Zircon.eventBus.subscribeTo<PlayerActionInput> {
+      val action = when (val input = it.input)
       {
         is UpstairsPress -> GoUpStaircase(player)
         is DownstarsPress -> GoDownStaircase(player)
         is EightWayPress -> engine.contextualAction(player, input.eightWay)
         is SleepPress -> Sleep(player)
       }
+      if (action == null || !engine.isValidAction(action))
+        KeepSubscription
+      else
+      {
+        continuation.resume(action)
+        DisposeSubscription
+      }
     }
-    while (action == null || !engine.isValidAction(action))
-    return action
   }
 
   override fun drawNavigationMap(map: NavigationMap) = world.setDebugNavigationMap(map)
@@ -222,4 +221,11 @@ class InGameView(private val application: Application, private val tileGrid: Til
   override fun drawDebug(x: Int, y: Int, value: Int) = world.setDebugTile(x, y, value)
 
   override fun addLogMessages(messages: List<LogMessage>) = logArea.add(messages)
+
+  enum class ViewState
+  {
+    MAP,
+    INVENTORY,
+    ;
+  }
 }

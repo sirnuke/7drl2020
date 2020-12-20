@@ -38,11 +38,13 @@ class WorldFragment(private val engine: Engine, profile: LaunchProfile, screen: 
 
   private val baseLayer = LayerData().also { screen.addLayer(it.layer) }
   private val creatureLayer = LayerData().also { screen.addLayer(it.layer) }
-  private val debugLayer = LayerData().also { screen.addLayer(it.layer) }
+  private val debugLayer = LayerData().also { screen.addLayer(it.layer) }.also { it.hide() }
   private val knownSquaresLayer = LayerData().also { screen.addLayer(it.layer) }
   private val visibleSquaresLayer = LayerData().also { screen.addLayer(it.layer) }
 
-  private var debugDrawing = false
+  private val layers = listOf(baseLayer, creatureLayer, debugLayer, knownSquaresLayer, visibleSquaresLayer)
+
+  //private var debugDrawing = false
 
   private val visibleSquares = Family.all(SquareComponent::class.java, OnVisibleLevelComponent::class.java).get()
 
@@ -175,6 +177,16 @@ class WorldFragment(private val engine: Engine, profile: LaunchProfile, screen: 
     visibleSquaresLayer.draw()
   }
 
+  fun hide()
+  {
+    layers.forEach { it.hide() }
+  }
+
+  fun show()
+  {
+    layers.forEach { it.show() }
+  }
+
   fun setDebugNavigationMap(map: NavigationMap)
   {
     Square.each { x, y ->
@@ -189,11 +201,7 @@ class WorldFragment(private val engine: Engine, profile: LaunchProfile, screen: 
 
   fun toggleDrawingDebugMap()
   {
-    debugDrawing = !debugDrawing
-    if (debugDrawing)
-      debugLayer.draw()
-    else
-      debugLayer.clearScreen()
+    debugLayer.toggle()
   }
 
   class LayerData
@@ -228,6 +236,21 @@ class WorldFragment(private val engine: Engine, profile: LaunchProfile, screen: 
     fun clearScreen()
     {
       layer.clear()
+    }
+
+    fun hide()
+    {
+      layer.isHidden = true
+    }
+
+    fun show()
+    {
+      layer.isHidden = false
+    }
+
+    fun toggle()
+    {
+      layer.isHidden = !layer.isHidden
     }
 
     companion object
