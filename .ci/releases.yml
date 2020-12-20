@@ -24,8 +24,8 @@ jobs:
         params:
           BUILD_TYPE: release
         vars:
-          nexus_username: ((nexus_username))
-          nexus_password: ((nexus_password))
+          internal_maven_username: ((internal_maven_username))
+          internal_maven_password: ((internal_maven_password))
           itch_api_key: ((itch_api_key))
       - put: gh-release
         params:

@@ -4,13 +4,13 @@ inputs:
 image_resource:
   type: docker-image
   source:
-    username: ((nexus_username))
-    password: ((nexus_password))
-    repository: "paradiso.nexus:8083/ci/gradle"
+    username: ((internal_maven_username))
+    password: ((internal_maven_password))
+    repository: "docker:443/ci/gradle"
     insecure_registries: ["paradiso.nexus:8083"]
 params:
-  INTERNAL_NEXUS_USERNAME: ((nexus_username))
-  INTERNAL_NEXUS_PASSWORD: ((nexus_password))
+  INTERNAL_MAVEN_USERNAME: ((internal_maven_username))
+  INTERNAL_MAVEN_PASSWORD: ((internal_maven_password))
   BUTLER_API_KEY: ((itch_api_key))
 caches:
   - path: gradle/wrapper

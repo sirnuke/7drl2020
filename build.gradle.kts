@@ -32,11 +32,11 @@ subprojects {
   apply(plugin = "org.jetbrains.kotlin.jvm")
   apply(plugin = "maven-publish")
 
-  if (project.properties.containsKey("internalNexusURL"))
+  if (project.properties.containsKey("internalMavenURL"))
   {
-    val internalNexusUsername: String by project
-    val internalNexusPassword: String by project
-    val internalNexusURL: String by project
+    val internalMavenUsername: String by project
+    val internalMavenPassword: String by project
+    val internalMavenURL: String by project
 
     publishing {
       publications {
@@ -47,13 +47,13 @@ subprojects {
       repositories {
         maven {
           credentials {
-            username = internalNexusUsername
-            password = internalNexusPassword
+            username = internalMavenUsername
+            password = internalMavenPassword
           }
-          val releasesRepoUrl = "$internalNexusURL/repository/maven-releases/"
-          val snapshotsRepoUrl = "$internalNexusURL/repository/maven-snapshots/"
+          val releasesRepoUrl = "$internalMavenURL/releases/"
+          val snapshotsRepoUrl = "$internalMavenURL/snapshots/"
           url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
-          name = "Internal-Nexus"
+          name = "Internal-Maven-Publish"
         }
       }
     }
@@ -61,11 +61,22 @@ subprojects {
     repositories {
       maven {
         credentials {
-          username = internalNexusUsername
-          password = internalNexusPassword
+          username = internalMavenUsername
+          password = internalMavenPassword
         }
-        url = uri("$internalNexusURL/repository/maven-public")
-        name = "Internal-Nexus"
+        url = uri("$internalMavenURL/releases")
+        name = "Internal-Maven-Releases"
+      }
+    }
+
+    repositories {
+      maven {
+        credentials {
+          username = internalMavenUsername
+          password = internalMavenPassword
+        }
+        url = uri("$internalMavenURL/snapshots")
+        name = "Internal-Maven-Snapshots"
       }
     }
   }

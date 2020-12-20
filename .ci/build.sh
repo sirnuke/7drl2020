@@ -7,10 +7,10 @@ export BUILD_DIR=`pwd`
 cp /root/.gradle/gradle.properties gradle/
 
 set +x
-echo "Setting internalNexusUsername..."
-echo "internalNexusUsername=$INTERNAL_NEXUS_USERNAME" >> gradle/gradle.properties
-echo "Setting internalNexusPassword..."
-echo "internalNexusPassword=$INTERNAL_NEXUS_PASSWORD" >> gradle/gradle.properties
+echo "Setting internalMavenUsername..."
+echo "internalMavenUsername=$INTERNAL_MAVEN_USERNAME" >> gradle/gradle.properties
+echo "Setting internalMavenPassword..."
+echo "internalMavenPassword=$INTERNAL_MAVEN_PASSWORD" >> gradle/gradle.properties
 
 set -x
 export GRADLE_USER_HOME="${BUILD_DIR}/gradle"

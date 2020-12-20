@@ -17,6 +17,6 @@ jobs:
         params:
           BUILD_TYPE: snapshot
         vars:
-          nexus_username: ((nexus_username))
-          nexus_password: ((nexus_password))
+          internal_maven_username: ((internal_maven_username))
+          internal_maven_password: ((internal_maven_password))
           itch_api_key: ((itch_api_key))
